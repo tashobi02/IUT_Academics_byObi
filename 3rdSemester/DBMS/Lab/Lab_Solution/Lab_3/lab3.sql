@@ -1,0 +1,110 @@
+/* TASK 1 */
+CREATE TABLE RESTAURANT (
+    REST_ID INT,
+    RES_NAME VARCHAR2(50),
+    CITY VARCHAR2(30), 
+    CUISINE VARCHAR(30),
+    CONSTRAINT REST_ID_PK PRIMARY KEY (REST_ID) 
+); 
+CREATE TABLE DISH (
+    DISH_ID INT, 
+    NAME VARCHAR2(50), 
+    CUISINE VARCHAR2(30), 
+    PRICE DECIMAL(5, 2), 
+    TASTE VARCHAR(20),  
+    REST_ID INT, 
+    CONSTRAINT REST_ID_FK FOREIGN KEY(REST_ID)
+        REFERENCES RESTAURANT(REST_ID) 
+); 
+CREATE TABLE CUSTOMER (
+    CUST_ID INT,  
+    FIRST_NAME VARCHAR2(30), 
+    LAST_NAME VARCHAR2(30),  
+    CITY VARCHAR2(30)
+);
+
+/* TASK 2 */
+
+INSERT INTO RESTAURANT VALUES 
+    (1, 'Bella Italia', 'New York', 'Italian'); 
+INSERT INTO RESTAURANT VALUES 
+    (2, 'Dragon Palace', 'San Francisco', 'Chinese'); 
+INSERT INTO RESTAURANT VALUES 
+    (3, 'Spice Route', 'Chicago', 'Indian'); 
+INSERT INTO RESTAURANT VALUES 
+    (4, 'Sushi World', 'Los Angeles', 'Japanese'); 
+INSERT INTO RESTAURANT VALUES 
+    (5, 'Bella Italia', 'Houston', 'Mexican'); 
+
+
+
+INSERT INTO DISH VALUES 
+    (1, 'Margherita Pizza', 'Italian', 12.99, 'Savory', 1);
+INSERT INTO DISH VALUES 
+    (2, 'Spaghetti Carbonara', 'Italian', 14.99, 'Savory', 1);
+INSERT INTO DISH VALUES 
+    (3, 'Sweet and Sour Pork', 'Chinese', 10.99, 'Sweet', 2);
+INSERT INTO DISH VALUES 
+    (4, 'Kung Pao Chicken', 'Chinese', 11.99, 'Spicy', 2);
+INSERT INTO DISH VALUES 
+    (5, 'Butter Chicken', 'Indian', 13.50, 'Spicy', 3);
+INSERT INTO DISH VALUES 
+    (6, 'Tandoori Chicken', 'Indian', 14.00, 'Spicy', 3);
+INSERT INTO DISH VALUES 
+    (7, 'California Roll', 'Japanese', 8.99, 'Savory', 4);
+INSERT INTO DISH VALUES 
+    (8, 'Salmon Sashimi', 'Japanese', 15.99, 'Savory', 4);
+INSERT INTO DISH VALUES 
+    (9, 'Chicken Tacos', 'Mexican', 9.99, 'Spicy', 5);
+INSERT INTO DISH VALUES 
+    (10, 'Beef Burrito', 'Mexican' , 11.50, 'Savory', 5);
+
+INSERT INTO CUSTOMER VALUES 
+    (1, 'John', 'Smith', 'New York'); 
+INSERT INTO CUSTOMER VALUES  
+    (2, 'Mary', 'Jhonson', 'Los Angeles');
+INSERT INTO CUSTOMER VALUES  
+    (3, 'Robert', 'Brown', 'Chicago');
+INSERT INTO CUSTOMER VALUES  
+    (2, 'Linda', 'Davis', 'Houston');
+INSERT INTO CUSTOMER VALUES  
+    (2, 'Michael', 'Miller', 'Phoenix');
+
+SELECT DISTINCT CUISINE
+FROM DISH;
+
+SELECT PRICE
+FROM DISH
+WHERE PRICE BETWEEN 10 AND 15;
+
+SELECT NAME
+FROM DISH
+WHERE NAME LIKE 'Chicken%';
+
+SELECT NAME
+FROM DISH
+WHERE NAME LIKE '%Roll%';
+
+SELECT NAME 
+FROM DISH 
+WHERE NAME LIKE '% % %' AND NAME NOT LIKE '% % % %';
+
+SELECT FIRST_NAME || ' ' || LAST_NAME , CITY
+FROM CUSTOMER; 
+
+SELECT NAME, CUISINE, PRICE 
+FROM DISH 
+ORDER BY CUISINE ASC, PRICE DESC; 
+
+
+CREATE TABLE CUSTOMER_DISH (
+    CUST_ID INT, 
+    DISH_ID INT, 
+    ORDER_DATE DATE
+);
+
+ALTER TABLE CUSTOMER_DISH 
+ADD CONSTRAINT CUST_ID_FK FOREIGN KEY (CUST_ID) REFERENCES CUSTOMER(CUST_ID);
+
+ALTER TABLE CUSTOMER_DISH 
+ADD CONSTRAINT DISH_ID_FK FOREIGN KEY (DISH_ID) REFERENCES DISH(DISH_ID);

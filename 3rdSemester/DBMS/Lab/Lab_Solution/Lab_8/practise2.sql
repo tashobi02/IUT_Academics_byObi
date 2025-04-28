@@ -1,0 +1,7 @@
+DECLARE
+    USERNAME VARCHAR2(10);
+BEGIN
+    USERNAME := '& username ';
+    DBMS_OUTPUT . PUT_LINE ( ' Hello ' || USERNAME );
+END;
+/

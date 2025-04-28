@@ -1,0 +1,11 @@
+SET SERVEROUTPUT ON SIZE 100000
+
+BEGIN 
+    NULL; 
+END; 
+/
+
+BEGIN 
+    DBMS_OUTPUT.PUT_LINE('Hello, World');
+END;
+/
