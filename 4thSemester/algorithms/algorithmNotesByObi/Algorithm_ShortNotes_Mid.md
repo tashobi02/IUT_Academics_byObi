@@ -104,4 +104,3 @@
 | Multiple Components Support     | ❌ Not directly (for disconnected graphs)                                  | ✅ Can form minimum spanning forest                                     |
 
 --- 
-
