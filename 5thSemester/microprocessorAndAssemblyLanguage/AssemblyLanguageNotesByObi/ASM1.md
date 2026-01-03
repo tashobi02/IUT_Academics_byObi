@@ -3,7 +3,30 @@
 .stack 100h  ; reserves 256 bytes (100h = 256) - used for storing return addresses, local variables, and register values 
 .code        ; marks the beginning of the code segment 
 
+main proc    ; declares a procedure called main - like main() in c++.model small ; small model - one code segment and one data segment 
+.stack 100h  ; reserves 256 bytes (100h = 256) - used for storing return addresses, local variables, and register values 
+.code        ; marks the beginning of the code segment 
+
 main proc    ; declares a procedure called main - like main() in c++
+    mov ah, 1   ; reads a single character from the keyboard 
+    int 21h     ; executes the DOS interrupt 
+    mov bl, al  ; moves the first input character from AL -> BL register 
+    
+    mov ah, 1   ; again sets function 1 of INT 21h to read another character
+    int 21h     ; reads the second character from keyboard and stores it in AL again
+    mov bh, al  ; moves the second character from AL -> BH register
+                ; bl = first character, bh = second character 
+    mov ah, 2   ; display a single character on the screen (output)
+    mov dl, bl  ; loads the first character (BL) into DL,
+    int 21h     ; executes the interrupt -> displays the character in DL on the screen
+    mov dl, bh  ; loads the second character (BH) into DL, preparing to print it next
+    int 21h     ; displays the second character on the screen
+    
+exit:           ; this is just a label, used for marking the exit point of the program
+    mov ah, 4ch ; terminate the program and return control to DOS
+    int 21h     ; executes the interrupt ? program ends
+main endp   ; marks the end of the procedure -> main
+end main    ; marks the end of the program main 
     mov ah, 1   ; reads a single character from the keyboard 
     int 21h     ; executes the DOS interrupt 
     mov bl, al  ; moves the first input character from AL -> BL register 
