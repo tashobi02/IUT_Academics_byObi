@@ -46,12 +46,12 @@ mov dl, bl
 
 Each 16-bit register can be split into **two 8-bit halves**:
 
-|16-bit|High 8-bit|Low 8-bit|
-|---|---|---|
-|AX|AH|AL|
-|BX|BH|BL|
-|CX|CH|CL|
-|DX|DH|DL|
+| 16-bit | High 8-bit | Low 8-bit |
+| ------ | ---------- | --------- |
+| AX     | AH         | AL        |
+| BX     | BH         | BL        |
+| CX     | CH         | CL        |
+| DX     | DH         | DL        |
 
 So:
 
