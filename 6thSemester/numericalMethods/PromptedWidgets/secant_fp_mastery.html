@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secant & False Position — Complete Mastery Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1e2530;--border:#2d3748;
+    --text:#e6edf3;--muted:#8b949e;
+    --secant:#58a6ff;--secant-dim:rgba(88,166,255,0.12);
+    --fp:#3fb950;--fp-dim:rgba(63,185,80,0.12);
+    --nr:#d2a8ff;--nr-dim:rgba(210,168,255,0.12);
+    --warn:#f78166;--warn-dim:rgba(247,129,102,0.12);
+    --gold:#e3b341;--gold-dim:rgba(227,179,65,0.12);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:16px;}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;overflow-x:auto;}
+  nav .brand{font-family:'Lora',serif;font-weight:700;font-size:.9rem;white-space:nowrap;padding:.75rem 1.2rem .75rem 0;margin-right:.8rem;border-right:1px solid var(--border);}
+  nav .brand .s{color:var(--secant);}nav .brand .f{color:var(--fp);}
+  nav a{color:var(--muted);text-decoration:none;font-size:.75rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:.75rem .8rem;white-space:nowrap;transition:color .2s;}
+  nav a:hover{color:var(--text);}
+
+  .hero{margin-top:46px;padding:5rem 1.5rem 4rem;text-align:center;background:linear-gradient(180deg,#0d1117 0%,#0d1520 100%);position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 30% 50%,rgba(88,166,255,.06) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 70% 50%,rgba(63,185,80,.06) 0%,transparent 70%);}
+  .hero-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:.3rem 1rem;margin-bottom:1.5rem;}
+  .hero h1{font-family:'Lora',serif;font-size:clamp(2rem,5.5vw,3.5rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem;}
+  .hero h1 .s{color:var(--secant);}.hero h1 .f{color:var(--fp);}
+  .hero-sub{color:var(--muted);max-width:560px;margin:0 auto 2.5rem;font-size:1rem;}
+  .formula-row{display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;}
+  .formula-pill{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;}
+  .formula-pill .lbl{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.3rem;}
+  .s-pill{border-color:rgba(88,166,255,.4);}.s-pill .lbl{color:var(--secant);}.s-pill .eq{color:var(--secant);}
+  .f-pill{border-color:rgba(63,185,80,.4);}.f-pill .lbl{color:var(--fp);}.f-pill .eq{color:var(--fp);}
+
+  .container{max-width:920px;margin:0 auto;padding:0 1.5rem;}
+  .section{padding:4rem 0;border-bottom:1px solid var(--border);}
+  .sec-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+  .section h2{font-family:'Lora',serif;font-size:1.9rem;font-weight:700;margin-bottom:2rem;line-height:1.2;}
+  .section h3{font-size:1.05rem;font-weight:600;margin:2rem 0 .8rem;}
+  .s-head{color:var(--secant);}.f-head{color:var(--fp);}.g-head{color:var(--gold);}
+  .section p{color:#c9d1d9;margin-bottom:.9rem;}
+  .section ul,.section ol{padding-left:1.4rem;}
+  .section li{color:#c9d1d9;margin-bottom:.35rem;}
+
+  .box{border-radius:8px;padding:1.1rem 1.4rem;margin:1.4rem 0;border-left:3px solid;}
+  .box .box-lbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600;margin-bottom:.45rem;}
+  .box p{margin:0;font-size:.93rem;}
+  .box-s{background:var(--secant-dim);border-color:var(--secant);}.box-s .box-lbl{color:var(--secant);}
+  .box-f{background:var(--fp-dim);border-color:var(--fp);}.box-f .box-lbl{color:var(--fp);}
+  .box-g{background:var(--gold-dim);border-color:var(--gold);}.box-g .box-lbl{color:var(--gold);}
+  .box-w{background:var(--warn-dim);border-color:var(--warn);}.box-w .box-lbl{color:var(--warn);}
+  .box-nr{background:var(--nr-dim);border-color:var(--nr);}.box-nr .box-lbl{color:var(--nr);}
+
+  .math{font-family:'JetBrains Mono',monospace;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:.15em .5em;font-size:.88em;color:var(--gold);}
+  .math-block{font-family:'JetBrains Mono',monospace;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.2rem 1.5rem;margin:1rem 0;line-height:2;overflow-x:auto;font-size:.88rem;}
+  .math-block .hs{color:var(--secant);}.math-block .hf{color:var(--fp);}.math-block .hg{color:var(--gold);}.math-block .hm{color:var(--muted);font-size:.83em;}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin:1.2rem 0;}
+  @media(max-width:640px){.two-col{grid-template-columns:1fr;}}
+
+  .deriv{border-left:2px solid var(--border);padding-left:1.2rem;margin:1rem 0;}
+  .deriv-step{margin-bottom:1.2rem;}
+  .deriv-step .sn{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+  .deriv-step .why{font-size:.84rem;color:var(--muted);font-style:italic;margin-top:.3rem;}
+
+  .iter-table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.82rem;font-family:'JetBrains Mono',monospace;border-radius:8px;overflow:hidden;}
+  .iter-table th{background:var(--surface2);padding:.6rem .75rem;text-align:center;font-weight:600;font-size:.73rem;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);}
+  .iter-table td{padding:.52rem .75rem;text-align:center;border-bottom:1px solid rgba(45,55,72,.5);background:var(--surface);}
+  .iter-table tr:nth-child(even) td{background:#11161e;}
+  .iter-table .hs{color:var(--secant);font-weight:700;}.iter-table .hf{color:var(--fp);font-weight:700;}
+  .iter-table tr.done td{color:var(--fp);font-weight:600;}
+  .iter-table th.s-th{color:var(--secant);}.iter-table th.f-th{color:var(--fp);}
+
+  .steps{list-style:none;padding:0;counter-reset:s;}
+  .steps li{counter-increment:s;display:flex;gap:1rem;margin-bottom:1rem;align-items:flex-start;}
+  .steps li::before{content:counter(s);flex-shrink:0;width:1.8rem;height:1.8rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;margin-top:.15rem;}
+  .steps.ss li::before{background:var(--secant-dim);color:var(--secant);border:1px solid var(--secant);}
+  .steps.fs li::before{background:var(--fp-dim);color:var(--fp);border:1px solid var(--fp);}
+  .steps li,.steps li p{color:#c9d1d9;font-size:.94rem;}
+
+  .cmp-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.84rem;border-radius:8px;overflow:hidden;}
+  .cmp-table th{padding:.7rem 1rem;font-weight:700;font-size:.77rem;letter-spacing:.06em;text-transform:uppercase;text-align:center;}
+  .cmp-table th:nth-child(1){background:var(--surface2);text-align:left;color:var(--muted);}
+  .cmp-table th:nth-child(2){background:rgba(88,166,255,.18);color:var(--secant);}
+  .cmp-table th:nth-child(3){background:rgba(63,185,80,.18);color:var(--fp);}
+  .cmp-table th:nth-child(4){background:rgba(210,168,255,.18);color:var(--nr);}
+  .cmp-table td{padding:.58rem 1rem;border-bottom:1px solid var(--border);text-align:center;color:#c9d1d9;background:var(--surface);}
+  .cmp-table td:first-child{font-weight:600;text-align:left;background:var(--surface2);color:var(--text);}
+  .cmp-table tr:nth-child(even) td{background:#11161e;}
+  .cmp-table tr:nth-child(even) td:first-child{background:#161b22;}
+
+  .pcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.4rem;margin:1.2rem 0;position:relative;}
+  .pbadge{position:absolute;top:-11px;left:1.2rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .7rem;border-radius:12px;}
+  .easy{background:rgba(63,185,80,.25);color:var(--fp);border:1px solid var(--fp);}
+  .med{background:rgba(227,179,65,.25);color:var(--gold);border:1px solid var(--gold);}
+  .hard{background:rgba(247,129,102,.25);color:var(--warn);border:1px solid var(--warn);}
+
+  details{margin-top:.9rem;}
+  summary{cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:var(--secant);border:1px solid var(--secant);border-radius:4px;padding:.35rem .8rem;transition:all .2s;user-select:none;}
+  summary:hover,details[open] summary{background:var(--secant-dim);}
+  .ans{margin-top:.8rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:1rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;color:#c9d1d9;white-space:pre-wrap;}
+
+  .tip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin:1.2rem 0;}
+  .tip{background:var(--surface);border-radius:8px;padding:1.1rem;border-top:2px solid var(--gold);}
+  .tip h4{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;}
+  .tip p{font-size:.86rem;color:#c9d1d9;margin:0;}
+
+  .mental-model{background:linear-gradient(135deg,rgba(88,166,255,.07),rgba(63,185,80,.07));border:1px solid var(--border);border-radius:12px;padding:2rem;margin:1.5rem 0;}
+  .mental-model>h3{color:var(--gold);font-size:1.1rem;margin-bottom:1.2rem;}
+  .mm-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+  @media(max-width:640px){.mm-row{grid-template-columns:1fr;}}
+  .mm-card{background:var(--surface);border-radius:8px;padding:1rem;border:1px solid var(--border);}
+  .mm-card .mn{font-weight:700;font-size:.95rem;margin-bottom:.35rem;}
+  .mm-card .ma{font-size:.83rem;color:var(--muted);font-style:italic;margin-bottom:.55rem;}
+  .mm-card ul{padding-left:1.1rem;}
+  .mm-card li{font-size:.83rem;color:#c9d1d9;margin-bottom:.25rem;}
+
+  .quiz-card{background:var(--surface2);border-radius:10px;padding:1.5rem;margin:1.2rem 0;}
+  .quiz-card h4{font-family:'Lora',serif;font-size:1rem;color:var(--gold);margin-bottom:1rem;}
+  .qopts{list-style:none;}
+  .qopts li{margin-bottom:.45rem;}
+  .qopts button{width:100%;text-align:left;padding:.55rem 1rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--muted);cursor:pointer;font-family:'Outfit',sans-serif;font-size:.88rem;transition:all .18s;}
+  .qopts button:hover{background:rgba(88,166,255,.1);border-color:var(--secant);color:var(--text);}
+  .qopts button.correct{background:rgba(63,185,80,.2);border-color:var(--fp);color:#7ee787;}
+  .qopts button.wrong{background:rgba(247,129,102,.2);border-color:var(--warn);color:#ffa198;}
+  .qres{margin-top:.7rem;font-size:.85rem;color:var(--muted);min-height:1.4em;font-style:italic;}
+
+  footer{background:var(--surface);border-top:1px solid var(--border);text-align:center;padding:2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);}
+  footer span{color:var(--secant);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  .hero>*{animation:fadeUp .65s ease both;}
+  .hero .hero-badge{animation-delay:.1s;}.hero h1{animation-delay:.22s;}.hero .hero-sub{animation-delay:.35s;}.hero .formula-row{animation-delay:.48s;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand"><span class="s">Secant</span> &amp; <span class="f">False Position</span></div>
+  <a href="#s1">Intuition</a><a href="#s2">Derivation</a><a href="#s3">Algorithms</a>
+  <a href="#s4">Examples</a><a href="#s5">Comparison</a><a href="#s6">Convergence</a>
+  <a href="#s7">Exam</a><a href="#s8">Practice</a><a href="#s9">Deeper</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Math 4641 · Lecture 4 · IUT Dhaka</div>
+  <h1><span class="s">Secant Method</span><br>&amp; <span class="f">False Position (Regula Falsi)</span></h1>
+  <p class="hero-sub">Two methods. One geometric idea. Totally different philosophies. Master both and you can handle any root-finding problem your exam throws at you.</p>
+  <div class="formula-row">
+    <div class="formula-pill s-pill">
+      <div class="lbl">Secant Method</div>
+      <div class="eq">x<sub>i+1</sub> = x<sub>i</sub> − f(x<sub>i</sub>)·(x<sub>i</sub>−x<sub>i-1</sub>) / (f(x<sub>i</sub>)−f(x<sub>i-1</sub>))</div>
+    </div>
+    <div class="formula-pill f-pill">
+      <div class="lbl">False Position</div>
+      <div class="eq">x<sub>r</sub> = (x<sub>U</sub>·f(x<sub>L</sub>) − x<sub>L</sub>·f(x<sub>U</sub>)) / (f(x<sub>L</sub>) − f(x<sub>U</sub>))</div>
+    </div>
+  </div>
+</div>
+
+<!-- S1: INTUITION -->
+<div class="section" id="s1"><div class="container">
+  <div class="sec-label">Section 01</div>
+  <h2>Core Intuition</h2>
+
+  <p>Both methods find where <span class="math">f(x) = 0</span>. Both draw a <strong>secant line</strong> (straight line through two points on the curve) and use where it crosses the x-axis as the next guess. But they manage those two points in completely opposite ways.</p>
+
+  <div class="two-col">
+    <div class="box box-s">
+      <div class="box-lbl">💡 Secant — Mental Model</div>
+      <p><strong>"Chase the x-axis with a sliding ruler."</strong> Draw a line through your two most recent points. Where it hits zero is your next guess. Then slide forward — drop the oldest point, keep the two newest. No safety net. Fast, bold, not always guaranteed.</p>
+    </div>
+    <div class="box box-f">
+      <div class="box-lbl">💡 False Position — Mental Model</div>
+      <p><strong>"Hunt with a safety net."</strong> Start with a bracket (one point above, one below the x-axis). Draw a line between them. Where it hits zero is your estimate. Replace one bracket endpoint — always keeping the root trapped. Slower. Always converges.</p>
+    </div>
+  </div>
+
+  <h3 class="s-head">🔵 Secant Method — Geometric Picture</h3>
+  <p>You have two guesses <span class="math">x<sub>i-1</sub></span> and <span class="math">x<sub>i</sub></span>. They do <em>not</em> need to bracket the root — this is an <strong>open method</strong>. Draw the secant line through <span class="math">(x<sub>i-1</sub>, f(x<sub>i-1</sub>))</span> and <span class="math">(x<sub>i</sub>, f(x<sub>i</sub>))</span>. Where it crosses y=0 is <span class="math">x<sub>i+1</sub></span>. Drop <span class="math">x<sub>i-1</sub></span>, use <span class="math">x<sub>i</sub></span> and <span class="math">x<sub>i+1</sub></span> next time. The window always slides forward.</p>
+
+  <div class="box box-nr">
+    <div class="box-lbl">🔗 Direct Link to Newton-Raphson</div>
+    <p>Newton-Raphson: <span class="math">x<sub>i+1</sub> = x<sub>i</sub> − f(x<sub>i</sub>)/f′(x<sub>i</sub>)</span>. The Secant method replaces the expensive exact derivative with a cheap approximation: <span class="math">f′(x<sub>i</sub>) ≈ [f(x<sub>i</sub>)−f(x<sub>i-1</sub>)] / (x<sub>i</sub>−x<sub>i-1</sub>)</span>. Same structure, no symbolic differentiation needed.</p>
+  </div>
+
+  <h3 class="f-head">🟢 False Position — Geometric Picture</h3>
+  <p>You choose <span class="math">x<sub>L</sub></span> and <span class="math">x<sub>U</sub></span> with <span class="math">f(x<sub>L</sub>) · f(x<sub>U</sub>) &lt; 0</span> — opposite signs mean the root is between them. The secant line through these two points crosses y=0 at <span class="math">x<sub>r</sub></span>, which is smarter than the midpoint because it uses the function's shape. You then check which side still has the root and tighten the bracket. One endpoint always stays fixed — the one with the "dominant" sign.</p>
+
+  <div class="box box-g">
+    <div class="box-lbl">💡 Why False Position Beats Bisection</div>
+    <p>Bisection always cuts at the midpoint, ignoring how the function behaves. False Position draws a line using f-values, so its estimate jumps closer to the root immediately — especially when the function is steep on one side and flat on the other. Your lecture says the secant x-intercept is "closer to the actual root compared to the midpoint."</p>
+  </div>
+
+  <h3 class="g-head">⚡ The One-Sentence Difference</h3>
+  <div class="two-col">
+    <div class="box box-s"><div class="box-lbl">Secant</div><p>Open method. Slides forward using two most-recent points. Fast. Not guaranteed.</p></div>
+    <div class="box box-f"><div class="box-lbl">False Position</div><p>Bracketed method. Always traps the root. Guaranteed. Can be slow on asymmetric functions.</p></div>
+  </div>
+</div></div>
+
+<!-- S2: DERIVATION -->
+<div class="section" id="s2"><div class="container">
+  <div class="sec-label">Section 02</div>
+  <h2>Mathematical Derivation</h2>
+
+  <h3 class="s-head">🔵 Secant Method — Derived from Newton-Raphson</h3>
+  <div class="deriv">
+    <div class="deriv-step">
+      <div class="sn">Step 1 — Start with Newton-Raphson</div>
+      <div class="math-block"><span class="hg">x<sub>i+1</sub> = x<sub>i</sub> − f(x<sub>i</sub>) / f′(x<sub>i</sub>)</span></div>
+      <p class="why">Problem: computing f′(x<sub>i</sub>) symbolically is expensive for computers.</p>
+    </div>
+    <div class="deriv-step">
+      <div class="sn">Step 2 — Approximate the derivative (finite difference)</div>
+      <div class="math-block"><span class="hs">f′(x<sub>i</sub>) ≈ [f(x<sub>i</sub>) − f(x<sub>i-1</sub>)] / (x<sub>i</sub> − x<sub>i-1</sub>)</span></div>
+      <p class="why">This is the slope of the secant line through the two points — the derivative definition without the limit.</p>
+    </div>
+    <div class="deriv-step">
+      <div class="sn">Step 3 — Substitute into NR formula</div>
+      <div class="math-block">x<sub>i+1</sub> = x<sub>i</sub> − f(x<sub>i</sub>) ÷ <span class="hs">[(f(x<sub>i</sub>)−f(x<sub>i-1</sub>)) / (x<sub>i</sub>−x<sub>i-1</sub>)]</span></div>
+    </div>
+    <div class="deriv-step">
+      <div class="sn">Step 4 — Simplify (dividing = multiply by reciprocal)</div>
+      <div class="math-block"><span class="hs">x<sub>i+1</sub> = x<sub>i</sub> − f(x<sub>i</sub>)·(x<sub>i</sub>−x<sub>i-1</sub>) / (f(x<sub>i</sub>)−f(x<sub>i-1</sub>))</span>  ✓</div>
+    </div>
+  </div>
+
+  <div class="box box-g">
+    <div class="box-lbl">📐 Also from Geometry (Similar Triangles — Your Lecture)</div>
+    <p>Triangles ABE ~ DCE in Figure 1. From proportionality: AB/AE = DC/DE, giving f(x<sub>i</sub>)/(x<sub>i</sub>−x<sub>i+1</sub>) = f(x<sub>i-1</sub>)/(x<sub>i-1</sub>−x<sub>i+1</sub>). Cross-multiply and solve for x<sub>i+1</sub> → same formula. Two paths, one answer.</p>
+  </div>
+
+  <h3 class="f-head">🟢 False Position — From Similar Triangles (Your Lecture)</h3>
+  <p>From triangles ABC ~ DAE (your lecture's Figure): DE/AE = BC/AC, which gives:</p>
+  <div class="math-block"><span class="hm">// (0−f(x_L))/(x_r−x_L) = (0−f(x_U))/(x_r−x_U)</span>
+Cross-multiply:
+  (x_r − x_L)·f(x_U) = (x_r − x_U)·f(x_L)
+  x_r·[f(x_L) − f(x_U)] = x_U·f(x_L) − x_L·f(x_U)
+
+<span class="hf">x_r = [x_U·f(x_L) − x_L·f(x_U)] / [f(x_L) − f(x_U)]</span>   (Eq. 5) ✓
+
+<span class="hm">// Equivalently (Eq. 6 from your lecture):</span>
+<span class="hf">x_r = x_U − f(x_U)·(x_L − x_U) / (f(x_L) − f(x_U))</span>
+
+<span class="hm">// Or (Eq. 7):</span>
+<span class="hf">x_r = x_L − f(x_L)·(x_U − x_L) / (f(x_U) − f(x_L))</span>
+
+<span class="hm">// All three are mathematically identical. Your exam likely prefers Eq. 5.</span></div>
+
+  <div class="box box-g">
+    <div class="box-lbl">💡 From Your Lecture</div>
+    <p>"Observe the resemblance of Equations (6) and (7) to the secant method." The formulas ARE the same structure — only the bracket update rule distinguishes the methods in practice.</p>
+  </div>
+
+  <h3>Error Formula (identical for both)</h3>
+  <div class="math-block"><span class="hg">|εₐ| = | (x_new − x_old) / x_new | × 100%</span>
+<span class="hm">// Secant: x_new = x_{i+1}, x_old = x_i
+// False Position: x_new = x_r^new, x_old = x_r^old (from previous iteration)</span></div>
+</div></div>
+
+<!-- S3: ALGORITHMS -->
+<div class="section" id="s3"><div class="container">
+  <div class="sec-label">Section 03</div>
+  <h2>Algorithms</h2>
+  <div class="two-col">
+    <div>
+      <h3 class="s-head">🔵 Secant Algorithm</h3>
+      <ol class="steps ss">
+        <li>Choose two guesses <span class="math">x₀</span> and <span class="math">x₁</span>. Root need NOT be between them.</li>
+        <li>Approximate derivative: <span class="math">f′ ≈ (f(x₁)−f(x₀))/(x₁−x₀)</span></li>
+        <li>Compute <span class="math">x₂ = x₁ − f(x₁)·(x₁−x₀)/(f(x₁)−f(x₀))</span></li>
+        <li>Compute error: <span class="math">|εₐ| = |x₂−x₁|/|x₂| × 100%</span></li>
+        <li>If |εₐ| ≤ εₛ → stop. Else set <span class="math">x₀=x₁, x₁=x₂</span> → go to Step 3.</li>
+        <li>Stop if max iterations exceeded.</li>
+      </ol>
+      <div class="box box-w" style="margin-top:1rem;">
+        <div class="box-lbl">⚠️ Guard</div>
+        <p>Check f(x₁) ≠ f(x₀) before dividing. Equal function values → division by zero → method fails.</p>
+      </div>
+    </div>
+    <div>
+      <h3 class="f-head">🟢 False Position Algorithm</h3>
+      <ol class="steps fs">
+        <li>Choose <span class="math">x_L, x_U</span> such that <span class="math">f(x_L)·f(x_U) &lt; 0</span>. Root MUST be bracketed!</li>
+        <li>Compute <span class="math">x_r = [x_U·f(x_L)−x_L·f(x_U)] / [f(x_L)−f(x_U)]</span></li>
+        <li>Update bracket using f(x_L)·f(x_r):<br>
+          • &lt; 0 → root in [x_L, x_r] → set <span class="math">x_U = x_r</span><br>
+          • &gt; 0 → root in [x_r, x_U] → set <span class="math">x_L = x_r</span><br>
+          • = 0 → x_r is the exact root → stop!</li>
+        <li>Compute error: <span class="math">|εₐ| = |x_r^new − x_r^old| / |x_r^new| × 100%</span></li>
+        <li>If |εₐ| ≤ εₛ → stop. Else go to Step 2.</li>
+      </ol>
+    </div>
+  </div>
+</div></div>
+
+<!-- S4: EXAMPLES -->
+<div class="section" id="s4"><div class="container">
+  <div class="sec-label">Section 04</div>
+  <h2>Worked Examples</h2>
+
+  <h3 class="s-head">🔵 Secant Example 1: f(x) = x³ − 20 = 0, x₀=2, x₁=3</h3>
+  <div class="math-block">f(2) = 8−20 = <span class="hs">−12</span>,   f(3) = 27−20 = <span class="hs">7</span>
+
+Iter 1:
+  x₂ = 3 − 7·(3−2)/(7−(−12)) = 3 − 7/19 = 3 − 0.36842 = <span class="hs">2.63158</span>
+  |εₐ| = |2.63158−3|/2.63158 × 100 = <span class="hs">14.0%</span>
+
+Iter 2:
+  f(2.63158) = 18.2378−20 = −1.762
+  x₃ = 2.63158 − (−1.762)·(2.63158−3)/(−1.762−7) = <span class="hs">2.70566</span>
+  |εₐ| = 2.74%
+
+Iter 3:
+  f(2.70566) ≈ −0.171
+  x₄ ≈ <span class="hs">2.71396</span>,  |εₐ| ≈ 0.31%   ← converging to ∛20 ≈ 2.71442</div>
+
+  <table class="iter-table">
+    <thead><tr><th>Iter</th><th>x<sub>i-1</sub></th><th>x<sub>i</sub></th><th>f(x<sub>i-1</sub>)</th><th>f(x<sub>i</sub>)</th><th class="s-th">x<sub>i+1</sub></th><th>|εₐ|%</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>2</td><td>3</td><td>−12</td><td>7</td><td class="hs">2.63158</td><td>14.0</td></tr>
+      <tr><td>2</td><td>3</td><td>2.63158</td><td>7</td><td>−1.762</td><td class="hs">2.70566</td><td>2.74</td></tr>
+      <tr><td>3</td><td>2.63158</td><td>2.70566</td><td>−1.762</td><td>−0.171</td><td class="hs">2.71396</td><td>0.31</td></tr>
+      <tr class="done"><td>4</td><td>2.70566</td><td>2.71396</td><td>−0.171</td><td>−0.012</td><td>2.71442</td><td>0.017</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="s-head">🔵 Secant Example 2: f(x) = eˣ − 3x = 0, x₀=1, x₁=2</h3>
+  <table class="iter-table">
+    <thead><tr><th>Iter</th><th>x<sub>i-1</sub></th><th>x<sub>i</sub></th><th>f(x<sub>i-1</sub>)</th><th>f(x<sub>i</sub>)</th><th class="s-th">x<sub>i+1</sub></th><th>|εₐ|%</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>1.0</td><td>2.0</td><td>−0.282</td><td>1.389</td><td class="hs">1.203</td><td>66.2</td></tr>
+      <tr><td>2</td><td>2.0</td><td>1.203</td><td>1.389</td><td>−0.484</td><td class="hs">1.568</td><td>23.3</td></tr>
+      <tr><td>3</td><td>1.203</td><td>1.568</td><td>−0.484</td><td>0.390</td><td class="hs">1.493</td><td>5.0</td></tr>
+      <tr class="done"><td>4</td><td>1.568</td><td>1.493</td><td>0.390</td><td>0.018</td><td>1.512</td><td>1.25</td></tr>
+    </tbody>
+  </table>
+
+  <hr style="border-color:var(--border);margin:2.5rem 0;">
+
+  <h3 class="f-head">🟢 False Position Example 1: f(x) = x³ − 20 = 0, x_L=2, x_U=3</h3>
+  <p>f(2) = −12, f(3) = 7. Product &lt; 0 ✓</p>
+  <div class="math-block">Iter 1:
+  x_r = [3·(−12) − 2·7] / [(−12)−7] = [−36−14]/(−19) = −50/−19 = <span class="hf">2.63158</span>
+  f(2.63158) = −1.762
+  f(x_L)·f(x_r) = (−12)(−1.762) = +21.1 > 0  → x_L = 2.63158
+
+Iter 2:
+  x_r = [3·(−1.762) − 2.63158·7] / [(−1.762)−7] = −23.707/−8.762 = <span class="hf">2.70566</span>
+  f(2.70566) = −0.171
+  f(x_L)·f(x_r) = (−1.762)(−0.171) > 0  → x_L = 2.70566
+
+<span class="hm">// Notice: x_U = 3 never changes! It stays stuck.</span></div>
+
+  <table class="iter-table">
+    <thead><tr><th>Iter</th><th class="f-th">x_L</th><th class="f-th">x_U</th><th>f(x_L)</th><th>f(x_U)</th><th class="f-th">x_r</th><th>|εₐ|%</th><th>Update</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>2</td><td>3</td><td>−12</td><td>7</td><td class="hf">2.63158</td><td>—</td><td>x_L = 2.63158</td></tr>
+      <tr><td>2</td><td>2.63158</td><td>3</td><td>−1.762</td><td>7</td><td class="hf">2.70566</td><td>2.74</td><td>x_L = 2.70566</td></tr>
+      <tr><td>3</td><td>2.70566</td><td>3</td><td>−0.171</td><td>7</td><td class="hf">2.71337</td><td>0.28</td><td>x_L = 2.71337</td></tr>
+      <tr class="done"><td>4</td><td>2.71337</td><td>3</td><td>−0.017</td><td>7</td><td>2.71412</td><td>0.028</td><td>x_L = 2.71412</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-g">
+    <div class="box-lbl">🔍 Key Observation — Stuck Bracket</div>
+    <p>x_U = 3 never changes across all 4 iterations. f(3)=7 is large; f(x_L) is small and negative. The secant line always tips toward x_L. The x_U endpoint is "stuck." This is the stagnation problem — a known weakness of False Position.</p>
+  </div>
+
+  <h3 class="f-head">🟢 False Position Example 2: f(x) = x² − 4 = 0, x_L=0, x_U=3</h3>
+  <p>Root at x=2. f(0) = −4, f(3) = 5. Product &lt; 0 ✓</p>
+  <table class="iter-table">
+    <thead><tr><th>Iter</th><th>x_L</th><th>x_U</th><th>f(x_L)</th><th>f(x_U)</th><th class="f-th">x_r</th><th>f(x_r)</th><th>|εₐ|%</th><th>Update</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>0</td><td>3</td><td>−4</td><td>5</td><td class="hf">1.333</td><td>−2.222</td><td>—</td><td>x_L=1.333</td></tr>
+      <tr><td>2</td><td>1.333</td><td>3</td><td>−2.222</td><td>5</td><td class="hf">1.714</td><td>−1.061</td><td>22.2</td><td>x_L=1.714</td></tr>
+      <tr><td>3</td><td>1.714</td><td>3</td><td>−1.061</td><td>5</td><td class="hf">1.875</td><td>−0.484</td><td>8.6</td><td>x_L=1.875</td></tr>
+      <tr><td>4</td><td>1.875</td><td>3</td><td>−0.484</td><td>5</td><td class="hf">1.944</td><td>−0.220</td><td>3.6</td><td>x_L=1.944</td></tr>
+      <tr class="done"><td>5</td><td>1.944</td><td>3</td><td>−0.220</td><td>5</td><td>1.973</td><td>−0.105</td><td>1.5</td><td>converging</td></tr>
+    </tbody>
+  </table>
+</div></div>
+
+<!-- S5: COMPARISON -->
+<div class="section" id="s5"><div class="container">
+  <div class="sec-label">Section 05</div>
+  <h2>Method Comparison</h2>
+
+  <table class="cmp-table">
+    <thead><tr><th>Property</th><th>Secant</th><th>False Position</th><th>Newton-Raphson</th></tr></thead>
+    <tbody>
+      <tr><td>Category</td><td>Open</td><td>Bracketed</td><td>Open</td></tr>
+      <tr><td>Guesses needed</td><td>2 (any)</td><td>2 (must bracket)</td><td>1</td></tr>
+      <tr><td>Requires f′(x)?</td><td>❌ No</td><td>❌ No</td><td>✅ Yes</td></tr>
+      <tr><td>Convergence guaranteed?</td><td>❌ No</td><td>✅ Yes</td><td>❌ No</td></tr>
+      <tr><td>Convergence rate</td><td>Superlinear (~1.618)</td><td>Linear</td><td>Quadratic (2.0)</td></tr>
+      <tr><td>Speed rank</td><td>2nd</td><td>3rd</td><td>1st</td></tr>
+      <tr><td>Safety rank</td><td>2nd</td><td>1st</td><td>3rd</td></tr>
+      <tr><td>Fails when…</td><td>f(xᵢ) = f(xᵢ₋₁)</td><td>One bracket stuck</td><td>f′(x) = 0</td></tr>
+      <tr><td>Approximates derivative?</td><td>✅ Yes — finite diff</td><td>✅ Yes — secant line</td><td>❌ Uses exact f′</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="g-head">🧠 Mental Model + Quick Decision Guide</h3>
+  <div class="mental-model">
+    <h3>Choose Your Method in Under 10 Seconds</h3>
+    <div class="mm-row">
+      <div class="mm-card">
+        <div class="mn" style="color:var(--nr)">Newton-Raphson</div>
+        <div class="ma">"The surgeon — precise, fast, needs full information"</div>
+        <ul>
+          <li>✅ f(x) is easy to differentiate</li>
+          <li>✅ You want maximum speed</li>
+          <li>✅ Good initial guess available</li>
+          <li>❌ Avoid if f′(x) is hard to compute</li>
+        </ul>
+      </div>
+      <div class="mm-card">
+        <div class="mn" style="color:var(--secant)">Secant Method</div>
+        <div class="ma">"The navigator — good speed, no map required"</div>
+        <ul>
+          <li>✅ f(x) is hard to differentiate</li>
+          <li>✅ Two reasonable guesses available</li>
+          <li>✅ Want NR-like speed without f′</li>
+          <li>❌ Avoid if guarantee needed</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mm-row">
+      <div class="mm-card">
+        <div class="mn" style="color:var(--fp)">False Position</div>
+        <div class="ma">"The safety climber — never falls, sometimes slow"</div>
+        <ul>
+          <li>✅ Need guaranteed convergence</li>
+          <li>✅ You have a reliable bracket [a, b]</li>
+          <li>✅ Accuracy &gt; speed</li>
+          <li>❌ Slow on highly asymmetric functions</li>
+        </ul>
+      </div>
+      <div class="mm-card">
+        <div class="mn" style="color:var(--gold)">3-Question Decision Tree</div>
+        <div class="ma">"Ask these in order"</div>
+        <ul>
+          <li>Can I compute f′(x) easily? → Yes: use NR</li>
+          <li>Do I need guaranteed convergence? → Yes: use False Position</li>
+          <li>Otherwise → Secant Method</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- S6: CONVERGENCE -->
+<div class="section" id="s6"><div class="container">
+  <div class="sec-label">Section 06</div>
+  <h2>Convergence &amp; Pitfalls</h2>
+
+  <h3 class="s-head">🔵 Secant — Pitfalls</h3>
+  <div class="box box-w">
+    <div class="box-lbl">⚠️ Pitfall 1: Division by Zero</div>
+    <p>If f(x<sub>i</sub>) = f(x<sub>i-1</sub>), denominator = 0. The secant line is horizontal — never hits the x-axis. Always check this condition before dividing.</p>
+  </div>
+  <div class="box box-w">
+    <div class="box-lbl">⚠️ Pitfall 2: Bad Initial Guesses (Mini Quiz from Lecture)</div>
+    <p>For sin(x) = 0, if both guesses are on the same "hill" of the sine curve (both positive), the secant line crosses the x-axis far from any intended root. The worst pair is one where f(x₀) ≈ f(x₁) (nearly same height) — tiny denominator, huge x<sub>i+1</sub> jump. Always choose guesses with different-signed or very different-magnitude f-values when possible.</p>
+  </div>
+  <div class="box box-w">
+    <div class="box-lbl">⚠️ Pitfall 3: Divergence on Oscillatory Functions</div>
+    <p>Just like NR, the method can diverge when the secant line sends the next guess far from the root — common with oscillating or highly nonlinear functions with no good initial guesses.</p>
+  </div>
+
+  <h3 class="f-head">🟢 False Position — Pitfalls</h3>
+  <div class="box box-w">
+    <div class="box-lbl">⚠️ Pitfall: Stagnation (Stuck Bracket)</div>
+    <p>When the function is very asymmetric — one side extremely steep (large |f|), the other gentle (small |f|) — one bracket endpoint never gets replaced. The secant line always angles toward the gentle side. The bracket shrinks, but agonizingly slowly. This is the "same drawback as Bisection" your lecture mentions. Example: f(x) = x¹⁰ − 1 on [0, 1.5].</p>
+  </div>
+  <div class="box box-g">
+    <div class="box-lbl">💡 Mini Quiz Answer — Slide 14: Bisection vs False Position</div>
+    <p>For the graph in your lecture (root near x_U, steep curve on right): <strong>False Position wins easily</strong>. The secant line immediately points to the root near x_U because f(x_U) is very small. Bisection wastes many iterations cutting at the midpoint far to the left. False Position's smarter estimate leaps directly toward the root in one or two iterations.</p>
+  </div>
+
+  <h3>🚨 Common Student Mistakes</h3>
+  <ul>
+    <li><strong>Secant:</strong> Using x-values where f-values belong — denominator must be f(x<sub>i</sub>) − f(x<sub>i-1</sub>), not x<sub>i</sub> − x<sub>i-1</sub> alone.</li>
+    <li><strong>Secant:</strong> Subtraction order error in denominator — it's f(x<sub>i</sub>) − f(x<sub>i-1</sub>) not the reverse.</li>
+    <li><strong>False Position:</strong> Updating the wrong bracket endpoint — must check sign of f(x_L)·f(x_r), not f(x_r)·f(x_U).</li>
+    <li><strong>False Position:</strong> Forgetting to verify f(x_L)·f(x_U) &lt; 0 before starting.</li>
+    <li><strong>Both:</strong> Error denominator is the NEW value, not the old one. Multiply by 100 for %.</li>
+    <li><strong>Both:</strong> Not carrying enough decimal places through the iteration.</li>
+  </ul>
+</div></div>
+
+<!-- S7: EXAM STRATEGY -->
+<div class="section" id="s7"><div class="container">
+  <div class="sec-label">Section 07</div>
+  <h2>Exam Strategy</h2>
+  <div class="tip-grid">
+    <div class="tip"><h4>⚡ Tip 1 — Write Formulas First</h4><p>Before starting any calculation, write both formulas at the top. Annotate which part is numerator/denominator. This prevents formula confusion mid-calculation.</p></div>
+    <div class="tip"><h4>⚡ Tip 2 — Secant Table Setup</h4><p>Columns: x<sub>i-1</sub> | x<sub>i</sub> | f(x<sub>i-1</sub>) | f(x<sub>i</sub>) | x<sub>i+1</sub> | |εₐ|. Each row shifts: old x<sub>i</sub> becomes new x<sub>i-1</sub>, old x<sub>i+1</sub> becomes new x<sub>i</sub>.</p></div>
+    <div class="tip"><h4>⚡ Tip 3 — False Position Table</h4><p>Columns: x_L | x_U | f(x_L) | f(x_U) | x_r | f(x_r) | Update | |εₐ|. Note which endpoint changes each row — one often stays constant.</p></div>
+    <div class="tip"><h4>⚡ Tip 4 — Bracket Check</h4><p>After every FP iteration, multiply f(x_L)·f(x_r). Negative → root on left (x_U=x_r). Positive → root on right (x_L=x_r). Zero → found it. This is your single most important decision point.</p></div>
+    <div class="tip"><h4>⚡ Tip 5 — Derivation Question</h4><p>If asked to derive Secant from NR: 3 steps. (1) Write NR formula. (2) Substitute finite-difference approximation for f′. (3) Simplify. Practice until it's automatic.</p></div>
+    <div class="tip"><h4>⚡ Tip 6 — Compare Question</h4><p>Key comparison sentence: "Both methods use a secant line. Secant is open (no guaranteed convergence, superlinear speed). False Position is bracketed (guaranteed convergence, linear speed)."</p></div>
+  </div>
+
+  <h3 class="g-head">Common Question Patterns</h3>
+  <ol class="steps ss">
+    <li><strong>"Apply Secant method to f(x) with x₀=a, x₁=b. Perform n iterations."</strong> → No derivative. Set up sliding table. Apply formula n times. Compute error after each.</li>
+    <li><strong>"Apply False Position to f(x) on [a,b]. Find root with tolerance ε."</strong> → Verify bracket first. Iterate with bracket update until |εₐ| ≤ ε.</li>
+    <li><strong>"Derive the Secant formula from Newton-Raphson."</strong> → Memorize 3-step derivation above.</li>
+    <li><strong>"Compare Secant and False Position."</strong> → Open vs bracketed. Convergence guarantee. Speed tradeoff. Failure modes.</li>
+    <li><strong>"Why is Secant preferred over Newton-Raphson when…"</strong> → Symbolic differentiation is expensive or impossible. Secant needs only function evaluations.</li>
+    <li><strong>"What is stagnation in False Position?"</strong> → One bracket endpoint freezes because function is asymmetric. Cite the large-|f| endpoint stays stuck.</li>
+  </ol>
+</div></div>
+
+<!-- S8: PRACTICE -->
+<div class="section" id="s8"><div class="container">
+  <div class="sec-label">Section 08</div>
+  <h2>Practice Problems</h2>
+  <p style="color:var(--muted);margin-bottom:1.5rem;">Attempt each problem yourself before revealing the answer.</p>
+
+  <div class="pcard">
+    <span class="pbadge easy">Easy — Secant</span>
+    <p style="font-weight:600;margin-top:.5rem;">P1. Solve x² − 6 = 0 using Secant method with x₀=2, x₁=3. Perform 3 iterations. Compute |εₐ| after each.</p>
+    <details><summary>▶ Show Answer</summary>
+    <div class="ans">f(x) = x² − 6,  f(2) = −2,  f(3) = 3
+
+Iter 1:
+  x₂ = 3 − 3·(3−2)/(3−(−2)) = 3 − 3/5 = 2.4
+  |εₐ| = |2.4−3|/2.4 × 100 = 25%
+
+Iter 2:
+  f(2.4) = 5.76 − 6 = −0.24
+  x₃ = 2.4 − (−0.24)·(2.4−3)/(−0.24−3) = 2.4 + 0.144/3.24 = 2.4 + 0.04444 = 2.44444
+  |εₐ| = |2.44444−2.4|/2.44444 × 100 = 1.82%
+
+Iter 3:
+  f(2.44444) = 5.9753 − 6 = −0.0247
+  x₄ = 2.44444 − (−0.0247)·(2.44444−2.4)/(−0.0247−(−0.24))
+     = 2.44444 + 0.001097/0.2153 ≈ 2.4494
+  |εₐ| ≈ 0.20%
+
+True value: √6 ≈ 2.44949 ✓</div>
+    </details>
+  </div>
+
+  <div class="pcard">
+    <span class="pbadge easy">Easy — False Position</span>
+    <p style="font-weight:600;margin-top:.5rem;">P2. Solve x² − 6 = 0 using False Position with x_L=2, x_U=3. Perform 3 iterations. Note which bracket endpoint stays fixed.</p>
+    <details><summary>▶ Show Answer</summary>
+    <div class="ans">f(x) = x² − 6,  f(2) = −2,  f(3) = 3.  Product < 0 ✓
+
+Iter 1:
+  x_r = [3·(−2) − 2·3] / [(−2)−3] = [−6−6]/[−5] = 2.4
+  f(2.4) = −0.24
+  f(x_L)·f(x_r) = (−2)(−0.24) = 0.48 > 0 → x_L = 2.4
+
+Iter 2:
+  x_r = [3·(−0.24) − 2.4·3] / [(−0.24)−3]
+      = [−0.72 − 7.2] / [−3.24] = −7.92/−3.24 = 2.4444
+  f(2.4444) = −0.0247
+  f(x_L)·f(x_r) = (−0.24)(−0.0247) > 0 → x_L = 2.4444
+  |εₐ| = |2.4444−2.4|/2.4444 × 100 = 1.81%
+
+Iter 3:
+  x_r ≈ 2.4490,  f ≈ −0.0024
+  |εₐ| ≈ 0.19%
+
+⚠️ x_U = 3 stays FIXED for all iterations! (stuck bracket)
+True value: √6 ≈ 2.44949 ✓</div>
+    </details>
+  </div>
+
+  <div class="pcard">
+    <span class="pbadge med">Medium — Secant</span>
+    <p style="font-weight:600;margin-top:.5rem;">P3. Solve cos(x) − x = 0 using Secant method with x₀=0, x₁=π/2 ≈ 1.5708. Perform 3 iterations.</p>
+    <details><summary>▶ Show Answer</summary>
+    <div class="ans">f(x) = cos(x) − x
+
+f(0) = cos(0) − 0 = 1.0
+f(1.5708) = cos(π/2) − π/2 = 0 − 1.5708 = −1.5708
+
+Iter 1:
+  x₂ = 1.5708 − (−1.5708)·(1.5708−0)/(−1.5708−1.0)
+     = 1.5708 − (−2.4674)/(−2.5708)
+     = 1.5708 − 0.9598 = 0.6110
+  f(0.6110) = cos(0.6110) − 0.6110 = 0.8133 − 0.6110 = 0.2023
+  |εₐ| = |0.6110−1.5708|/0.6110 × 100 = 157% (large but expected first step)
+
+Iter 2:
+  x₃ = 0.6110 − 0.2023·(0.6110−1.5708)/(0.2023−(−1.5708))
+     = 0.6110 − 0.2023·(−0.9598)/(1.7731)
+     = 0.6110 + 0.10946 = 0.7206 (approx)
+  f(0.7206) = cos(0.7206) − 0.7206 = 0.7518 − 0.7206 = 0.0312
+  |εₐ| ≈ 15.2%
+
+Iter 3:
+  x₄ ≈ 0.7391
+  |εₐ| ≈ 2.5%
+
+Root ≈ 0.7391 (Dottie number: fixed point of cosine) ✓</div>
+    </details>
+  </div>
+
+  <div class="pcard">
+    <span class="pbadge med">Medium — False Position</span>
+    <p style="font-weight:600;margin-top:.5rem;">P4. Solve f(x) = x³ + 4x − 9 = 0 using False Position on [1, 2]. Iterate until |εₐ| &lt; 1%.</p>
+    <details><summary>▶ Show Answer</summary>
+    <div class="ans">f(1) = 1+4−9 = −4,  f(2) = 8+8−9 = 7.  Product < 0 ✓
+
+Iter 1:
+  x_r = [2·(−4)−1·7]/[(−4)−7] = [−8−7]/(−11) = −15/−11 = 1.3636
+  f(1.3636) = 2.536+5.454−9 = −1.010
+  f(x_L)·f(x_r) = (−4)(−1.010) > 0 → x_L = 1.3636
+
+Iter 2:
+  x_r = [2·(−1.010)−1.3636·7]/[(−1.010)−7]
+      = [−2.020−9.545]/(−8.010) = 1.4438
+  f(1.4438) ≈ −0.215
+  f(x_L)·f(x_r) > 0 → x_L = 1.4438
+  |εₐ| = |1.4438−1.3636|/1.4438×100 = 5.56%
+
+Iter 3:
+  x_r ≈ 1.4608,  f ≈ −0.040
+  |εₐ| = 1.16%
+
+Iter 4:
+  x_r ≈ 1.4640,  |εₐ| ≈ 0.22%  < 1% → STOP ✓
+
+Root ≈ 1.464</div>
+    </details>
+  </div>
+
+  <div class="pcard">
+    <span class="pbadge hard">Hard — Derivation + Conceptual</span>
+    <p style="font-weight:600;margin-top:.5rem;">P5. (a) Derive the Secant formula from Newton-Raphson showing all steps. (b) Explain why f(π/4) and f(π/2) are bad starting values for Secant applied to sin(x) = 0. (c) Define "stagnation" in False Position with an example function.</p>
+    <details><summary>▶ Show Answer</summary>
+    <div class="ans">(a) DERIVATION:
+NR:  x_{i+1} = x_i − f(x_i) / f'(x_i)
+Approximate f'(x_i):
+  f'(x_i) ≈ [f(x_i) − f(x_{i-1})] / (x_i − x_{i-1})
+Substitute:
+  x_{i+1} = x_i − f(x_i) / { [f(x_i)−f(x_{i-1})] / (x_i−x_{i-1}) }
+  x_{i+1} = x_i − f(x_i)·(x_i−x_{i-1}) / (f(x_i)−f(x_{i-1}))  ✓
+
+(b) BAD GUESSES π/4 and π/2 for sin(x):
+  f(π/4) = sin(π/4) = 0.7071
+  f(π/2) = sin(π/2) = 1.0
+Both values are POSITIVE and similar in magnitude.
+The secant line through (π/4, 0.707) and (π/2, 1.0) has
+positive slope. It crosses the x-axis at a NEGATIVE x value
+(far to the left of origin), far from the nearest root at x=0 or x=π.
+The method either diverges or takes many iterations to recover.
+Ideal: choose guesses straddling a root OR with significantly
+different function values.
+
+(c) STAGNATION IN FALSE POSITION:
+Definition: One bracket endpoint (x_L or x_U) is NEVER updated
+across multiple iterations because the sign check always updates
+the OTHER endpoint. This happens when one side has very large |f|.
+
+Example: f(x) = x^10 − 1 on [0, 1.5]
+  f(0) = −1, f(1.5) = 57.665 (extremely large positive)
+  Secant line strongly biased toward x=0 side.
+  x_r values quickly approach 1.0 from the left.
+  But x_U = 1.5 NEVER changes — its huge f-value dominates
+  every bracket update check. The method converges to root x=1
+  but x_U stays stuck at 1.5 throughout.</div>
+    </details>
+  </div>
+
+  <div class="pcard">
+    <span class="pbadge hard">Hard — Full Comparison Problem</span>
+    <p style="font-weight:600;margin-top:.5rem;">P6. Solve f(x) = x·eˣ − 2 = 0 using BOTH Secant (x₀=0.5, x₁=1.0) AND False Position (x_L=0.5, x_U=1.0). Perform 3 iterations of each. Compare results in a table.</p>
+    <details><summary>▶ Show Answer</summary>
+    <div class="ans">f(x) = x·e^x − 2
+f(0.5) = 0.5·e^0.5 − 2 = 0.8244 − 2 = −1.1756
+f(1.0) = 1.0·e^1.0 − 2 = 2.7183 − 2 = 0.7183
+Both are needed for both methods.
+
+─── SECANT METHOD ───
+Iter 1:
+  x₂ = 1.0 − 0.7183·(1.0−0.5)/(0.7183−(−1.1756))
+     = 1.0 − 0.3592/1.8939 = 1.0 − 0.1897 = 0.8103
+  f(0.8103) = 0.8103·e^0.8103 − 2 = 1.8208 − 2 = −0.1792
+  |εₐ| = 23.4%
+
+Iter 2:
+  x₃ = 0.8103 − (−0.1792)·(0.8103−1.0)/(−0.1792−0.7183)
+     = 0.8103 − (0.1792·0.1897)/(−0.8975)  ← note signs
+     = 0.8103 + 0.03789 = 0.8482
+  f(0.8482) = 0.8482·2.3354 − 2 = 1.9810 − 2 = −0.0190
+  |εₐ| = 4.47%
+
+Iter 3:
+  x₄ ≈ 0.8521,  |εₐ| ≈ 0.46%
+
+─── FALSE POSITION ───
+f(0.5)=−1.1756, f(1.0)=0.7183. Product < 0 ✓
+
+Iter 1:
+  x_r = [1.0·(−1.1756) − 0.5·0.7183]/[(−1.1756)−0.7183]
+      = [−1.1756 − 0.3592]/(−1.8939) = 0.8103
+  f(0.8103) = −0.1792
+  f(x_L)·f(x_r) = (−1.1756)(−0.1792) > 0 → x_L = 0.8103
+
+Iter 2:  x_r = 0.8482, |εₐ| = 4.47%, x_L = 0.8482
+Iter 3:  x_r ≈ 0.8521, |εₐ| ≈ 0.46%
+
+COMPARISON:
+  Iter │  Secant x    │  False Pos x  │ Difference
+  ─────┼──────────────┼───────────────┼───────────
+    1  │  0.8103      │  0.8103       │  0.000000
+    2  │  0.8482      │  0.8482       │  0.000000
+    3  │  0.8521      │  0.8521       │  ~0.00000
+
+Result: Both methods give IDENTICAL estimates here!
+Why? Because f(0.5) and f(1.0) have opposite signs, so
+in Iteration 1 the Secant method naturally picks the
+same two points as False Position does. Subsequent
+iterations also align because the x_L update in FP
+matches the sliding window in Secant for this function.
+True root: x ≈ 0.8526 (by Lambert W function)</div>
+    </details>
+  </div>
+</div></div>
+
+<!-- S9: DEEPER -->
+<div class="section" id="s9"><div class="container">
+  <div class="sec-label">Section 09</div>
+  <h2>Deeper Understanding</h2>
+
+  <h3 class="s-head">🔵 Why Secant ≈ Newton-Raphson as Convergence Happens</h3>
+  <p>The Secant method approximates <span class="math">f′(x<sub>i</sub>) ≈ Δf/Δx</span>. As the method converges, <span class="math">x<sub>i</sub> → x<sub>i-1</sub> → root</span>, so <span class="math">Δx → 0</span> and the finite difference approaches the true derivative. This is why the Secant method's convergence rate (≈ 1.618, the golden ratio!) approaches but doesn't quite reach NR's quadratic rate (2.0). You're paying for not knowing the exact derivative with a slightly slower approach to the root.</p>
+
+  <h3 class="f-head">🟢 Why the Bracket in False Position is Indestructible</h3>
+  <p>By the <strong>Intermediate Value Theorem</strong>: if f is continuous and f(a) · f(b) &lt; 0, there is at least one root in (a, b). Every False Position update is designed to preserve this sign condition. You only ever move an endpoint to x<sub>r</sub> when you know x<sub>r</sub> has the same sign as that endpoint — so the new sub-interval still has opposite signs. The root is always trapped. This is the mathematical guarantee behind "convergence is assured."</p>
+
+  <h3 class="g-head">📜 The Ancient History (From Your Lecture)</h3>
+  <p>Your lecture showed a slide of the <strong>Rhind Mathematical Papyrus</strong> (~1650 BCE), an ancient Egyptian document. The original Regula Falsi ("rule of false position") was used to solve linear equations: guess a wrong answer, see how wrong you are, scale the guess. The modern bracketed False Position is a nonlinear generalization — same name, much more powerful idea. It is one of the oldest documented numerical algorithms in human history, over 3,500 years old.</p>
+
+  <h3 class="g-head">🌳 The Family Tree of All Methods</h3>
+  <div class="math-block"><span class="hm">         All Root-Finding Methods
+                      │
+          ┌───────────┴────────────┐
+      Bracketed               Open Methods
+     (guaranteed)            (not guaranteed)
+          │                        │
+    ┌─────┴──────┐          ┌──────┴──────────┐
+ Bisection  <span class="hf">False Pos</span>   <span style="color:var(--nr)">Newton-Raphson</span>  <span class="hs">Secant</span>
+               │                   │                │
+         <span class="hf">Secant line       Exact f′         Approx f′</span>
+         <span class="hf">+ bracketing      (tangent)        (secant)</span>
+
+<span class="hm">Key insight: All three use a straight line to approximate the curve.
+They differ only in which line they draw and what they do afterward.</span></div>
+
+  <div class="box box-g">
+    <div class="box-lbl">✅ The Grand Unifying Idea</div>
+    <p>Newton-Raphson, Secant, and False Position all do the same thing: <strong>replace the curved function with a straight line and find where that line crosses zero</strong>. NR uses the tangent (1 point, needs derivative). Secant uses the secant through 2 recent points (no derivative). False Position uses the secant through 2 bracketing points (no derivative, adds bracket maintenance). Understanding this unifying idea means you truly understand all three methods — not just their formulas.</p>
+  </div>
+</div></div>
+
+<!-- QUIZ -->
+<div class="section" style="background:var(--surface);">
+<div class="container">
+  <div class="sec-label">Bonus</div>
+  <h2>Quick Self-Test</h2>
+
+  <div class="quiz-card">
+    <h4>Q1. The Secant method is different from Newton-Raphson because it...</h4>
+    <ul class="qopts">
+      <li><button onclick="qa(this,false,'No — Secant is also an open method requiring only guesses, not a bracket.')">Requires a bracket around the root</button></li>
+      <li><button onclick="qa(this,true,'Correct! Instead of computing the exact f\'(x), Secant approximates it using the slope between two points. No symbolic differentiation needed.')">Approximates f′(x) using finite differences from two function evaluations</button></li>
+      <li><button onclick="qa(this,false,'No — Secant actually uses TWO initial guesses, not one.')">Needs only one initial guess</button></li>
+      <li><button onclick="qa(this,false,'No — guaranteed convergence is a property of False Position (bracketed), not Secant.')">Guarantees convergence to the root</button></li>
+    </ul>
+    <div class="qres" id="qr1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <h4>Q2. In False Position, after computing x_r you check f(x_L)·f(x_r). If the result is NEGATIVE, you...</h4>
+    <ul class="qopts">
+      <li><button onclick="qa(this,true,'Correct! Negative product means f(x_L) and f(x_r) have opposite signs — the root is between x_L and x_r. So tighten the bracket by replacing x_U with x_r.')">Set x_U = x_r — root is between x_L and x_r</button></li>
+      <li><button onclick="qa(this,false,'No — negative product means x_L and x_r have OPPOSITE signs, so the root is between them, not between x_r and x_U.')">Set x_L = x_r — root is between x_r and x_U</button></li>
+      <li><button onclick="qa(this,false,'x_r is the root only when f(x_r) = exactly 0, not when the product of two values is negative.')">Stop — x_r is the exact root</button></li>
+      <li><button onclick="qa(this,false,'The method never switches to Secant. It continues using the False Position formula with the updated bracket.')">Switch to the Secant method</button></li>
+    </ul>
+    <div class="qres" id="qr2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <h4>Q3. "Stagnation" in False Position refers to...</h4>
+    <ul class="qopts">
+      <li><button onclick="qa(this,false,'False Position always converges — stagnation means SLOW convergence, not complete failure.')">The method diverging and failing entirely</button></li>
+      <li><button onclick="qa(this,true,'Exactly right! When the function is highly asymmetric, one bracket endpoint has a large |f| value and never gets replaced by the update rule. Convergence happens, but slowly.')">One bracket endpoint never getting updated due to asymmetric function values</button></li>
+      <li><button onclick="qa(this,false,'Division by zero is a Secant method problem (when f(xᵢ) = f(xᵢ₋₁)), not False Position.')">Division by zero when f(x_L) = f(x_U)</button></li>
+      <li><button onclick="qa(this,false,'Root jumping is a problem for open methods like Secant and NR, not bracketed False Position.')">The method jumping to a different root</button></li>
+    </ul>
+    <div class="qres" id="qr3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <h4>Q4. Which method should you choose if you need guaranteed convergence but cannot compute f′(x)?</h4>
+    <ul class="qopts">
+      <li><button onclick="qa(this,false,'Newton-Raphson requires f′(x) — the whole point of Secant and False Position is avoiding this requirement.')">Newton-Raphson</button></li>
+      <li><button onclick="qa(this,false,'Secant method does not require f′(x), but it is an open method — convergence is NOT guaranteed.')">Secant Method</button></li>
+      <li><button onclick="qa(this,true,'Perfect! False Position is bracketed (guaranteed convergence) AND requires no derivative — only function evaluations. It is the right tool when both conditions apply.')">False Position (Regula Falsi)</button></li>
+      <li><button onclick="qa(this,false,'Bisection also guarantees convergence without f′(x), but False Position is preferred because it uses function values more smartly and typically converges faster.')">Bisection (when False Position is available)</button></li>
+    </ul>
+    <div class="qres" id="qr4"></div>
+  </div>
+</div>
+</div>
+
+<footer>
+  <p>Math 4641: Numerical Methods · Lecture 4 — Secant &amp; False Position Methods</p>
+  <p style="margin-top:.5rem;">Dept. of CSE · Islamic University of Technology · Dhaka, Bangladesh</p>
+  <p style="margin-top:.5rem;color:#444;">Study guide from <span>Lecture 4 slides</span> by Syed Rifat Raiyan</p>
+</footer>
+
+<script>
+const answered={};
+function qa(btn,correct,msg){
+  const ul=btn.closest('ul');
+  const rid=ul.parentElement.querySelector('.qres').id;
+  if(answered[rid])return;
+  answered[rid]=true;
+  ul.querySelectorAll('button').forEach(b=>b.style.pointerEvents='none');
+  btn.classList.add(correct?'correct':'wrong');
+  const r=document.getElementById(rid);
+  r.textContent=(correct?'✅ ':'❌ ')+msg;
+  r.style.color=correct?'#7ee787':'#ffa198';
+}
+</script>
+</body>
+</html>

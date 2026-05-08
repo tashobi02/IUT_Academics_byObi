@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newton-Raphson Method — Complete Mastery Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=JetBrains+Mono:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0d;
+    --paper: #faf8f3;
+    --cream: #f2ede2;
+    --accent: #c8421a;
+    --accent2: #2a6496;
+    --gold: #b8892a;
+    --muted: #7a7265;
+    --border: #d8d0c0;
+    --green: #1f6b45;
+    --code-bg: #1a1814;
+    --code-text: #e8dfc8;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--ink);
+    display: flex; align-items: center; gap: 0;
+    padding: 0 2rem;
+    border-bottom: 3px solid var(--accent);
+    overflow-x: auto;
+  }
+  nav .brand {
+    font-family: 'Playfair Display', serif;
+    color: var(--paper);
+    font-size: 1rem;
+    font-weight: 700;
+    white-space: nowrap;
+    padding: 0.8rem 1.5rem 0.8rem 0;
+    border-right: 1px solid #444;
+    margin-right: 1rem;
+  }
+  nav a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.8rem 0.9rem;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    margin-top: 52px;
+    background: var(--ink);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(200,66,26,0.04) 40px,
+      rgba(200,66,26,0.04) 41px
+    );
+  }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--paper);
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1.1;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 span { color: var(--gold); font-style: italic; }
+  .hero-sub {
+    color: #aaa;
+    font-size: 1rem;
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+  }
+  .hero-formula {
+    display: inline-block;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(200,66,26,0.4);
+    border-radius: 8px;
+    padding: 1rem 2.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    padding: 4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 2rem 0 0.8rem;
+    color: var(--accent2);
+  }
+  .section p { margin-bottom: 1rem; color: #2a2520; }
+  .section ul, .section ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .section li { margin-bottom: 0.4rem; color: #2a2520; }
+
+  /* ── CALLOUT BOXES ── */
+  .box {
+    border-radius: 6px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid;
+  }
+  .box-insight { background: #fff8f0; border-color: var(--gold); }
+  .box-formula { background: #f0f4f8; border-color: var(--accent2); }
+  .box-warning { background: #fff3f0; border-color: var(--accent); }
+  .box-success { background: #f0faf5; border-color: var(--green); }
+  .box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .box-insight .box-label { color: var(--gold); }
+  .box-formula .box-label { color: var(--accent2); }
+  .box-warning .box-label { color: var(--accent); }
+  .box-success .box-label { color: var(--green); }
+
+  /* ── MATH DISPLAY ── */
+  .math {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.3em 0.6em;
+    font-size: 0.95em;
+    display: inline-block;
+  }
+  .math-block {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    color: var(--gold);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+    font-size: 1.05rem;
+    text-align: center;
+    letter-spacing: 0.05em;
+    overflow-x: auto;
+  }
+  .math-block .comment { color: #777; font-size: 0.85em; margin-top: 0.5rem; display: block; }
+
+  /* ── ITERATION TABLE ── */
+  .iter-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .iter-table th {
+    background: var(--ink);
+    color: var(--gold);
+    padding: 0.7rem 1rem;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+  }
+  .iter-table td {
+    padding: 0.6rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--paper);
+  }
+  .iter-table tr:nth-child(even) td { background: var(--cream); }
+  .iter-table tr.converged td { background: #edfaf3; color: var(--green); font-weight: 600; }
+  .iter-table .highlight { color: var(--accent); font-weight: 700; }
+
+  /* ── STEP-BY-STEP ── */
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(step);
+    flex-shrink: 0;
+    width: 2rem; height: 2rem;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.1rem;
+  }
+
+  /* ── DERIVATION STEPS ── */
+  .deriv-step {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .deriv-step:last-child { border-bottom: none; }
+  .deriv-arrow {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 1.2rem;
+    padding-top: 0.1rem;
+  }
+  .deriv-content { flex: 1; }
+  .deriv-content .why {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.3rem;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .compare-table th {
+    padding: 0.7rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .compare-table th:first-child { background: var(--ink); color: var(--paper); }
+  .compare-table th:nth-child(2) { background: var(--accent); color: white; }
+  .compare-table th:nth-child(3) { background: var(--accent2); color: white; }
+  .compare-table td {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+  }
+  .compare-table td:first-child { font-weight: 600; background: var(--cream); }
+
+  /* ── PRACTICE PROBLEMS ── */
+  .problem-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.2rem 0;
+    position: relative;
+  }
+  .problem-badge {
+    position: absolute; top: -10px; left: 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 700;
+  }
+  .easy { background: var(--green); color: white; }
+  .medium { background: var(--gold); color: white; }
+  .hard { background: var(--accent); color: white; }
+  .problem-q { font-weight: 600; margin-bottom: 0.5rem; }
+
+  /* ── ANSWER TOGGLE ── */
+  details {
+    margin-top: 0.8rem;
+  }
+  summary {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent2);
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--accent2);
+    border-radius: 4px;
+    user-select: none;
+    transition: all 0.2s;
+  }
+  summary:hover { background: var(--accent2); color: white; }
+  details[open] summary { background: var(--accent2); color: white; }
+  .answer-body {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    line-height: 1.8;
+  }
+
+  /* ── QUIZ ── */
+  .quiz-card {
+    background: var(--ink);
+    border-radius: 10px;
+    padding: 1.8rem;
+    margin: 1.5rem 0;
+    color: var(--paper);
+  }
+  .quiz-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .quiz-options { list-style: none; }
+  .quiz-options li {
+    margin-bottom: 0.5rem;
+  }
+  .quiz-options button {
+    width: 100%;
+    text-align: left;
+    padding: 0.6rem 1rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: #ccc;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .quiz-options button:hover { background: rgba(200,66,26,0.2); border-color: var(--accent); color: white; }
+  .quiz-options button.correct { background: rgba(31,107,69,0.3); border-color: var(--green); color: #7de7aa; }
+  .quiz-options button.wrong { background: rgba(200,66,26,0.25); border-color: var(--accent); color: #f8a090; }
+  .quiz-result {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #999;
+    min-height: 1.5em;
+  }
+
+  /* ── EXAM TIPS ── */
+  .tip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .tip-card {
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 1.2rem;
+    border-top: 3px solid var(--gold);
+  }
+  .tip-card h4 {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .tip-card p { font-size: 0.88rem; margin: 0; color: #3a3228; }
+
+  /* ── CONVERGENCE VISUAL ── */
+  .convergence-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .convergence-bar .label { width: 80px; color: var(--muted); }
+  .bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s ease;
+  }
+  .convergence-bar .value { width: 70px; text-align: right; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: #777;
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  footer span { color: var(--accent); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .hero { padding: 3rem 1rem 2.5rem; }
+    .section { padding: 2.5rem 0; }
+    .iter-table { font-size: 0.78rem; }
+    .iter-table th, .iter-table td { padding: 0.5rem 0.5rem; }
+    nav a { font-size: 0.72rem; padding: 0.8rem 0.6rem; }
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero > * { animation: fadeUp 0.7s ease both; }
+  .hero .hero-label { animation-delay: 0.1s; }
+  .hero h1 { animation-delay: 0.25s; }
+  .hero-sub { animation-delay: 0.4s; }
+  .hero-formula { animation-delay: 0.55s; }
+
+  .tag {
+    display: inline-block;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.15em 0.5em;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">NR Mastery</div>
+  <a href="#s1">Intuition</a>
+  <a href="#s2">Derivation</a>
+  <a href="#s3">Algorithm</a>
+  <a href="#s4">Examples</a>
+  <a href="#s5">Convergence</a>
+  <a href="#s6">Exam</a>
+  <a href="#s7">Practice</a>
+  <a href="#s8">Deeper</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">Math 4641 · Lecture 3 · IUT Dhaka</div>
+  <h1>Newton-<span>Raphson</span><br>Method</h1>
+  <p class="hero-sub">From intuition to mastery — everything you need to solve problems fluently and explain the method confidently in any exam.</p>
+  <div class="hero-formula">x<sub>i+1</sub> = x<sub>i</sub> − f(x<sub>i</sub>) / f′(x<sub>i</sub>)</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 1: CORE INTUITION             -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s1">
+<div class="container">
+  <div class="section-number">Section 01</div>
+  <h2>Core Intuition</h2>
+
+  <h3>🎯 What problem are we solving?</h3>
+  <p>We want to find the <strong>root</strong> of an equation — the value of <span class="math">x</span> where <span class="math">f(x) = 0</span>. This means: where does the curve cross the x-axis?</p>
+  <p>For example, if you need to solve <span class="math">x³ = 20</span>, you rewrite it as <span class="math">f(x) = x³ − 20 = 0</span> and ask: what is <span class="math">x</span>?</p>
+
+  <div class="box box-insight">
+    <div class="box-label">💡 Big Picture</div>
+    Newton-Raphson is an <strong>open method</strong> — it needs only <em>one</em> initial guess (unlike bisection which needs two). It doesn't guarantee convergence, but when it converges, it does so blazingly fast.
+  </div>
+
+  <h3>📐 Geometric Intuition — The Tangent Line Idea</h3>
+  <p>Here's the core idea, step by step:</p>
+  <ol class="steps">
+    <li>You make a guess <span class="math">x<sub>i</sub></span> about where the root might be.</li>
+    <li>You plot the point <span class="math">(x<sub>i</sub>, f(x<sub>i</sub>))</span> on the curve.</li>
+    <li>You draw the <strong>tangent line</strong> to the curve at that point. (A tangent is a straight line that "just touches" the curve and has the same slope as the curve at that point.)</li>
+    <li>You see where this tangent line <strong>crosses the x-axis</strong> — call it <span class="math">x<sub>i+1</sub></span>.</li>
+    <li>That crossing point is your <strong>improved, better guess</strong> for the root!</li>
+    <li>You repeat using <span class="math">x<sub>i+1</sub></span> as your new starting point — each time getting closer.</li>
+  </ol>
+
+  <div class="box box-insight">
+    <div class="box-label">💡 Mental Image</div>
+    Imagine standing on a hill in fog — you can't see the bottom (the root), but you can feel the slope beneath your feet (the derivative). You step in the direction the slope points. Each step lands you closer to the valley bottom.
+  </div>
+
+  <h3>🤔 Why does it work?</h3>
+  <p>Near any smooth point on a curve, the tangent line is a <em>very good local approximation</em> of the curve. If your guess is already somewhat close to the root, the tangent line's x-intercept will be much closer to the root than your original guess was. This is the magic of Newton-Raphson — it exploits local linearity to make huge leaps in accuracy.</p>
+
+  <div class="box box-warning">
+    <div class="box-label">⚠️ Key Caveat</div>
+    This method is an <strong>open method</strong> — convergence is NOT guaranteed. If your initial guess is far from the root, or near a flat spot (inflection point / local extremum), the method may fail. When it works though, it is extremely powerful.
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 2: MATHEMATICAL DERIVATION    -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s2">
+<div class="container">
+  <div class="section-number">Section 02</div>
+  <h2>Mathematical Derivation</h2>
+
+  <h3>Method 1: From Slope (Geometric — Your Lecture's Primary Approach)</h3>
+  <p>We exploit the definition of slope. The tangent line at <span class="math">(x<sub>i</sub>, f(x<sub>i</sub>))</span> has slope equal to the derivative <span class="math">f′(x<sub>i</sub>)</span>, and it passes through the point and the x-axis.</p>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">①</div>
+    <div class="deriv-content">
+      <strong>Write the slope of the tangent at x<sub>i</sub>:</strong>
+      <div class="math-block">f′(xᵢ) = tan θ</div>
+      <p class="why">The derivative IS the slope. The angle θ is the angle the tangent makes with the x-axis.</p>
+    </div>
+  </div>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">②</div>
+    <div class="deriv-content">
+      <strong>Express the slope using rise-over-run between (x<sub>i</sub>, f(x<sub>i</sub>)) and (x<sub>i+1</sub>, 0):</strong>
+      <div class="math-block">f′(xᵢ) = (f(xᵢ) − 0) / (xᵢ − xᵢ₊₁)</div>
+      <p class="why">The tangent starts at height f(xᵢ) and ends at the x-axis (height = 0). The horizontal run is xᵢ − xᵢ₊₁. Note: denominator is xᵢ − xᵢ₊₁, not xᵢ₊₁ − xᵢ, to keep the slope positive when the curve slopes downward toward the root.</p>
+    </div>
+  </div>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">③</div>
+    <div class="deriv-content">
+      <strong>Multiply both sides by (x<sub>i</sub> − x<sub>i+1</sub>):</strong>
+      <div class="math-block">f′(xᵢ) · (xᵢ − xᵢ₊₁) = f(xᵢ)</div>
+      <p class="why">Simple cross-multiplication.</p>
+    </div>
+  </div>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">④</div>
+    <div class="deriv-content">
+      <strong>Solve for x<sub>i+1</sub>:</strong>
+      <div class="math-block">xᵢ − xᵢ₊₁ = f(xᵢ) / f′(xᵢ)
+xᵢ₊₁ = xᵢ − f(xᵢ) / f′(xᵢ)  ✓</div>
+      <p class="why">Rearrange: subtract xᵢ from both sides, then multiply by −1.</p>
+    </div>
+  </div>
+
+  <div class="box box-formula">
+    <div class="box-label">✅ Result</div>
+    This is the Newton-Raphson formula. We derived it purely from the geometric meaning of slope.
+  </div>
+
+  <h3>Method 2: From Taylor Series (Your Lecture's Second Approach)</h3>
+  <p>The Taylor series expands a function around a known point:</p>
+
+  <div class="math-block">f(x + h) = f(x) + f′(x)·h + f″(x)·h²/2! + f‴(x)·h³/3! + …</div>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">①</div>
+    <div class="deriv-content">
+      <strong>Expand f(x<sub>i+1</sub>) around x<sub>i</sub>:</strong>
+      <div class="math-block">f(xᵢ₊₁) = f(xᵢ) + f′(xᵢ)(xᵢ₊₁−xᵢ) + f″(xᵢ)(xᵢ₊₁−xᵢ)²/2! + …</div>
+      <p class="why">This is just the Taylor series with h = (xᵢ₊₁ − xᵢ).</p>
+    </div>
+  </div>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">②</div>
+    <div class="deriv-content">
+      <strong>We WANT x<sub>i+1</sub> to be the root, so set f(x<sub>i+1</sub>) = 0:</strong>
+      <div class="math-block">0 = f(xᵢ) + f′(xᵢ)(xᵢ₊₁−xᵢ) + f″(xᵢ)(xᵢ₊₁−xᵢ)²/2! + …</div>
+      <p class="why">This is the key assumption — we're hoping xᵢ₊₁ is the root.</p>
+    </div>
+  </div>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">③</div>
+    <div class="deriv-content">
+      <strong>Keep only the first two terms (truncate higher-order terms):</strong>
+      <div class="math-block">0 ≈ f(xᵢ) + f′(xᵢ)(xᵢ₊₁ − xᵢ)</div>
+      <p class="why">This is a first-order (linear) approximation. The higher-order terms are small if xᵢ₊₁ is close to xᵢ.</p>
+    </div>
+  </div>
+
+  <div class="deriv-step">
+    <div class="deriv-arrow">④</div>
+    <div class="deriv-content">
+      <strong>Solve for x<sub>i+1</sub>:</strong>
+      <div class="math-block">f′(xᵢ)(xᵢ₊₁ − xᵢ) ≈ −f(xᵢ)
+xᵢ₊₁ ≈ xᵢ − f(xᵢ) / f′(xᵢ)  ✓</div>
+      <p class="why">Divide both sides by f′(xᵢ), then add xᵢ. Same formula!</p>
+    </div>
+  </div>
+
+  <div class="box box-success">
+    <div class="box-label">✅ Both methods agree</div>
+    The geometric method and the Taylor series method both give exactly the same formula. This confirms we're on solid mathematical ground. The ≈ symbol appears because we truncated the Taylor series — introducing a small error that shrinks with each iteration.
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 3: ALGORITHM & FORMULA        -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s3">
+<div class="container">
+  <div class="section-number">Section 03</div>
+  <h2>Algorithm & Formula</h2>
+
+  <h3>The Newton-Raphson Formula</h3>
+  <div class="math-block" style="font-size:1.3rem;">xᵢ₊₁ = xᵢ − f(xᵢ) / f′(xᵢ)
+<span class="comment">// Next guess = Current guess − (Function value) / (Derivative value)</span></div>
+
+  <h3>Error Formula</h3>
+  <div class="math-block">|εₐ| = |( xᵢ₊₁ − xᵢ ) / xᵢ₊₁| × 100%
+<span class="comment">// Absolute Relative Approximate Error (stop when this is small enough)</span></div>
+
+  <div class="box box-insight">
+    <div class="box-label">💡 Significant Digits Rule</div>
+    Your answer has at least <strong>m significant digits correct</strong> if |εₐ| ≤ 0.5 × 10<sup>2−m</sup> %. Example: for m=2, need |εₐ| ≤ 0.5% = 5×10⁻¹%. As a rough guide: 1 sig fig → |εₐ| ≤ 5%, 2 sig figs → ≤ 0.5%, 3 sig figs → ≤ 0.05%.
+  </div>
+
+  <h3>Step-by-Step Algorithm (from your lecture)</h3>
+  <ol class="steps">
+    <li><strong>Rewrite</strong> the equation in the form <span class="math">f(x) = 0</span>. (Move everything to one side.)</li>
+    <li><strong>Differentiate</strong> symbolically to get <span class="math">f′(x)</span>. Do this ONCE before any iteration.</li>
+    <li><strong>Choose</strong> an initial guess <span class="math">x₀</span>. (Often given in the problem. If not, a rough estimate works.)</li>
+    <li><strong>Apply</strong> the formula: <span class="math">x<sub>i+1</sub> = x<sub>i</sub> − f(x<sub>i</sub>)/f′(x<sub>i</sub>)</span></li>
+    <li><strong>Compute</strong> the absolute relative approximate error <span class="math">|εₐ|</span>.</li>
+    <li><strong>Check stopping criteria:</strong> If <span class="math">|εₐ| ≤ ε<sub>s</sub></span> (given tolerance), stop. Otherwise, set <span class="math">x<sub>i</sub> = x<sub>i+1</sub></span> and go back to Step 4.</li>
+    <li><strong>Also check</strong>: if iteration count exceeds maximum allowed iterations, stop and report failure.</li>
+  </ol>
+
+  <div class="box box-warning">
+    <div class="box-label">⚠️ Watch Out</div>
+    Always compute f′(x) SYMBOLICALLY (analytically) before starting. Never approximate it numerically unless specifically asked. And always check that f′(xᵢ) ≠ 0 before dividing!
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 4: WORKED EXAMPLES            -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s4">
+<div class="container">
+  <div class="section-number">Section 04</div>
+  <h2>Worked Examples</h2>
+
+  <!-- Example 1 -->
+  <h3>Example 1 — From Your Lecture: Solve x³ = 20, x₀ = 3</h3>
+
+  <p><strong>Setup:</strong></p>
+  <div class="math-block">f(x)  = x³ − 20
+f′(x) = 3x²
+x₀   = 3</div>
+
+  <p><strong>Iteration 1:</strong></p>
+  <div class="math-block">x₁ = x₀ − f(x₀)/f′(x₀)
+   = 3 − (3³ − 20) / (3 · 3²)
+   = 3 − (27 − 20) / 27
+   = 3 − 7/27
+   = 3 − 0.259259
+   = 2.74074
+
+|εₐ| = |2.74074 − 3| / 2.74074  × 100 = 9.46%</div>
+
+  <p><strong>Iteration 2:</strong></p>
+  <div class="math-block">x₂ = 2.74074 − ((2.74074)³ − 20) / (3·(2.74074)²)
+   = 2.74074 − 0.587495 / 22.5350
+   = 2.74074 − 0.026072
+   = 2.71467
+
+|εₐ| = |2.71467 − 2.74074| / 2.71467 × 100 = 0.960%</div>
+
+  <p><strong>Iteration 3:</strong></p>
+  <div class="math-block">x₃ = 2.71467 − ((2.71467)³ − 20) / (3·(2.71467)²)
+   = 2.71467 − 5.57925×10⁻³ / 22.1083
+   = 2.71467 − 2.52360×10⁻⁴
+   = 2.71442
+
+|εₐ| = |2.71442 − 2.71467| / 2.71442 × 100 = 0.00921%</div>
+
+  <p><strong>Summary Table:</strong></p>
+  <table class="iter-table">
+    <thead>
+      <tr><th>Iter</th><th>xᵢ</th><th>f(xᵢ)</th><th>f′(xᵢ)</th><th>xᵢ₊₁</th><th>|εₐ| %</th><th>Sig. Figs</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>3</td><td>7</td><td>27</td><td>2.74074</td><td>—</td><td>—</td></tr>
+      <tr><td>1</td><td>2.74074</td><td>0.5875</td><td>22.535</td><td>2.71467</td><td class="highlight">9.46%</td><td>0</td></tr>
+      <tr><td>2</td><td>2.71467</td><td>0.005579</td><td>22.108</td><td>2.71442</td><td class="highlight">0.960%</td><td>1</td></tr>
+      <tr class="converged"><td>3</td><td>2.71442</td><td>≈ 0</td><td>22.104</td><td>2.71442</td><td>0.00921%</td><td>3 ✓</td></tr>
+    </tbody>
+  </table>
+  <div class="box box-success">
+    <div class="box-label">✅ Observation</div>
+    Notice how the error went: 9.46% → 0.960% → 0.00921%. The number of correct significant digits went 0 → 1 → 3. This is <strong>quadratic convergence</strong> — the number of correct digits roughly <em>doubles</em> each iteration!
+  </div>
+
+  <!-- Example 2 -->
+  <h3>Example 2 — Finding √5 (Square Root as Root-Finding)</h3>
+  <p>Find √5 using Newton-Raphson, starting with x₀ = 2.</p>
+
+  <p><strong>Setup:</strong> We want x such that x² = 5, so:</p>
+  <div class="math-block">f(x)  = x² − 5
+f′(x) = 2x
+x₀   = 2</div>
+
+  <table class="iter-table">
+    <thead>
+      <tr><th>Iter</th><th>xᵢ</th><th>f(xᵢ) = xᵢ²−5</th><th>f′(xᵢ) = 2xᵢ</th><th>xᵢ₊₁</th><th>|εₐ| %</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>2.000000</td><td>−1.000000</td><td>4.000000</td><td>2.250000</td><td>—</td></tr>
+      <tr><td>1</td><td>2.250000</td><td>0.062500</td><td>4.500000</td><td>2.236111</td><td class="highlight">0.620%</td></tr>
+      <tr class="converged"><td>2</td><td>2.236111</td><td>0.000043</td><td>4.472222</td><td>2.236068</td><td>0.00192%</td></tr>
+    </tbody>
+  </table>
+  <p>True value: √5 = 2.236068... — <strong>converged in just 3 iterations!</strong></p>
+
+  <!-- Example 3 -->
+  <h3>Example 3 — Transcendental Equation: e^x = 3x, x₀ = 1</h3>
+  <p>Solve <span class="math">e<sup>x</sup> = 3x</span> using Newton-Raphson.</p>
+
+  <p><strong>Setup:</strong></p>
+  <div class="math-block">f(x)  = eˣ − 3x
+f′(x) = eˣ − 3
+x₀   = 1</div>
+
+  <table class="iter-table">
+    <thead>
+      <tr><th>Iter</th><th>xᵢ</th><th>f(xᵢ)</th><th>f′(xᵢ)</th><th>xᵢ₊₁</th><th>|εₐ| %</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>1.0000</td><td>−0.2817</td><td>−0.2817</td><td>2.0000</td><td>—</td></tr>
+      <tr><td>1</td><td>2.0000</td><td>1.3891</td><td>4.3891</td><td>1.6835</td><td class="highlight">18.8%</td></tr>
+      <tr><td>2</td><td>1.6835</td><td>0.1638</td><td>2.3847</td><td>1.6148</td><td class="highlight">4.26%</td></tr>
+      <tr class="converged"><td>3</td><td>1.6148</td><td>0.0025</td><td>2.0376</td><td>1.6121</td><td>0.167%</td></tr>
+    </tbody>
+  </table>
+  <p>Root is approximately <strong>x ≈ 1.512</strong> (converges to the root near x = 1.512 after more iterations).</p>
+
+  <div class="box box-insight">
+    <div class="box-label">💡 Notice the Pattern</div>
+    In all examples: the error drops dramatically after the first couple of iterations. Once you get within the "zone of convergence," the method is extremely aggressive in zeroing in on the answer.
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 5: CONVERGENCE & ERRORS       -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s5">
+<div class="container">
+  <div class="section-number">Section 05</div>
+  <h2>Convergence & When It Fails</h2>
+
+  <h3>✅ When Newton-Raphson Converges Fast</h3>
+  <ul>
+    <li>Your initial guess <span class="math">x₀</span> is <strong>close to the actual root</strong>.</li>
+    <li>The function is <strong>smooth and well-behaved</strong> near the root (no wiggles).</li>
+    <li>The derivative <strong>f′(x)</strong> is large (steep slope) near the root — the tangent line shoots straight to the x-axis.</li>
+    <li>The function has <strong>simple, isolated roots</strong>.</li>
+  </ul>
+
+  <h3>📊 Convergence Rate: Quadratic</h3>
+  <p>Newton-Raphson has <strong>quadratic convergence</strong>. This means the number of correct significant digits approximately <em>doubles</em> with each iteration. In your lecture example:</p>
+
+  <div style="padding: 1rem 0;">
+    <div class="convergence-bar">
+      <span class="label">Iter 1</span>
+      <div class="bar-track"><div class="bar-fill" style="width:5%; background: var(--accent);"></div></div>
+      <span class="value">0 sig figs</span>
+    </div>
+    <div class="convergence-bar">
+      <span class="label">Iter 2</span>
+      <div class="bar-track"><div class="bar-fill" style="width:33%; background: var(--gold);"></div></div>
+      <span class="value">1 sig fig</span>
+    </div>
+    <div class="convergence-bar">
+      <span class="label">Iter 3</span>
+      <div class="bar-track"><div class="bar-fill" style="width:100%; background: var(--green);"></div></div>
+      <span class="value">3 sig figs ✓</span>
+    </div>
+  </div>
+
+  <h3>❌ The 4 Failure Modes (from your lecture)</h3>
+
+  <div class="box box-warning" style="margin-bottom: 1rem;">
+    <div class="box-label">⚠️ Failure 1: Divergence at Inflection Points</div>
+    If your current guess lands near an <strong>inflection point</strong> (where concavity changes — f″(x) = 0), the tangent is nearly flat and shoots the next guess far away. The method may diverge wildly or oscillate before eventually converging back.
+  </div>
+
+  <div class="box box-warning" style="margin-bottom: 1rem;">
+    <div class="box-label">⚠️ Failure 2: Division by Zero (f′(x) = 0)</div>
+    If the derivative is zero at your guess — i.e., you land exactly at a local maximum or minimum — the tangent line is horizontal and never crosses the x-axis. Division by zero occurs! Example: <span class="math">f(x) = x³ − 0.03x² + 2.4×10⁻⁶</span> has f′(x) = 3x² − 0.06x = 0 at x = 0 and x = 0.02.
+  </div>
+
+  <div class="box box-warning" style="margin-bottom: 1rem;">
+    <div class="box-label">⚠️ Failure 3: Oscillation near Local Max/Min (No Real Root)</div>
+    For functions like <span class="math">f(x) = x² + 2</span> (no real roots), the method oscillates endlessly between negative and positive x values around the minimum, never converging.
+  </div>
+
+  <div class="box box-warning">
+    <div class="box-label">⚠️ Failure 4: Root Jumping</div>
+    For oscillating functions with multiple roots, even if you start close to one root, the tangent line may send you flying to a completely different root far away. The method finds <em>a</em> root, but not necessarily the one you wanted.
+  </div>
+
+  <h3>🚨 Common Student Mistakes</h3>
+  <ul>
+    <li><strong>Forgetting to subtract:</strong> Writing <span class="math">x<sub>i+1</sub> = x<sub>i</sub> + f(x<sub>i</sub>)/f′(x<sub>i</sub>)</span> instead of minus. Always minus!</li>
+    <li><strong>Using f(x<sub>i</sub>) as the denominator</strong> instead of f′(x<sub>i</sub>). Very common mistake — always the derivative on the bottom!</li>
+    <li><strong>Error formula denominator wrong:</strong> Using x<sub>i</sub> instead of x<sub>i+1</sub> in the denominator of the error formula.</li>
+    <li><strong>Not rewriting the equation as f(x) = 0 first.</strong> You must bring everything to one side before differentiating.</li>
+    <li><strong>Rounding too early.</strong> Keep maximum decimal places during iteration, round only at the final answer.</li>
+    <li><strong>Forgetting to differentiate f(x) correctly</strong> (e.g., differentiating x³ as 3x instead of 3x²).</li>
+  </ul>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 6: EXAM STRATEGY              -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s6">
+<div class="container">
+  <div class="section-number">Section 06</div>
+  <h2>Exam Strategy</h2>
+
+  <div class="tip-grid">
+    <div class="tip-card">
+      <h4>⚡ Speed Trick 1</h4>
+      <p>Write the NR formula at the top of your answer sheet BEFORE you start. Then derive f and f′ symbolically ONCE and verify. Never re-derive in the middle of a table.</p>
+    </div>
+    <div class="tip-card">
+      <h4>⚡ Speed Trick 2</h4>
+      <p>Build your iteration table column by column, not row by row. Fill all f(xᵢ) values, then all f′(xᵢ), then all xᵢ₊₁. Reduces context-switching errors.</p>
+    </div>
+    <div class="tip-card">
+      <h4>⚡ Speed Trick 3</h4>
+      <p>For the error formula, always check: denominator = x<sub>NEW</sub> (the one you just calculated), not the old one. Mnemonics: "new below, difference on top."</p>
+    </div>
+    <div class="tip-card">
+      <h4>⚡ Speed Trick 4</h4>
+      <p>When you see the iteration values barely changing (e.g., 2.71467 → 2.71442), the error will be tiny. Trust the pattern and compute anyway.</p>
+    </div>
+    <div class="tip-card">
+      <h4>⚡ Speed Trick 5</h4>
+      <p>If asked "how many sig figs are correct?" use: m is the largest integer satisfying |εₐ| ≤ 0.5×10<sup>2−m</sup>%. Shortcut: |εₐ| ≈ 0.0092% → m = 3.</p>
+    </div>
+    <div class="tip-card">
+      <h4>⚡ Speed Trick 6</h4>
+      <p>For square root questions (find √N), immediately set f(x) = x² − N, f′(x) = 2x. This is a classic exam pattern you should recognize in 3 seconds.</p>
+    </div>
+  </div>
+
+  <h3>Common Exam Question Patterns</h3>
+  <ol class="steps">
+    <li><strong>"Solve [equation] using NR method with x₀ = [value]. Perform n iterations."</strong> → Straightforward. Set up table, run n iterations, report final value + errors.</li>
+    <li><strong>"Find the root with tolerance ε<sub>s</sub> = [%]"</strong> → Run until |εₐ| ≤ ε<sub>s</sub>, then stop.</li>
+    <li><strong>"Find the number of significant digits correct after each iteration."</strong> → Compute |εₐ| per iter, then find m from 0.5 × 10<sup>2−m</sup> ≥ |εₐ|.</li>
+    <li><strong>"Derive the NR formula from Taylor series"</strong> → Memorize the 4-step Taylor series derivation. This is a high-value theory question.</li>
+    <li><strong>"What are the drawbacks of the NR method?"</strong> → List the 4 failure modes. Explain each with a function example.</li>
+    <li><strong>"Why does NR converge faster than Bisection?"</strong> → NR = quadratic convergence (digits double). Bisection = linear (one extra bit per iteration).</li>
+  </ol>
+
+  <h3>Anti-Error Checklist (Before Submitting)</h3>
+  <div class="box box-success">
+    <div class="box-label">✅ Final Check</div>
+    <ul style="margin:0.5rem 0 0; padding-left:1.2rem;">
+      <li>Did you rewrite as f(x) = 0? ✓</li>
+      <li>Did you correctly differentiate f′(x)? ✓</li>
+      <li>Is the formula x<sub>i+1</sub> = x<sub>i</sub> <strong>minus</strong> f/f′? ✓</li>
+      <li>Is the error denominator x<sub>i+1</sub> (the new value)? ✓</li>
+      <li>Did you multiply error by 100 to get %? ✓</li>
+      <li>Significant digits: used 0.5 × 10<sup>2−m</sup> % formula? ✓</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 7: PRACTICE PROBLEMS          -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s7">
+<div class="container">
+  <div class="section-number">Section 07</div>
+  <h2>Practice Problems</h2>
+  <p style="color: var(--muted); margin-bottom: 1.5rem;">Try each problem yourself first. Click "Show Answer" only after you've attempted it.</p>
+
+  <!-- Easy -->
+  <div class="problem-card">
+    <span class="problem-badge easy">Easy</span>
+    <p class="problem-q">P1. Solve x² − 7 = 0 using NR with x₀ = 3. Perform 3 iterations. Find |εₐ| after each iteration.</p>
+    <details>
+      <summary>▶ Show Answer</summary>
+      <div class="answer-body">
+f(x) = x² − 7,   f′(x) = 2x
+
+Iter 1: x₁ = 3 − (9−7)/6 = 3 − 0.3333 = 2.6667
+        |εₐ| = |2.6667−3|/2.6667 × 100 = 12.5%
+
+Iter 2: x₂ = 2.6667 − (7.1111−7)/5.3334 = 2.6457
+        |εₐ| = |2.6457−2.6667|/2.6457 × 100 = 0.793%
+
+Iter 3: x₃ = 2.6458 − (7.000025−7)/5.2916 ≈ 2.6458
+        |εₐ| ≈ 0.00095%
+
+True value: √7 ≈ 2.6457513...  ✓
+      </div>
+    </details>
+  </div>
+
+  <!-- Easy 2 -->
+  <div class="problem-card">
+    <span class="problem-badge easy">Easy</span>
+    <p class="problem-q">P2. Explain in your own words (without looking at notes): what is the geometric meaning of the Newton-Raphson method? Why does the tangent line give a better root estimate?</p>
+    <details>
+      <summary>▶ Show Explanation</summary>
+      <div class="answer-body">
+Key points:
+- You start at a guess xᵢ on the curve y = f(x).
+- The tangent at that point has slope = f′(xᵢ) (derivative).
+- Where this straight line (tangent) hits the x-axis is xᵢ₊₁.
+- Because f(x) is locally linear (smooth curves look like lines up close),
+  the tangent's x-intercept is closer to the true root than xᵢ was.
+- Repeating this process homes in on the root.
+      </div>
+    </details>
+  </div>
+
+  <!-- Medium -->
+  <div class="problem-card">
+    <span class="problem-badge medium">Medium</span>
+    <p class="problem-q">P3. Solve cos(x) − x = 0 using NR with x₀ = 0.5 radians. Perform 3 iterations and compute the relative approximate error after each. (Hint: f(x) = cos(x) − x)</p>
+    <details>
+      <summary>▶ Show Answer</summary>
+      <div class="answer-body">
+f(x)  = cos(x) − x
+f′(x) = −sin(x) − 1
+
+x₀ = 0.5
+
+Iter 1: f(0.5) = cos(0.5)−0.5 = 0.8776−0.5 = 0.3776
+        f′(0.5) = −sin(0.5)−1 = −0.4794−1 = −1.4794
+        x₁ = 0.5 − (0.3776/−1.4794) = 0.5 + 0.2552 = 0.7552
+        |εₐ| = |0.7552−0.5|/0.7552 × 100 = 33.8%
+
+Iter 2: f(0.7552) = cos(0.7552)−0.7552 = 0.7259−0.7552 = −0.0293
+        f′(0.7552) = −sin(0.7552)−1 = −0.6878−1 = −1.6878
+        x₂ = 0.7552 − (−0.0293/−1.6878) = 0.7552 − 0.01736 = 0.7379
+        |εₐ| = |0.7379−0.7552|/0.7379 × 100 = 2.35%
+
+Iter 3: f(0.7379) ≈ 0.738−0.739 ≈ very small
+        x₃ ≈ 0.7391
+        |εₐ| ≈ 0.162%
+
+True root: x ≈ 0.7390851...  ✓
+      </div>
+    </details>
+  </div>
+
+  <!-- Medium 2 -->
+  <div class="problem-card">
+    <span class="problem-badge medium">Medium</span>
+    <p class="problem-q">P4. For the equation f(x) = x³ − 0.03x² + 2.4×10⁻⁶ = 0, what will happen if you try Newton-Raphson with x₀ = 0? Explain without computing.</p>
+    <details>
+      <summary>▶ Show Answer</summary>
+      <div class="answer-body">
+f′(x) = 3x² − 0.06x
+
+At x₀ = 0:
+f′(0) = 3(0)² − 0.06(0) = 0
+
+→ Division by zero in the NR formula!
+→ The algorithm FAILS — the denominator is zero.
+→ This is because x = 0 is a critical point (local minimum or maximum) of f(x).
+→ The tangent line at x = 0 is HORIZONTAL — it never crosses the x-axis.
+→ This is Drawback #2: Division by Zero.
+      </div>
+    </details>
+  </div>
+
+  <!-- Hard -->
+  <div class="problem-card">
+    <span class="problem-badge hard">Hard</span>
+    <p class="problem-q">P5. Derive the NR formula from the Taylor series expansion. Show all steps clearly. Then use it to find the root of f(x) = x³ + 4x² − 10 = 0 starting at x₀ = 1.5. Perform 3 iterations and determine how many significant digits are at least correct after each iteration.</p>
+    <details>
+      <summary>▶ Show Answer</summary>
+      <div class="answer-body">
+DERIVATION:
+Taylor series: f(xᵢ₊₁) = f(xᵢ) + f′(xᵢ)(xᵢ₊₁−xᵢ) + f″(xᵢ)(xᵢ₊₁−xᵢ)²/2! + ...
+Set f(xᵢ₊₁) = 0 (want next point to be root):
+  0 = f(xᵢ) + f′(xᵢ)(xᵢ₊₁−xᵢ) + higher order terms
+Truncate (keep only first 2 terms):
+  0 ≈ f(xᵢ) + f′(xᵢ)(xᵢ₊₁−xᵢ)
+Solve for xᵢ₊₁:
+  f′(xᵢ)(xᵢ₊₁−xᵢ) = −f(xᵢ)
+  xᵢ₊₁ = xᵢ − f(xᵢ)/f′(xᵢ)  ✓
+
+APPLICATION:
+f(x)  = x³ + 4x² − 10
+f′(x) = 3x² + 8x
+
+Iter 1 (x₀=1.5):
+  f(1.5)  = 3.375 + 9 − 10 = 2.375
+  f′(1.5) = 6.75 + 12 = 18.75
+  x₁ = 1.5 − 2.375/18.75 = 1.5 − 0.1267 = 1.3733
+  |εₐ| = |1.3733−1.5|/1.3733 × 100 = 9.22%
+  Sig figs: 0 (need < 5% for 1 s.f.)
+
+Iter 2 (x₁=1.3733):
+  f(1.3733)  = 2.5932 + 7.5465 − 10 = 0.1397
+  f′(1.3733) = 5.6619 + 10.9864 = 16.6483
+  x₂ = 1.3733 − 0.1397/16.6483 = 1.3649
+  |εₐ| = |1.3649−1.3733|/1.3649 × 100 = 0.615%
+  Sig figs: 1 (0.615 < 5%)
+
+Iter 3 (x₂=1.3649):
+  f(1.3649) ≈ 0.00085
+  f′(1.3649) ≈ 16.491
+  x₃ ≈ 1.3648
+  |εₐ| ≈ 0.0073%
+  Sig figs: 3 (0.0073 < 0.05%)
+
+Root ≈ 1.3652 (true value)
+      </div>
+    </details>
+  </div>
+
+  <!-- Hard / Conceptual -->
+  <div class="problem-card">
+    <span class="problem-badge hard">Hard — Conceptual</span>
+    <p class="problem-q">P6. For f(x) = x² + 2 = 0, show what happens when you apply NR with x₀ = 1. Run 3 iterations and explain the geometric behavior. Why does this function cause NR to oscillate?</p>
+    <details>
+      <summary>▶ Show Answer</summary>
+      <div class="answer-body">
+f(x)  = x² + 2,   f′(x) = 2x
+
+Iter 1: x₁ = 1 − (1+2)/(2) = 1 − 1.5 = −0.5
+Iter 2: x₂ = −0.5 − (0.25+2)/(−1) = −0.5 + 2.25 = 1.75
+Iter 3: x₃ = 1.75 − (3.0625+2)/(3.5) = 1.75 − 1.446 = 0.304
+
+The values jump: 1 → −0.5 → 1.75 → 0.304 → ...
+Pattern: oscillates around the minimum at x=0, never converging.
+
+WHY: f(x) = x²+2 has NO real roots (minimum value = 2 > 0).
+The tangent lines near the minimum (a U-shaped parabola) keep 
+bouncing the guesses back and forth across the y-axis.
+Eventually, |εₐ| is erratic — the method does NOT converge.
+This is Drawback #3: Oscillation near local maximum/minimum.
+      </div>
+    </details>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SECTION 8: DEEPER UNDERSTANDING       -->
+<!-- ══════════════════════════════════════ -->
+<div class="section" id="s8">
+<div class="container">
+  <div class="section-number">Section 08</div>
+  <h2>Deeper Understanding</h2>
+
+  <h3>🔗 Connection to Derivatives and Linear Approximation</h3>
+  <p>Newton-Raphson is fundamentally a <strong>linear approximation method</strong>. At any point on a smooth curve, the tangent line is the best linear approximation. Newton-Raphson says: "Replace the curve with its tangent at the current guess, then solve the simpler linear equation."</p>
+  <p>More formally, the tangent line at <span class="math">(x<sub>i</sub>, f(x<sub>i</sub>))</span> is:</p>
+  <div class="math-block">y = f(xᵢ) + f′(xᵢ)(x − xᵢ)</div>
+  <p>Setting y = 0 (finding where this line hits the x-axis) gives exactly:</p>
+  <div class="math-block">0 = f(xᵢ) + f′(xᵢ)(x − xᵢ)  →  x = xᵢ − f(xᵢ)/f′(xᵢ)</div>
+  <p>This connects to the Taylor series: f(x) ≈ f(x<sub>i</sub>) + f′(x<sub>i</sub>)(x − x<sub>i</sub>) is the first-order Taylor approximation. NR is nothing more than solving this approximation for its zero.</p>
+
+  <h3>⚡ Application: Fast Division (From Your Lecture)</h3>
+  <p>Your lecture shows an incredible application: CPUs use Newton-Raphson to compute divisions (and square roots) without using actual division hardware! To compute 1/D:</p>
+  <div class="math-block">f(x) = 1/x − D = 0  →  root is x = 1/D
+f′(x) = −1/x²
+xᵢ₊₁ = xᵢ(2 − D·xᵢ)  [NR formula, simplified]</div>
+  <p>This formula uses only <strong>multiplication and subtraction</strong> — no division! A hardware multiplier can perform this in roughly 9 clock cycles per iteration. With a lookup table for the initial guess, only 2 iterations are needed. This is how modern processors compute floating-point division at high speed.</p>
+
+  <h3>📊 Newton-Raphson vs. Bisection — Full Comparison</h3>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Newton-Raphson</th>
+        <th>Bisection</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Initial guesses needed</td><td>1 (open method)</td><td>2 (bracket [a,b])</td></tr>
+      <tr><td>Convergence guaranteed?</td><td>❌ Not always</td><td>✅ Always</td></tr>
+      <tr><td>Speed of convergence</td><td>Quadratic (fast!)</td><td>Linear (slow)</td></tr>
+      <tr><td>Requires derivative?</td><td>✅ Yes — f′(x)</td><td>❌ No</td></tr>
+      <tr><td>Fails when…</td><td>f′(x)=0, bad guess</td><td>Root not bracketed</td></tr>
+      <tr><td>Best for</td><td>Smooth functions, fast results</td><td>Guaranteed solution, simple functions</td></tr>
+      <tr><td>Iterations for high accuracy</td><td>3–6 typically</td><td>20–50 typically</td></tr>
+    </tbody>
+  </table>
+
+  <h3>🧠 The "Mini Quiz" from Your Lecture</h3>
+  <div class="box box-insight">
+    <div class="box-label">💡 Piecewise Linear Function</div>
+    Your lecture asks: for a piecewise linear function, how many iterations will NR need? The answer is <strong>exactly 1 iteration</strong>! Why? A piecewise linear function IS already made of straight lines. The tangent at any point on a line IS the line itself. So the tangent's x-intercept IS the exact root — found in one step.
+  </div>
+
+  <h3>🌊 Why Quadratic Convergence Is Mind-Blowing</h3>
+  <p>Bisection halves the error every iteration. After 10 iterations you've got 10× more zeros in the error. Newton-Raphson <em>squares</em> the error. After 10 iterations (starting from 1 correct digit), you'd have 2¹⁰ = 1024 correct digits. This is why NR is the workhorse of numerical computation in science and engineering.</p>
+
+  <div class="box box-success">
+    <div class="box-label">✅ Final Thought</div>
+    Newton-Raphson is not just a numerical trick — it's a deep idea: replace a hard nonlinear problem with a sequence of easy linear problems. Each linear approximation is better than the last, and they converge on the truth faster than almost any other method. This same idea powers optimization algorithms (gradient descent), machine learning, and engineering design tools used worldwide.
+  </div>
+
+</div>
+</div>
+
+<!-- INTERACTIVE QUIZ -->
+<div class="section" style="background: var(--cream);" id="quiz">
+<div class="container">
+  <div class="section-number">Bonus</div>
+  <h2>Quick Self-Test</h2>
+  <p>Test your understanding. Click an option to check your answer.</p>
+
+  <div class="quiz-card">
+    <h4>Q1. In the NR formula xᵢ₊₁ = xᵢ − f(xᵢ)/f′(xᵢ), what is in the denominator?</h4>
+    <ul class="quiz-options">
+      <li><button onclick="quizAnswer(this, false, 'No — f(xᵢ) is the numerator (the function value at xᵢ).')">f(xᵢ) — the function value at xᵢ</button></li>
+      <li><button onclick="quizAnswer(this, true, 'Correct! The derivative f′(xᵢ) is always in the denominator. Never forget this!')">f′(xᵢ) — the derivative at xᵢ</button></li>
+      <li><button onclick="quizAnswer(this, false, 'No — f″ is the second derivative and not used in the basic NR formula.')">f″(xᵢ) — the second derivative</button></li>
+      <li><button onclick="quizAnswer(this, false, 'No — xᵢ itself is not the denominator.')">xᵢ — the current guess</button></li>
+    </ul>
+    <div class="quiz-result" id="qr1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <h4>Q2. Newton-Raphson has ________ convergence, meaning the number of correct significant digits roughly ________ each iteration.</h4>
+    <ul class="quiz-options">
+      <li><button onclick="quizAnswer(this, false, 'No — linear convergence is characteristic of Bisection method.')">Linear; doubles</button></li>
+      <li><button onclick="quizAnswer(this, true, 'Correct! Quadratic convergence means correct digits roughly double each iteration.')">Quadratic; doubles</button></li>
+      <li><button onclick="quizAnswer(this, false, 'Cubic convergence is even faster but not what NR achieves in the standard case.')">Cubic; triples</button></li>
+      <li><button onclick="quizAnswer(this, false, 'No — NR converges much faster than linear.')">Linear; stays the same</button></li>
+    </ul>
+    <div class="quiz-result" id="qr2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <h4>Q3. If f′(xᵢ) = 0 at your current guess, what happens?</h4>
+    <ul class="quiz-options">
+      <li><button onclick="quizAnswer(this, false, 'Not necessarily — the problem might have real roots, just NR fails here.')">The equation has no real roots</button></li>
+      <li><button onclick="quizAnswer(this, false, 'The convergence does not simply slow down — it breaks entirely.')">Convergence slows down</button></li>
+      <li><button onclick="quizAnswer(this, true, 'Correct! f′(xᵢ)=0 means division by zero in the NR formula — the algorithm crashes. This is Drawback #2.')">Division by zero — algorithm fails</button></li>
+      <li><button onclick="quizAnswer(this, false, 'That would happen at an inflection point, not necessarily when f′=0.')">The method starts diverging indefinitely</button></li>
+    </ul>
+    <div class="quiz-result" id="qr3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <h4>Q4. For x² = 5, which is the correct setup for Newton-Raphson?</h4>
+    <ul class="quiz-options">
+      <li><button onclick="quizAnswer(this, false, 'You must move everything to one side first: f(x) = x²−5.')">f(x) = x², f′(x) = 2x</button></li>
+      <li><button onclick="quizAnswer(this, true, 'Correct! Always rewrite as f(x)=0. So f(x) = x²−5, f′(x) = 2x.')">f(x) = x² − 5, f′(x) = 2x</button></li>
+      <li><button onclick="quizAnswer(this, false, 'f′(x) = 2x, not x².')">f(x) = x² − 5, f′(x) = x²</button></li>
+      <li><button onclick="quizAnswer(this, false, 'This is the wrong form. f(x) must equal zero at the root.')">f(x) = √5, f′(x) = 0</button></li>
+    </ul>
+    <div class="quiz-result" id="qr4"></div>
+  </div>
+</div>
+</div>
+
+<footer>
+  <p>Math 4641: Numerical Methods · Lecture 3 — Newton-Raphson Method</p>
+  <p style="margin-top: 0.5rem;">Department of CSE · Islamic University of Technology · Dhaka, Bangladesh</p>
+  <p style="margin-top: 0.5rem; color: #555;">Study guide built from <span>Lecture 3 slides</span> by Syed Rifat Raiyan</p>
+</footer>
+
+<script>
+let quizAnswered = {};
+
+function quizAnswer(btn, isCorrect, message) {
+  const list = btn.closest('ul');
+  const resultId = list.parentElement.querySelector('.quiz-result').id;
+  if (quizAnswered[resultId]) return;
+  quizAnswered[resultId] = true;
+
+  const buttons = list.querySelectorAll('button');
+  buttons.forEach(b => b.style.pointerEvents = 'none');
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  const result = document.getElementById(resultId);
+  result.textContent = (isCorrect ? '✅ ' : '❌ ') + message;
+  result.style.color = isCorrect ? '#7de7aa' : '#f8a090';
+}
+</script>
+
+</body>
+</html>

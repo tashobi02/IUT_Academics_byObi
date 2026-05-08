@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bisection Method — Complete Mastery Guide | CSEMath4641</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0eeea;
+    --text: #1a1a18;
+    --text2: #5f5e5a;
+    --text3: #888780;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --accent: #1a6eb5;
+    --accent-bg: #e8f2fb;
+    --accent-text: #0c4478;
+    --accent-border: rgba(26,110,181,0.35);
+    --success-bg: #eaf3de;
+    --success-text: #3b6d11;
+    --success-border: rgba(59,109,17,0.3);
+    --warn-bg: #faeeda;
+    --warn-text: #854f0b;
+    --warn-border: rgba(133,79,11,0.3);
+    --danger-bg: #fcebeb;
+    --danger-text: #a32d2d;
+    --danger-border: rgba(163,45,45,0.3);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    --serif: Georgia, 'Times New Roman', serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #e8e6de;
+      --text2: #9c9a92;
+      --text3: #6e6c66;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.2);
+      --accent: #5aa3e0;
+      --accent-bg: #0d2a42;
+      --accent-text: #8bc4f0;
+      --accent-border: rgba(90,163,224,0.3);
+      --success-bg: #173404;
+      --success-text: #97c459;
+      --success-border: rgba(99,153,34,0.3);
+      --warn-bg: #412402;
+      --warn-text: #ef9f27;
+      --warn-border: rgba(186,117,23,0.3);
+      --danger-bg: #501313;
+      --danger-text: #f09595;
+      --danger-border: rgba(163,45,45,0.3);
+    }
+  }
+
+  body {
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 2rem;
+  }
+  .topbar-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 52px;
+  }
+  .logo {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .logo span { color: var(--accent); }
+  .nav-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex: 1;
+  }
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav { display: flex; gap: 4px; min-width: max-content; padding: 8px 0; }
+  .nb {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px 11px;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--font);
+    transition: all 0.15s;
+  }
+  .nb:hover { background: var(--bg2); color: var(--text); }
+  .nb.on { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-border); }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+
+  .hero {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .hero p { color: var(--text2); font-size: 14px; }
+  .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .tag {
+    font-size: 11px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    background: var(--bg2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  /* ── SECTIONS ── */
+  .sec {
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .sec:last-child { border-bottom: none; margin-bottom: 0; }
+  .sec-h {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.3px;
+  }
+  .sec-n {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid var(--accent-border);
+  }
+  .sub-h {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 1.25rem 0 0.4rem;
+    color: var(--text);
+  }
+  p { margin: 0.5rem 0; font-size: 14px; }
+  p:first-child { margin-top: 0; }
+  ul, ol { padding-left: 1.4rem; margin: 0.4rem 0; }
+  li { margin: 0.25rem 0; font-size: 13.5px; line-height: 1.6; }
+
+  /* ── CARDS ── */
+  .card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin: 0.7rem 0;
+    background: var(--bg);
+  }
+  .card-b { background: var(--accent-bg); border-color: var(--accent-border); }
+  .card-g { background: var(--success-bg); border-color: var(--success-border); }
+  .card-w { background: var(--warn-bg); border-color: var(--warn-border); }
+  .card-d { background: var(--danger-bg); border-color: var(--danger-border); }
+
+  .insight {
+    border-left: 3px solid var(--accent);
+    padding: 0.7rem 1rem;
+    background: var(--bg2);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.7rem 0;
+    font-size: 13.5px;
+  }
+  .trick {
+    border-left: 3px solid var(--warn-text);
+    padding: 0.7rem 1rem;
+    background: var(--warn-bg);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0.5rem 0;
+    font-size: 13.5px;
+  }
+
+  /* ── FORMULA ── */
+  .formula {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    text-align: center;
+    margin: 0.7rem 0;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── ALGORITHM STEPS ── */
+  .steps { list-style: none; margin: 0.7rem 0; }
+  .step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    transition: background 0.15s;
+  }
+  .step:hover { background: var(--bg2); }
+  .sn {
+    min-width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    border: 1px solid var(--accent-border);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .sc { flex: 1; font-size: 13.5px; line-height: 1.6; }
+  .st { font-weight: 600; margin-bottom: 3px; }
+
+  /* ── GRIDS ── */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0.7rem 0; }
+  @media (max-width: 600px) { .g2 { grid-template-columns: 1fr; } }
+  .sgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    gap: 10px;
+    margin: 0.7rem 0;
+  }
+  .sc2 {
+    padding: 0.875rem;
+    background: var(--bg2);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+  .sc2 .sl {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 0.4rem;
+  }
+  .sc2 .sv { font-family: var(--mono); font-size: 12.5px; }
+
+  /* ── TABLES ── */
+  .tbl-wrap { overflow-x: auto; margin: 0.7rem 0; border-radius: var(--radius-lg); border: 1px solid var(--border); }
+  table.it {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-family: var(--mono);
+    min-width: 540px;
+  }
+  table.it th {
+    background: var(--bg2);
+    padding: 8px 11px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 11px;
+    font-family: var(--font);
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  table.it th:last-child { border-right: none; }
+  table.it td {
+    padding: 7px 11px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  table.it td:last-child { border-right: none; }
+  table.it tr:last-child td { border-bottom: none; }
+  table.it tr:nth-child(even) td { background: var(--bg2); }
+  table.it .hi { font-weight: 600; color: var(--accent-text); }
+  table.it .pos { color: var(--success-text); }
+  table.it .neg { color: var(--danger-text); }
+
+  /* ── PRACTICE ── */
+  .prac {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin: 0.7rem 0;
+    overflow: hidden;
+  }
+  .prac-q {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--bg);
+    user-select: none;
+    font-size: 13.5px;
+  }
+  .prac-q:hover { background: var(--bg2); }
+  .prac-a {
+    padding: 1rem 1.25rem;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    display: none;
+    font-size: 13.5px;
+  }
+  .prac-a.open { display: block; }
+  .toggle-icon { font-size: 14px; color: var(--text2); flex-shrink: 0; transition: transform 0.2s; }
+  .prac-q.open .toggle-icon { transform: rotate(180deg); }
+  .badge {
+    font-size: 11px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-family: var(--font);
+    font-weight: 500;
+  }
+  .be { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+  .bm { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-border); }
+  .bh { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+
+  /* ── COMPARISON TABLE ── */
+  .cmp { width: 100%; border-collapse: collapse; font-size: 12.5px; border-radius: var(--radius-lg); overflow: hidden; }
+  .cmp th {
+    padding: 10px 12px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    font-weight: 600;
+    text-align: left;
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .cmp th:last-child { border-right: none; }
+  .cmp td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .cmp td:last-child { border-right: none; }
+  .cmp tr:last-child td { border-bottom: none; }
+  .cmp tr:nth-child(even) td { background: var(--bg2); }
+  .cmp .bi td { background: var(--accent-bg) !important; }
+  .ck { color: var(--success-text); font-weight: 600; }
+  .xx { color: var(--danger-text); font-weight: 600; }
+
+  /* ── MISTAKES ── */
+  .mk {
+    display: flex;
+    gap: 10px;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 6px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    font-size: 13.5px;
+    align-items: flex-start;
+    transition: background 0.15s;
+  }
+  .mk:hover { background: var(--bg3); }
+  .mk-x { color: var(--danger-text); flex-shrink: 0; font-weight: 700; margin-top: 2px; }
+
+  /* ── DEMO CANVAS ── */
+  .canvas-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin: 0.7rem 0;
+    background: var(--bg);
+  }
+  canvas { display: block; width: 100%; }
+  .ctrls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 0.5rem 0; }
+  .db {
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 6px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: var(--font);
+    transition: all 0.15s;
+  }
+  .db:hover { background: var(--bg2); }
+  .db.pri { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-border); }
+  .db.pri:hover { filter: brightness(0.95); }
+  .db:disabled { opacity: 0.4; cursor: not-allowed; }
+  .legd { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--text2); margin: 0.4rem 0; }
+  .ld { display: flex; align-items: center; gap: 6px; }
+  .ldot { width: 16px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+  #istat { font-size: 13px; color: var(--text2); min-height: 1.5em; margin: 0.25rem 0; }
+  #istat b { color: var(--text); }
+  #iter-label { font-size: 12px; color: var(--text3); }
+
+  /* ── MISC ── */
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+  sub { font-size: 0.8em; vertical-align: sub; }
+  sup { font-size: 0.8em; vertical-align: super; }
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+    padding: 2rem 0 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+  .tbl-wrap-cmp { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); margin: 0.7rem 0; }
+
+  @media (max-width: 600px) {
+    .page { padding: 1.25rem 1rem 3rem; }
+    .topbar { padding: 0 1rem; }
+    .hero h1 { font-size: 21px; }
+    .sec-h { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo"><span>CSEMath4641</span> · Bisection Method</div>
+    <div class="nav-scroll">
+      <div class="nav" id="nav">
+        <button class="nb on" onclick="go(1)">1 · Core Idea</button>
+        <button class="nb" onclick="go(2)">2 · Math Foundation</button>
+        <button class="nb" onclick="go(3)">3 · Algorithm</button>
+        <button class="nb" onclick="go(4)">4 · Worked Example</button>
+        <button class="nb" onclick="go(5)">5 · Visualisation</button>
+        <button class="nb" onclick="go(6)">6 · Convergence</button>
+        <button class="nb" onclick="go(7)">7 · Mistakes</button>
+        <button class="nb" onclick="go(8)">8 · Exam Strategy</button>
+        <button class="nb" onclick="go(9)">9 · Practice</button>
+        <button class="nb" onclick="go(10)">10 · Comparison</button>
+        <button class="nb" onclick="go(11)">11 · Summary</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Bisection Method — Complete Mastery Guide</h1>
+    <p>From CSEMath4641 Lecture 1 · Islamic University of Technology · Syed Rifat Raiyan</p>
+    <div class="hero-tags">
+      <span class="tag">Root Finding</span>
+      <span class="tag">Bracketing Method</span>
+      <span class="tag">Nonlinear Equations</span>
+      <span class="tag">11 Sections</span>
+      <span class="tag">Interactive Demo</span>
+      <span class="tag">Practice Problems</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 1 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s1">
+    <div class="sec-h"><span class="sec-n">1</span> Core Idea</div>
+
+    <div class="sub-h">What problem does it solve?</div>
+    <p>Many real-world equations have no closed-form solution — no neat formula to plug numbers into. The Bisection Method finds an approximate root of <em>f(x) = 0</em> for any continuous function, using a simple but powerful strategy borrowed directly from binary search.</p>
+
+    <div class="insight"><strong>The "aha" intuition:</strong> If a continuous curve is below the x-axis at point A and above it at point B, it must cross zero somewhere between them. We keep cutting that gap in half — just like binary search — until we've zeroed in on the crossing.</div>
+
+    <div class="sub-h">Why does root-finding matter in CS?</div>
+    <div class="card card-b">
+      <p style="font-weight:600;margin-bottom:0.4rem">Root-finding is everywhere in your field:</p>
+      <ul>
+        <li><strong>Machine learning</strong> — finding where a loss function's derivative equals zero</li>
+        <li><strong>Computer graphics</strong> — ray-sphere intersection solves quadratic equations; ray-mesh solves harder ones</li>
+        <li><strong>Signal processing</strong> — finding where a filter response crosses a threshold</li>
+        <li><strong>Scientific computing</strong> — solving transcendental equations like e<sup>x</sup> = 3x (no algebraic solution)</li>
+        <li><strong>Financial models</strong> — finding interest rate given a payment schedule</li>
+      </ul>
+    </div>
+
+    <div class="sub-h">Analytic vs numerical solutions (from your lecture, slide 6)</div>
+    <div class="g2">
+      <div class="card card-g">
+        <div class="st">Analytic method</div>
+        <ul>
+          <li>Gives <em>exact</em> solutions</li>
+          <li>Requires symbolic manipulation</li>
+          <li>Only works when a formula exists</li>
+          <li>Example: quadratic formula for ax² + bx + c = 0</li>
+        </ul>
+      </div>
+      <div class="card card-b">
+        <div class="st">Numerical method (bisection)</div>
+        <ul>
+          <li>Gives <em>approximate</em> solutions</li>
+          <li>Converges iteratively — "good enough"</li>
+          <li>Works even when no formula exists</li>
+          <li>Applicable to any continuous f(x)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="trick">🧠 <strong>Memory hook:</strong> Bisection = Binary Search for roots. Both cut the search space in half every iteration. Both guarantee finding the answer in O(log n) steps.</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 2 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s2">
+    <div class="sec-h"><span class="sec-n">2</span> Mathematical Foundation</div>
+
+    <div class="sub-h">The Intermediate Value Theorem (IVT) — intuition first</div>
+    <p>Imagine driving from sea level (altitude 0 m) to a mountain peak at 3000 m. You must pass through every altitude in between — you cannot teleport from 0 to 3000 without crossing 1000 m, 2000 m, etc. A continuous function has this exact same property: it cannot jump from negative to positive without crossing zero.</p>
+
+    <div class="card card-b">
+      <div class="st" style="margin-bottom:0.3rem">The theorem (Lecture 1, slide 10)</div>
+      <p style="font-size:13.5px">An equation <em>f(x) = 0</em>, where <em>f(x)</em> is a real <strong>continuous</strong> function, has <strong>at least one root</strong> between x<sub>l</sub> and x<sub>u</sub> if:</p>
+      <div class="formula">f(x<sub>l</sub>) × f(x<sub>u</sub>) &lt; 0</div>
+      <p style="font-size:13.5px">This means the function changes sign — one endpoint is negative, the other positive. The curve must cross the x-axis somewhere between them.</p>
+    </div>
+
+    <div class="sub-h">The four cases you must know (slides 11–12)</div>
+    <div class="g2">
+      <div class="card card-g">
+        <div class="st">f(x<sub>l</sub>) × f(x<sub>u</sub>) &lt; 0 ✓</div>
+        <p style="font-size:13px">Signs differ → at least one root <strong>guaranteed</strong>. Bisection will work.</p>
+      </div>
+      <div class="card card-d">
+        <div class="st">f(x<sub>l</sub>) × f(x<sub>u</sub>) &gt; 0 ✗</div>
+        <p style="font-size:13px">Same sign → root may or may not exist. Cannot guarantee. Choose a different bracket.</p>
+      </div>
+      <div class="card card-b">
+        <div class="st">Same sign but root still exists?</div>
+        <p style="font-size:13px">Yes — if there is an even number of roots in the interval (e.g. two roots, signs cancel out).</p>
+      </div>
+      <div class="card card-w">
+        <div class="st">Signs differ but multiple roots?</div>
+        <p style="font-size:13px">Yes — when signs differ, there could be 3, 5… roots. The theorem only guarantees <em>at least one</em>.</p>
+      </div>
+    </div>
+
+    <div class="insight"><strong>Edge case from your lecture (slide 24):</strong> f(x) = x² = 0 has a single root at x = 0, but the function <em>touches</em> the x-axis without crossing — it never changes sign. You cannot find two points where f(x<sub>l</sub>) · f(x<sub>u</sub>) &lt; 0, so bisection cannot bracket this root. This is called a "tangent root" (even-multiplicity root).</div>
+
+    <div class="sub-h">Required conditions for bisection to work</div>
+    <ul>
+      <li>f(x) must be <strong>continuous</strong> on [x<sub>l</sub>, x<sub>u</sub>]</li>
+      <li>f(x<sub>l</sub>) × f(x<sub>u</sub>) must be <strong>&lt; 0</strong> (signs must differ)</li>
+      <li>f(x) must be <strong>real-valued</strong> on the entire interval</li>
+    </ul>
+    <p>These are called <strong>bracketing conditions</strong> — bisection is classified as a <em>bracketing method</em> because it always keeps the root trapped inside the interval.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 3 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s3">
+    <div class="sec-h"><span class="sec-n">3</span> The Bisection Algorithm</div>
+    <p>The exact 6-step algorithm from your Lecture 1, slide 14:</p>
+
+    <ul class="steps">
+      <li class="step">
+        <span class="sn">1</span>
+        <div class="sc">
+          <div class="st">Choose initial bracket</div>
+          Choose x<sub>l</sub> and x<sub>u</sub> such that f(x<sub>l</sub>) × f(x<sub>u</sub>) &lt; 0. This is the <em>sanity check</em> — always verify the signs differ before proceeding. If they don't, your bracket is invalid and you must pick different values.
+        </div>
+      </li>
+      <li class="step">
+        <span class="sn">2</span>
+        <div class="sc">
+          <div class="st">Estimate the midpoint</div>
+          Calculate the midpoint x<sub>m</sub> as the average of the two endpoints:
+          <div class="formula" style="text-align:left;margin:0.375rem 0">x<sub>m</sub> = (x<sub>l</sub> + x<sub>u</sub>) / 2</div>
+        </div>
+      </li>
+      <li class="step">
+        <span class="sn">3</span>
+        <div class="sc">
+          <div class="st">Sign check — determine which sub-interval contains the root</div>
+          Compute f(x<sub>l</sub>) × f(x<sub>m</sub>):
+          <ul style="margin:0.4rem 0">
+            <li>If <strong>f(x<sub>l</sub>) × f(x<sub>m</sub>) &lt; 0</strong> → signs differ → root is in [x<sub>l</sub>, x<sub>m</sub>] → set x<sub>u</sub> = x<sub>m</sub></li>
+            <li>If <strong>f(x<sub>l</sub>) × f(x<sub>m</sub>) &gt; 0</strong> → same sign → root is in [x<sub>m</sub>, x<sub>u</sub>] → set x<sub>l</sub> = x<sub>m</sub></li>
+            <li>If <strong>f(x<sub>l</sub>) × f(x<sub>m</sub>) = 0</strong> → x<sub>m</sub> IS the root → <strong>stop immediately</strong></li>
+          </ul>
+        </div>
+      </li>
+      <li class="step">
+        <span class="sn">4</span>
+        <div class="sc">
+          <div class="st">Update the estimate</div>
+          With the updated x<sub>l</sub> and x<sub>u</sub> from Step 3, compute the new midpoint:
+          <div class="formula" style="text-align:left;margin:0.375rem 0">x<sub>m</sub><sup>new</sup> = (x<sub>l</sub> + x<sub>u</sub>) / 2</div>
+        </div>
+      </li>
+      <li class="step">
+        <span class="sn">5</span>
+        <div class="sc">
+          <div class="st">Calculate the approximate relative error</div>
+          <div class="formula" style="text-align:left;margin:0.375rem 0">|ε<sub>a</sub>| = |x<sub>m</sub><sup>new</sup> − x<sub>m</sub><sup>old</sup>| / |x<sub>m</sub><sup>new</sup>| × 100%</div>
+          On the <em>first</em> iteration there is no previous x<sub>m</sub>, so ε<sub>a</sub> is undefined — write <strong>N/A</strong> in your table.
+        </div>
+      </li>
+      <li class="step">
+        <span class="sn">6</span>
+        <div class="sc">
+          <div class="st">Check stopping condition</div>
+          Compare |ε<sub>a</sub>| with the pre-specified tolerance ε<sub>s</sub>:
+          <ul style="margin:0.4rem 0">
+            <li>If |ε<sub>a</sub>| > ε<sub>s</sub> → go back to <strong>Step 3</strong> and continue</li>
+            <li>If |ε<sub>a</sub>| ≤ ε<sub>s</sub> → <strong>stop</strong>, x<sub>m</sub> is your answer</li>
+          </ul>
+          Also stop if the number of iterations exceeds a maximum limit. Report x<sub>m</sub> with a warning.
+        </div>
+      </li>
+    </ul>
+
+    <div class="trick">💡 <strong>Exam shortcut for the sign check:</strong> Instead of computing the actual product f(x<sub>l</sub>) × f(x<sub>m</sub>), just check whether f(x<sub>l</sub>) and f(x<sub>m</sub>) have <em>different signs</em>. Write "+" or "−" for each and compare — faster and less error-prone.</div>
+    <div class="trick">📌 <strong>The update rule in plain English:</strong> "x<sub>m</sub> replaces the endpoint it <em>resembles</em>." If f(x<sub>m</sub>) has the same sign as f(x<sub>l</sub>), then x<sub>m</sub> becomes the new x<sub>l</sub>. If it has the same sign as f(x<sub>u</sub>), x<sub>m</sub> becomes the new x<sub>u</sub>.</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 4 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s4">
+    <div class="sec-h"><span class="sec-n">4</span> Worked Example (from your lecture)</div>
+
+    <div class="card card-b">
+      <div class="st">Problem (Lecture 1, slide 15)</div>
+      <p style="font-size:13.5px">Find the root of <strong>x³ = 20</strong> using the bisection method. Use initial guesses x<sub>l</sub> = 1 and x<sub>u</sub> = 4. Conduct 3 iterations and find the absolute relative approximate error at the end of each iteration.</p>
+    </div>
+
+    <div class="sub-h">Step 0 — Setup (slide 16)</div>
+    <p>Rewrite as <strong>f(x) = x³ − 20 = 0</strong>. Perform the sanity check:</p>
+    <div class="formula">f(1) = 1³ − 20 = −19 &nbsp;|&nbsp; f(4) = 4³ − 20 = +44 &nbsp;|&nbsp; f(1) × f(4) = (−19)(+44) = −836 &lt; 0 ✓</div>
+    <p>Signs differ → bracket [1, 4] is valid. The true root is ∛20 ≈ <strong>2.71442</strong>.</p>
+
+    <div class="sub-h">Iteration 1 — xₗ = 1, xᵤ = 4 (slide 17)</div>
+    <div class="card">
+      <p><strong>Midpoint:</strong> x<sub>m</sub> = (1 + 4) / 2 = <strong>2.5</strong></p>
+      <p><strong>Evaluate:</strong> f(2.5) = (2.5)³ − 20 = 15.625 − 20 = <strong>−4.375</strong></p>
+      <p><strong>Sign check:</strong> f(x<sub>l</sub>) × f(x<sub>m</sub>) = f(1) × f(2.5) = (−19)(−4.375) = +83.125 &gt; 0</p>
+      <p><strong>Decision:</strong> Same sign → root is NOT in [1, 2.5]. Root is in [2.5, 4]. Set x<sub>l</sub> = 2.5.</p>
+      <p><strong>Error:</strong> No previous x<sub>m</sub> → ε<sub>a</sub> = <strong>N/A</strong></p>
+    </div>
+
+    <div class="sub-h">Iteration 2 — xₗ = 2.5, xᵤ = 4 (slides 18–19)</div>
+    <div class="card">
+      <p><strong>Midpoint:</strong> x<sub>m</sub> = (2.5 + 4) / 2 = <strong>3.25</strong></p>
+      <p><strong>Evaluate:</strong> f(3.25) = (3.25)³ − 20 = 34.3281 − 20 = <strong>+14.3281</strong></p>
+      <p><strong>Sign check:</strong> f(x<sub>l</sub>) × f(x<sub>m</sub>) = f(2.5) × f(3.25) = (−4.375)(+14.3281) = −62.69 &lt; 0</p>
+      <p><strong>Decision:</strong> Different signs → root IS in [2.5, 3.25]. Set x<sub>u</sub> = 3.25.</p>
+      <p><strong>Error:</strong> |ε<sub>a</sub>| = |3.25 − 2.5| / |3.25| × 100 = 0.75 / 3.25 × 100 = <strong>23.08%</strong></p>
+    </div>
+
+    <div class="sub-h">Iteration 3 — xₗ = 2.5, xᵤ = 3.25 (slides 20–21)</div>
+    <div class="card">
+      <p><strong>Midpoint:</strong> x<sub>m</sub> = (2.5 + 3.25) / 2 = <strong>2.875</strong></p>
+      <p><strong>Evaluate:</strong> f(2.875) = (2.875)³ − 20 = 23.7637 − 20 = <strong>+3.7637</strong></p>
+      <p><strong>Sign check:</strong> f(x<sub>l</sub>) × f(x<sub>m</sub>) = f(2.5) × f(2.875) = (−4.375)(+3.7637) = −16.47 &lt; 0</p>
+      <p><strong>Decision:</strong> Different signs → root IS in [2.5, 2.875]. Set x<sub>u</sub> = 2.875.</p>
+      <p><strong>Error:</strong> |ε<sub>a</sub>| = |2.875 − 3.25| / |2.875| × 100 = 0.375 / 2.875 × 100 = <strong>13.04%</strong></p>
+    </div>
+
+    <div class="sub-h">Complete iteration table</div>
+    <div class="tbl-wrap">
+      <table class="it">
+        <thead>
+          <tr><th>Iter</th><th>xₗ</th><th>xᵤ</th><th>xₘ</th><th>f(xₗ)</th><th>f(xₘ)</th><th>f(xₗ)·f(xₘ)</th><th>New bracket</th><th>|εₐ| %</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>1</td><td>4</td><td class="hi">2.5</td><td class="neg">−19</td><td class="neg">−4.375</td><td class="pos">+83.125 &gt; 0</td><td>xₗ = 2.5</td><td>N/A</td></tr>
+          <tr><td>2</td><td>2.5</td><td>4</td><td class="hi">3.25</td><td class="neg">−4.375</td><td class="pos">+14.3281</td><td class="neg">−62.69 &lt; 0</td><td>xᵤ = 3.25</td><td>23.08%</td></tr>
+          <tr><td>3</td><td>2.5</td><td>3.25</td><td class="hi">2.875</td><td class="neg">−4.375</td><td class="pos">+3.7637</td><td class="neg">−16.47 &lt; 0</td><td>xᵤ = 2.875</td><td>13.04%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:var(--text2)">True root: ∛20 ≈ 2.71442. The interval has narrowed from [1, 4] (width 3.0) to [2.5, 2.875] (width 0.375) — an 8× reduction in just 3 steps.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 5 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s5">
+    <div class="sec-h"><span class="sec-n">5</span> Interactive Visualisation</div>
+    <p>Watch the interval shrink in real time for f(x) = x³ − 20 with initial bracket [1, 4]. The purple curve is f(x), the blue line is x<sub>l</sub>, the red line is x<sub>u</sub>, the green dashed line is x<sub>m</sub>, and the shaded region is the active bracket.</p>
+
+    <div class="legd">
+      <div class="ld"><span class="ldot" style="background:#2563eb"></span> xₗ (lower bound)</div>
+      <div class="ld"><span class="ldot" style="background:#dc2626"></span> xᵤ (upper bound)</div>
+      <div class="ld"><span class="ldot" style="background:#16a34a"></span> xₘ (midpoint)</div>
+      <div class="ld"><span class="ldot" style="background:rgba(37,99,235,0.18);width:20px;height:12px;border-radius:3px"></span> Active bracket</div>
+      <div class="ld"><span class="ldot" style="background:#7c3aed"></span> f(x) curve</div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="bc"></canvas>
+    </div>
+
+    <div id="istat">Press <strong>Next Step →</strong> to begin the first iteration.</div>
+
+    <div class="ctrls">
+      <button class="db pri" id="btn-next" onclick="bisNext()">Next step →</button>
+      <button class="db" onclick="bisReset()">Reset</button>
+      <span id="iter-label">Iteration: 0 / 8</span>
+    </div>
+
+    <div class="tbl-wrap">
+      <table class="it" id="demo-tbl">
+        <thead><tr><th>Iter</th><th>xₗ</th><th>xᵤ</th><th>xₘ</th><th>f(xₘ)</th><th>Decision</th><th>|εₐ| %</th></tr></thead>
+        <tbody id="demo-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 6 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s6">
+    <div class="sec-h"><span class="sec-n">6</span> Convergence &amp; Error Analysis</div>
+
+    <div class="sub-h">Why the bisection method always converges</div>
+    <p>Each iteration halves the interval length exactly. Starting with an interval of width <em>b − a</em>:</p>
+    <div class="formula">After n iterations: maximum error ≤ (b − a) / 2<sup>n</sup></div>
+    <p>This is a <strong>guaranteed upper bound</strong> — no matter how the function behaves, the root cannot be more than this distance from x<sub>m</sub>. This is why bisection is called unconditionally convergent.</p>
+
+    <div class="insight"><strong>Worked example:</strong> Starting from [1, 4], width = 3.
+      <br>After 10 iterations: error ≤ 3/2¹⁰ = 3/1024 ≈ 0.00293
+      <br>After 20 iterations: error ≤ 3/2²⁰ ≈ 0.0000029
+      <br>After 30 iterations: error ≤ 3/2³⁰ ≈ 2.8 × 10⁻⁹</div>
+
+    <div class="sub-h">Minimum iterations needed for a target precision</div>
+    <p>To guarantee an error smaller than ε, you need:</p>
+    <div class="formula">n &gt; log<sub>2</sub>( (b − a) / ε )</div>
+    <p style="font-size:13.5px">For [1, 4] with ε = 0.0001:&nbsp; n &gt; log₂(3/0.0001) = log₂(30000) ≈ 14.9 → need at least <strong>15 iterations</strong>.</p>
+
+    <div class="sub-h">The approximate error formula (slides 8, 14)</div>
+    <div class="formula">|εₐ| = | x<sub>m</sub><sup>new</sup> − x<sub>m</sub><sup>old</sup> | / | x<sub>m</sub><sup>new</sup> | × 100%</div>
+    <ul>
+      <li>x<sub>m</sub><sup>new</sup> = midpoint from the <em>current</em> iteration</li>
+      <li>x<sub>m</sub><sup>old</sup> = midpoint from the <em>previous</em> iteration</li>
+      <li>On iteration 1: no previous midpoint, so write <strong>N/A</strong></li>
+      <li>Stop when |ε<sub>a</sub>| ≤ ε<sub>s</sub> (your pre-specified tolerance)</li>
+    </ul>
+
+    <div class="sub-h">Convergence rate</div>
+    <p>Bisection has <strong>linear convergence</strong> — each iteration gives exactly one more binary digit of accuracy. In practice, you gain about 0.301 decimal digits per iteration (since log₁₀(2) ≈ 0.301). Compare this to Newton-Raphson, which has <em>quadratic</em> convergence (errors roughly square each step, gaining roughly double the digits per iteration).</p>
+
+    <div class="sub-h">Advantages and disadvantages (slides 22–24)</div>
+    <div class="g2">
+      <div class="card card-g">
+        <div class="st">Advantages</div>
+        <ul>
+          <li>Always convergent — root is always bracketed</li>
+          <li>Error is bounded and predictable: (b−a)/2ⁿ</li>
+          <li>Simple to implement and understand</li>
+          <li>Only requires function evaluations (no derivatives)</li>
+          <li>Robust — not sensitive to function shape</li>
+        </ul>
+      </div>
+      <div class="card card-d">
+        <div class="st">Disadvantages</div>
+        <ul>
+          <li>Slow convergence (linear, not quadratic)</li>
+          <li>If one initial guess is very close to the root, it wastes many iterations</li>
+          <li>Cannot find tangent roots (even multiplicity — e.g. x² = 0)</li>
+          <li>Must manually find an initial valid bracket</li>
+          <li>Does not use all available information about f(x) shape</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 7 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s7">
+    <div class="sec-h"><span class="sec-n">7</span> Common Mistakes</div>
+
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Forgetting the sign check.</strong> Jumping straight to computing the midpoint without verifying f(x<sub>l</sub>) · f(x<sub>u</sub>) &lt; 0. If your bracket is invalid, you will get meaningless results. Always perform this check explicitly and show it in your solution.</div></div>
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Not rewriting the equation as f(x) = 0.</strong> Given "solve x³ = 20", students sometimes apply bisection without first writing f(x) = x³ − 20. Always rewrite the equation in the form f(x) = 0 before anything else.</div></div>
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Wrong decision after the sign check.</strong> After computing f(x<sub>l</sub>) · f(x<sub>m</sub>), confusing which half the root is in. Remember: if the product is <strong>&lt; 0</strong> (signs differ), the root is in the <strong>left half</strong> [x<sub>l</sub>, x<sub>m</sub>] → update x<sub>u</sub> = x<sub>m</sub>. If <strong>&gt; 0</strong> (same signs), root is in the <strong>right half</strong> [x<sub>m</sub>, x<sub>u</sub>] → update x<sub>l</sub> = x<sub>m</sub>.</div></div>
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Dividing by the wrong value in the error formula.</strong> A common mistake is using x<sub>m</sub><sup>old</sup> in the denominator instead of x<sub>m</sub><sup>new</sup>. The formula is |x<sub>m</sub><sup>new</sup> − x<sub>m</sub><sup>old</sup>| / |x<sub>m</sub><sup>new</sup>| × 100. The denominator is always the <em>current</em> (new) estimate.</div></div>
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Writing ε<sub>a</sub> for the first iteration.</strong> In iteration 1, there is no previous midpoint to compare with, so the error is undefined. Always write "N/A" or "—" in your table for iteration 1's error column.</div></div>
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Arithmetic errors in function evaluation.</strong> f(2.5) = (2.5)³ − 20: students often compute 2.5² = 6.25 and forget to multiply by 2.5 again. Correct: 2.5 × 2.5 = 6.25, then 6.25 × 2.5 = 15.625, then 15.625 − 20 = −4.375. Write out each multiplication step.</div></div>
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Updating both x<sub>l</sub> and x<sub>u</sub> simultaneously.</strong> Each iteration updates <em>either</em> x<sub>l</sub> <em>or</em> x<sub>u</sub> — never both. The unchanged endpoint remains fixed at its current value.</div></div>
+    <div class="mk"><span class="mk-x">✗</span><div><strong>Applying bisection to discontinuous functions.</strong> If f(x) has a vertical asymptote between x<sub>l</sub> and x<sub>u</sub> (like 1/x near x = 0), a sign change does not imply a root — it implies a discontinuity. Bisection is only valid for continuous functions.</div></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 8 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s8">
+    <div class="sec-h"><span class="sec-n">8</span> Exam &amp; Problem-Solving Strategy</div>
+
+    <div class="sub-h">Step-by-step exam protocol</div>
+    <ol style="padding-left:1.4rem;margin:0.5rem 0">
+      <li style="margin:0.4rem 0"><strong>Rewrite</strong> the equation in f(x) = 0 form. Write "f(x) = …" clearly.</li>
+      <li style="margin:0.4rem 0"><strong>Sanity check:</strong> compute f(x<sub>l</sub>) and f(x<sub>u</sub>), confirm their product is &lt; 0. Show this calculation — examiners want to see it.</li>
+      <li style="margin:0.4rem 0"><strong>Draw your iteration table</strong> first with these columns: Iter | x<sub>l</sub> | x<sub>u</sub> | x<sub>m</sub> | f(x<sub>l</sub>) | f(x<sub>m</sub>) | Sign product | Update | |ε<sub>a</sub>|%</li>
+      <li style="margin:0.4rem 0"><strong>Fill in row by row.</strong> For each iteration: compute x<sub>m</sub>, evaluate f(x<sub>m</sub>), check the sign, update the bracket, compute error.</li>
+      <li style="margin:0.4rem 0"><strong>Stop when required</strong> (fixed number of iterations or tolerance met).</li>
+      <li style="margin:0.4rem 0"><strong>State the answer:</strong> "After n iterations, the approximate root is x<sub>m</sub> = ___ with |ε<sub>a</sub>| = ___."</li>
+    </ol>
+
+    <div class="sub-h">Template iteration table (copy this format in exams)</div>
+    <div class="tbl-wrap">
+      <table class="it">
+        <thead><tr><th>Iter</th><th>xₗ</th><th>xᵤ</th><th>xₘ = (xₗ+xᵤ)/2</th><th>f(xₗ)</th><th>f(xₘ)</th><th>f(xₗ)·f(xₘ)</th><th>Update</th><th>|εₐ|%</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>a</td><td>b</td><td>(a+b)/2</td><td>sign: ±</td><td>sign: ±</td><td>+ or −</td><td>xₗ or xᵤ = xₘ</td><td>N/A</td></tr>
+          <tr><td>2</td><td>…</td><td>…</td><td>…</td><td>sign: ±</td><td>sign: ±</td><td>+ or −</td><td>…</td><td>|new−old|/|new|×100</td></tr>
+          <tr><td>3</td><td>…</td><td>…</td><td>…</td><td>sign: ±</td><td>sign: ±</td><td>+ or −</td><td>…</td><td>…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sub-h">Time-saving techniques</div>
+    <ul>
+      <li>For the sign check, just write "+" or "−" for each f value and compare visually — no need to compute the actual product</li>
+      <li>Always circle or highlight x<sub>m</sub> values in your table — they are what the examiner looks for</li>
+      <li>If the problem says "3 iterations", you do not need to check the stopping criterion — just do 3 rows</li>
+      <li>Double-check: the interval width should halve each iteration. If it doesn't, you've made a mistake somewhere</li>
+      <li>For cube roots: compute step by step. 2.875³ = (2.875 × 2.875) × 2.875 = 8.265625 × 2.875 = 23.7637</li>
+    </ul>
+
+    <div class="trick">📝 <strong>Viva answer blueprint:</strong> "The bisection method is a bracketing root-finding technique based on the Intermediate Value Theorem. We start with an interval [x<sub>l</sub>, x<sub>u</sub>] where f(x) changes sign, guaranteeing at least one root by the IVT. Each iteration, we compute the midpoint x<sub>m</sub> = (x<sub>l</sub>+x<sub>u</sub>)/2, evaluate f(x<sub>m</sub>), and determine which half contains the sign change. That half becomes the new bracket. The interval halves every iteration, guaranteeing linear convergence and a bounded error of (b−a)/2<sup>n</sup>. The method always converges because the root can never escape the bracket."</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 9 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s9">
+    <div class="sec-h"><span class="sec-n">9</span> Practice Problems</div>
+    <p>Click any problem to reveal the full worked solution.</p>
+
+    <!-- Problem 1 -->
+    <div class="prac">
+      <div class="prac-q" onclick="tog(this)">
+        <div><span class="badge be" style="margin-right:8px">Easy</span><strong>Problem 1:</strong> Find the root of f(x) = x² − 4 = 0 using bisection with x<sub>l</sub> = 0, x<sub>u</sub> = 3. Perform 3 iterations and compute the error at each step.</div>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="prac-a">
+        <p><strong>Setup:</strong> f(x) = x² − 4. f(0) = −4, f(3) = +5. Product: (−4)(+5) = −20 &lt; 0 ✓. True root: x = 2.</p>
+        <div class="tbl-wrap">
+          <table class="it">
+            <thead><tr><th>Iter</th><th>xₗ</th><th>xᵤ</th><th>xₘ</th><th>f(xₘ)</th><th>Sign product</th><th>Update</th><th>εₐ%</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>0</td><td>3</td><td class="hi">1.5</td><td class="neg">−1.75</td><td class="pos">&gt;0 (same as f(0))</td><td>xₗ = 1.5</td><td>N/A</td></tr>
+              <tr><td>2</td><td>1.5</td><td>3</td><td class="hi">2.25</td><td class="pos">+1.0625</td><td class="neg">&lt;0 (differs from f(1.5))</td><td>xᵤ = 2.25</td><td>33.33%</td></tr>
+              <tr><td>3</td><td>1.5</td><td>2.25</td><td class="hi">1.875</td><td class="neg">−0.4844</td><td class="pos">&gt;0</td><td>xₗ = 1.875</td><td>20.00%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--text2)">After 3 iterations, x<sub>m</sub> ≈ 1.875. The bracket is now [1.875, 2.25], width = 0.375. True root = 2.0. True error = |2.0−1.875|/2.0 × 100 = 6.25%.</p>
+      </div>
+    </div>
+
+    <!-- Problem 2 -->
+    <div class="prac">
+      <div class="prac-q" onclick="tog(this)">
+        <div><span class="badge bm" style="margin-right:8px">Medium</span><strong>Problem 2:</strong> Find the root of f(x) = e<sup>x</sup> − 3x = 0 in the interval [1, 2]. Perform 4 iterations. (Use e ≈ 2.71828)</div>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="prac-a">
+        <p><strong>Setup:</strong> f(x) = e<sup>x</sup> − 3x. f(1) = e − 3 ≈ −0.2817, f(2) = e² − 6 ≈ 1.3891. Product: (−0.2817)(1.3891) &lt; 0 ✓. True root ≈ 1.5121.</p>
+        <div class="tbl-wrap">
+          <table class="it">
+            <thead><tr><th>Iter</th><th>xₗ</th><th>xᵤ</th><th>xₘ</th><th>f(xₘ)</th><th>Sign product</th><th>Update</th><th>εₐ%</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1</td><td>2</td><td class="hi">1.5</td><td class="neg">−0.0183</td><td class="neg">&lt;0 (differs from f(1))</td><td>xᵤ = 1.5</td><td>N/A</td></tr>
+              <tr><td>2</td><td>1</td><td>1.5</td><td class="hi">1.25</td><td class="neg">−0.7114</td><td class="pos">&gt;0 (same as f(1))</td><td>xₗ = 1.25</td><td>20.00%</td></tr>
+              <tr><td>3</td><td>1.25</td><td>1.5</td><td class="hi">1.375</td><td class="neg">−0.3674</td><td class="pos">&gt;0</td><td>xₗ = 1.375</td><td>9.09%</td></tr>
+              <tr><td>4</td><td>1.375</td><td>1.5</td><td class="hi">1.4375</td><td class="neg">−0.1784</td><td class="pos">&gt;0</td><td>xₗ = 1.4375</td><td>4.35%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--text2)">After 4 iterations, x<sub>m</sub> ≈ 1.4375. Bracket: [1.4375, 1.5]. Note: The method is converging toward ≈ 1.5121. Note f(1.5) ≈ −0.018 is very close to zero — we started very near the root from above.</p>
+      </div>
+    </div>
+
+    <!-- Problem 3 -->
+    <div class="prac">
+      <div class="prac-q" onclick="tog(this)">
+        <div><span class="badge bh" style="margin-right:8px">Hard</span><strong>Problem 3:</strong> Use bisection to find the root of f(x) = cos(x) − x = 0 on [0, 1] (radians). Perform 5 iterations. This root is called the "Dottie number" — the fixed point of cosine.</div>
+        <span class="toggle-icon">▾</span>
+      </div>
+      <div class="prac-a">
+        <p><strong>Setup:</strong> f(x) = cos(x) − x. f(0) = cos(0) − 0 = 1 − 0 = +1. f(1) = cos(1) − 1 ≈ 0.5403 − 1 = −0.4597. Product: (+1)(−0.4597) &lt; 0 ✓. True root ≈ 0.73909.</p>
+        <div class="tbl-wrap">
+          <table class="it">
+            <thead><tr><th>Iter</th><th>xₗ</th><th>xᵤ</th><th>xₘ</th><th>f(xₘ)</th><th>Sign product</th><th>Update</th><th>εₐ%</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>0</td><td>1</td><td class="hi">0.5</td><td class="pos">+0.3776</td><td class="pos">&gt;0 (same as f(0)=+1)</td><td>xₗ = 0.5</td><td>N/A</td></tr>
+              <tr><td>2</td><td>0.5</td><td>1</td><td class="hi">0.75</td><td class="neg">−0.0183</td><td class="neg">&lt;0 (differs from f(0.5)=+)</td><td>xᵤ = 0.75</td><td>33.33%</td></tr>
+              <tr><td>3</td><td>0.5</td><td>0.75</td><td class="hi">0.625</td><td class="pos">+0.1859</td><td class="pos">&gt;0</td><td>xₗ = 0.625</td><td>20.00%</td></tr>
+              <tr><td>4</td><td>0.625</td><td>0.75</td><td class="hi">0.6875</td><td class="pos">+0.0852</td><td class="pos">&gt;0</td><td>xₗ = 0.6875</td><td>9.09%</td></tr>
+              <tr><td>5</td><td>0.6875</td><td>0.75</td><td class="hi">0.71875</td><td class="pos">+0.0340</td><td class="pos">&gt;0</td><td>xₗ = 0.71875</td><td>4.35%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--text2)">After 5 iterations, x<sub>m</sub> ≈ 0.71875. True root ≈ 0.73909. Since |ε<sub>a</sub>| = 4.35% &gt; 0.5%, no significant digits are guaranteed yet. The bracket is [0.71875, 0.75], interval width = 0.03125. Note: f(0.75) = cos(0.75)−0.75 ≈ 0.7317−0.75 = −0.0183 (very close to zero — the root is just below x=0.75).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 10 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s10">
+    <div class="sec-h"><span class="sec-n">10</span> Method Comparison</div>
+    <div class="tbl-wrap-cmp">
+      <table class="cmp">
+        <thead>
+          <tr><th style="min-width:130px">Property</th><th style="background:var(--accent-bg);color:var(--accent-text);min-width:140px">Bisection</th><th style="min-width:140px">False Position</th><th style="min-width:140px">Secant</th><th style="min-width:150px">Newton-Raphson</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Classification</strong></td>
+            <td style="background:var(--accent-bg)">Bracketing (closed)</td>
+            <td>Bracketing (closed)</td>
+            <td>Open method</td>
+            <td>Open method</td>
+          </tr>
+          <tr>
+            <td><strong>Convergence guarantee</strong></td>
+            <td style="background:var(--accent-bg)"><span class="ck">✓ Always</span></td>
+            <td><span class="ck">✓ Always</span></td>
+            <td><span class="xx">✗ Not always</span></td>
+            <td><span class="xx">✗ Not always</span></td>
+          </tr>
+          <tr>
+            <td><strong>Convergence rate</strong></td>
+            <td style="background:var(--accent-bg)">Linear (slow)</td>
+            <td>Linear (can stagnate)</td>
+            <td>Superlinear (≈1.618)</td>
+            <td>Quadratic (fast)</td>
+          </tr>
+          <tr>
+            <td><strong>Requires f′(x)</strong></td>
+            <td style="background:var(--accent-bg)"><span class="ck">No</span></td>
+            <td><span class="ck">No</span></td>
+            <td><span class="ck">No</span> (uses 2 pts)</td>
+            <td><span class="xx">Yes</span></td>
+          </tr>
+          <tr>
+            <td><strong>Initial input</strong></td>
+            <td style="background:var(--accent-bg)">2 bracketing points</td>
+            <td>2 bracketing points</td>
+            <td>2 arbitrary points</td>
+            <td>1 arbitrary point</td>
+          </tr>
+          <tr>
+            <td><strong>x<sub>m</sub> formula</strong></td>
+            <td style="background:var(--accent-bg);font-family:var(--mono);font-size:11px">(xₗ + xᵤ) / 2</td>
+            <td style="font-family:var(--mono);font-size:11px">xₗ − f(xₗ)(xᵤ−xₗ) / (f(xᵤ)−f(xₗ))</td>
+            <td style="font-family:var(--mono);font-size:11px">xᵢ − f(xᵢ)(xᵢ−xᵢ₋₁) / (f(xᵢ)−f(xᵢ₋₁))</td>
+            <td style="font-family:var(--mono);font-size:11px">xᵢ − f(xᵢ) / f′(xᵢ)</td>
+          </tr>
+          <tr>
+            <td><strong>Best used when</strong></td>
+            <td style="background:var(--accent-bg)">Safety-critical; guaranteed result needed</td>
+            <td>f(x) is nearly linear in the bracket</td>
+            <td>f′(x) unavailable; fast convergence desired</td>
+            <td>f′(x) available; speed is the priority</td>
+          </tr>
+          <tr>
+            <td><strong>Main weakness</strong></td>
+            <td style="background:var(--accent-bg)">Slow; ignores slope information</td>
+            <td>One bracket can stagnate (not update)</td>
+            <td>Can diverge with poor initial guesses</td>
+            <td>Fails if f′(x) = 0; sensitive to initial guess</td>
+          </tr>
+          <tr>
+            <td><strong>Error bound</strong></td>
+            <td style="background:var(--accent-bg)"><span class="ck">✓ Guaranteed:</span> (b−a)/2ⁿ</td>
+            <td>Not easily bounded</td>
+            <td>Not easily bounded</td>
+            <td>Not easily bounded</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="insight"><strong>Key insight for exams:</strong> Bisection is the <em>safest</em> method (always converges, bounded error) but the <em>slowest</em>. Newton-Raphson is the <em>fastest</em> (quadratic convergence) but requires f′(x) and can fail. False Position improves on bisection by using the function's slope, but can stagnate when one bracket barely moves. Secant avoids needing f′(x) while approaching Newton's speed, but is still an open method that can diverge.</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SECTION 11 -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="sec" id="s11">
+    <div class="sec-h"><span class="sec-n">11</span> Summary &amp; Mental Models</div>
+
+    <div class="sub-h">Key formulas — quick reference</div>
+    <div class="sgrid">
+      <div class="sc2"><div class="sl">Midpoint</div><div class="sv">xₘ = (xₗ + xᵤ) / 2</div></div>
+      <div class="sc2"><div class="sl">Validity condition (IVT)</div><div class="sv">f(xₗ) × f(xᵤ) &lt; 0</div></div>
+      <div class="sc2"><div class="sl">Approximate error</div><div class="sv">|εₐ| = |xₘⁿᵉʷ − xₘᵒˡᵈ| / |xₘⁿᵉʷ| × 100%</div></div>
+      <div class="sc2"><div class="sl">Max error after n iters</div><div class="sv">E ≤ (b − a) / 2ⁿ</div></div>
+      <div class="sc2"><div class="sl">Min iterations for precision ε</div><div class="sv">n &gt; log₂((b − a) / ε)</div></div>
+      <div class="sc2"><div class="sl">Error unit (sig digits)</div><div class="sv">~0.301 decimal digits per iteration</div></div>
+    </div>
+
+    <div class="sub-h">The fundamental mental model</div>
+    <div class="card card-b">
+      <p><strong>Bisection = Binary Search for roots.</strong> In binary search, you find a target number by repeatedly halving the search range. In bisection, you find a zero-crossing by repeatedly halving the bracket — using the sign of f(x) as the "which half?" oracle. Both guarantee the answer in O(log n) steps.</p>
+    </div>
+
+    <div class="sub-h">Memory tricks</div>
+    <div class="trick">🎯 <strong>The sign rule:</strong> "If signs differ, the root is between them. If signs are the same, the root escaped to the other half." Think of two people on opposite sides of a fence — if one is above zero and one below, the fence (zero line) must be crossed between them.</div>
+    <div class="trick">📐 <strong>The update rule in one sentence:</strong> "x<sub>m</sub> replaces the endpoint it <em>resembles</em>." If f(x<sub>m</sub>) has the same sign as f(x<sub>l</sub>), then x<sub>m</sub> becomes the new x<sub>l</sub>. If same sign as f(x<sub>u</sub>), x<sub>m</sub> becomes the new x<sub>u</sub>.</div>
+    <div class="trick">⏱️ <strong>Convergence pace:</strong> Each iteration gives roughly 0.3 more correct decimal digits. For 3 correct decimals: ~10 iterations. For 6 correct decimals: ~20 iterations. For 9 correct decimals: ~30 iterations.</div>
+    <div class="trick">✅ <strong>Exam sanity check:</strong> After each iteration, verify the interval width has exactly halved. If it hasn't, you made an error in the bracket update.</div>
+
+    <div class="sub-h">Course context (IUT CSEMath4641)</div>
+    <p>As your lecturer notes: Numerical Methods live at the intersection of <em>Mathematics</em> and <em>Algorithms</em>. Bisection is the first and most fundamental root-finding method — master it completely before moving to faster methods. The IVT theorem, the sign-change logic, the error metric, and the stopping criterion will reappear in <strong>False Position</strong>, <strong>Newton-Raphson</strong>, and <strong>Secant Method</strong> in later lectures.</p>
+
+    <div class="card card-g" style="margin-top:1rem">
+      <div class="st" style="margin-bottom:0.4rem">After completing this guide, you should be able to:</div>
+      <ul>
+        <li>Verify a valid bracket using the IVT condition and explain <em>why</em> it works</li>
+        <li>Execute any number of bisection iterations correctly from scratch</li>
+        <li>Fill in a complete iteration table including sign checks and relative errors</li>
+        <li>Explain the bounded error formula (b−a)/2ⁿ and compute minimum iterations needed</li>
+        <li>Identify when bisection will fail (tangent roots, discontinuities)</li>
+        <li>Compare bisection intelligently with Newton-Raphson, False Position, and Secant in a viva</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">
+    CSEMath4641 · Lecture 1 · Islamic University of Technology · Syed Rifat Raiyan<br>
+    Complete Bisection Method Mastery Guide — All 11 sections
+  </div>
+
+</div><!-- end .page -->
+
+<script>
+// ── NAVIGATION ──
+function go(n) {
+  document.querySelectorAll('.nb').forEach((b, i) => b.classList.toggle('on', i === n - 1));
+  const el = document.getElementById('s' + n);
+  if (el) {
+    const offset = 60;
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+}
+
+// Highlight nav on scroll
+const sections = Array.from({length:11},(_,i)=>document.getElementById('s'+(i+1)));
+function updateNav() {
+  const scrollY = window.scrollY + 80;
+  let active = 0;
+  sections.forEach((s,i)=>{ if(s && s.offsetTop <= scrollY) active = i; });
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('on',i===active));
+}
+window.addEventListener('scroll', updateNav, {passive:true});
+
+// ── PRACTICE TOGGLES ──
+function tog(el) {
+  const a = el.nextElementSibling;
+  const open = a.classList.toggle('open');
+  el.classList.toggle('open', open);
+  el.querySelector('.toggle-icon').textContent = open ? '▴' : '▾';
+}
+
+// ── BISECTION DEMO ──
+const fn = x => x*x*x - 20;
+let bState = { xl:1, xu:4, xm_old:null, iter:0, rows:[], done:false };
+const MAX_ITER = 8;
+
+function bisReset() {
+  bState = { xl:1, xu:4, xm_old:null, iter:0, rows:[], done:false };
+  document.getElementById('demo-body').innerHTML = '';
+  document.getElementById('iter-label').textContent = 'Iteration: 0 / ' + MAX_ITER;
+  document.getElementById('istat').innerHTML = 'Press <strong>Next Step →</strong> to begin the first iteration.';
+  document.getElementById('btn-next').disabled = false;
+  drawCanvas();
+}
+
+function bisNext() {
+  if (bState.done) return;
+  bState.iter++;
+  const { xl, xu } = bState;
+  const xm = (xl + xu) / 2;
+  const fxl = fn(xl), fxm = fn(xm);
+  const prod = fxl * fxm;
+  let ea = 'N/A', newXl = xl, newXu = xu;
+
+  if (bState.xm_old !== null) {
+    ea = (Math.abs(xm - bState.xm_old) / Math.abs(xm) * 100).toFixed(4) + '%';
+  }
+
+  let decision;
+  if (Math.abs(fxm) < 1e-10) {
+    decision = 'xₘ is the exact root!';
+    bState.done = true;
+  } else if (prod < 0) {
+    decision = 'Root in [xₗ, xₘ] → xᵤ = ' + xm.toFixed(6);
+    newXu = xm;
+  } else {
+    decision = 'Root in [xₘ, xᵤ] → xₗ = ' + xm.toFixed(6);
+    newXl = xm;
+  }
+
+  bState.rows.push({ iter:bState.iter, xl:xl.toFixed(6), xu:xu.toFixed(6), xm:xm.toFixed(6), fxm:fxm.toFixed(6), decision, ea });
+  bState.xm_old = xm;
+  bState.xl = newXl;
+  bState.xu = newXu;
+
+  // Add table row
+  const tbody = document.getElementById('demo-body');
+  const tr = document.createElement('tr');
+  const fcolor = fxm < 0 ? 'color:var(--danger-text)' : 'color:var(--success-text)';
+  tr.innerHTML = `<td>${bState.iter}</td><td>${xl.toFixed(6)}</td><td>${xu.toFixed(6)}</td><td style="font-weight:600;color:var(--accent-text)">${xm.toFixed(6)}</td><td style="${fcolor}">${fxm.toFixed(6)}</td><td style="font-size:11.5px">${decision}</td><td>${ea}</td>`;
+  tbody.appendChild(tr);
+
+  document.getElementById('istat').innerHTML = `Iter ${bState.iter}: xₘ = <b>${xm.toFixed(5)}</b>, f(xₘ) = <b>${fxm.toFixed(4)}</b>. ${decision}. Error: <b>${ea}</b>`;
+  document.getElementById('iter-label').textContent = `Iteration: ${bState.iter} / ${MAX_ITER}`;
+
+  if (bState.iter >= MAX_ITER || bState.done) {
+    document.getElementById('btn-next').disabled = true;
+    if (!bState.done) {
+      document.getElementById('istat').innerHTML += ` — <em>max iterations reached. Best estimate: root ≈ ${xm.toFixed(5)}</em>`;
+    }
+  }
+  drawCanvas();
+}
+
+// ── CANVAS DRAWING ──
+function drawCanvas() {
+  const canvas = document.getElementById('bc');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.offsetWidth || 640;
+  const H = 240;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const textCol = isDark ? '#c2c0b6' : '#3d3d3a';
+  const gridCol = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  const axisCol = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.22)';
+  const bgCol = isDark ? '#1c1c1a' : '#ffffff';
+
+  ctx.fillStyle = bgCol;
+  ctx.fillRect(0, 0, W, H);
+
+  const ml = 46, mr = 16, mt = 20, mb = 28;
+  const cw = W - ml - mr, ch = H - mt - mb;
+  const xMin = 0.5, xMax = 4.5, yMin = -28, yMax = 58;
+  const px = x => ml + (x - xMin) / (xMax - xMin) * cw;
+  const py = y => mt + (1 - (y - yMin) / (yMax - yMin)) * ch;
+
+  // Grid lines
+  ctx.strokeStyle = gridCol;
+  ctx.lineWidth = 0.5;
+  [1, 2, 3, 4].forEach(x => {
+    ctx.beginPath(); ctx.moveTo(px(x), mt); ctx.lineTo(px(x), mt + ch); ctx.stroke();
+  });
+  [-20, -10, 0, 10, 20, 30, 40, 50].forEach(y => {
+    if (y >= yMin && y <= yMax) {
+      ctx.beginPath(); ctx.moveTo(ml, py(y)); ctx.lineTo(ml + cw, py(y)); ctx.stroke();
+    }
+  });
+
+  // Axis labels
+  ctx.fillStyle = textCol;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  [1, 2, 3, 4].forEach(x => ctx.fillText(x, px(x), H - mb + 14));
+  ctx.textAlign = 'right';
+  [-20, -10, 0, 10, 20, 30, 40, 50].forEach(y => {
+    if (y >= yMin && y <= yMax) ctx.fillText(y, ml - 5, py(y) + 3);
+  });
+
+  // Shade active bracket
+  if (bState.xl !== 1 || bState.xu !== 4 || bState.iter > 0) {
+    ctx.fillStyle = isDark ? 'rgba(59,130,246,0.12)' : 'rgba(37,99,235,0.09)';
+    ctx.fillRect(px(bState.xl), mt, px(bState.xu) - px(bState.xl), ch);
+  }
+
+  // Axes
+  ctx.strokeStyle = axisCol;
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(ml, py(0)); ctx.lineTo(ml + cw, py(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ch); ctx.stroke();
+
+  // Function curve f(x) = x³ - 20
+  ctx.strokeStyle = '#7c3aed';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  let first = true;
+  for (let xi = xMin; xi <= xMax; xi += 0.015) {
+    const yi = fn(xi);
+    if (yi < yMin - 5 || yi > yMax + 5) { first = true; continue; }
+    first ? ctx.moveTo(px(xi), py(yi)) : ctx.lineTo(px(xi), py(yi));
+    first = false;
+  }
+  ctx.stroke();
+
+  // True root vertical (faint)
+  const trueRoot = Math.cbrt(20);
+  ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(px(trueRoot), mt + 4); ctx.lineTo(px(trueRoot), mt + ch); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = textCol;
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('true root ≈ 2.714', px(trueRoot) + 4, mt + 14);
+
+  // xL line
+  ctx.strokeStyle = '#2563eb';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(px(bState.xl), mt); ctx.lineTo(px(bState.xl), mt + ch); ctx.stroke();
+  ctx.fillStyle = '#2563eb';
+  ctx.font = 'bold 10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  const xlStr = 'xₗ=' + parseFloat(bState.xl.toFixed ? bState.xl.toFixed(3) : bState.xl);
+  ctx.fillText(xlStr, px(bState.xl), mt - 6);
+
+  // xU line
+  ctx.strokeStyle = '#dc2626';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(px(bState.xu), mt); ctx.lineTo(px(bState.xu), mt + ch); ctx.stroke();
+  ctx.fillStyle = '#dc2626';
+  ctx.font = 'bold 10px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  const xuStr = 'xᵤ=' + parseFloat(bState.xu.toFixed ? bState.xu.toFixed(3) : bState.xu);
+  ctx.fillText(xuStr, px(bState.xu), mt - 6);
+
+  // xm line and dot (last iteration)
+  if (bState.rows.length > 0) {
+    const lastXm = parseFloat(bState.rows[bState.rows.length - 1].xm);
+    ctx.strokeStyle = '#16a34a';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(px(lastXm), mt); ctx.lineTo(px(lastXm), mt + ch); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#16a34a';
+    ctx.font = 'bold 10px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('xₘ=' + lastXm.toFixed(3), px(lastXm), mt + ch + 16);
+    // Dot at (xm, f(xm))
+    const yfxm = fn(lastXm);
+    if (yfxm >= yMin && yfxm <= yMax) {
+      ctx.beginPath();
+      ctx.arc(px(lastXm), py(yfxm), 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#16a34a';
+      ctx.fill();
+      ctx.strokeStyle = bgCol;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+}
+
+window.addEventListener('resize', drawCanvas);
+// Defer canvas draw until layout is ready
+requestAnimationFrame(drawCanvas);
+</script>
+</body>
+</html>
