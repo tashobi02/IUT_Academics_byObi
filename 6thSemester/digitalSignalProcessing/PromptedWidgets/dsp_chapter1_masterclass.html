@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSP Chapter 1 Masterclass</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f8f7f4;color:#2c2c2a;line-height:1.6;font-size:15px}
+.app{max-width:860px;margin:0 auto;padding:1.5rem}
+h1{font-size:22px;font-weight:600;margin-bottom:4px;color:#2c2c2a}
+.subtitle{font-size:14px;color:#888780;margin-bottom:1.5rem}
+.nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid #e0ddd7;padding-bottom:10px}
+.nav button{padding:7px 13px;font-size:13px;cursor:pointer;border-radius:8px;color:#888780;background:transparent;border:0.5px solid transparent;font-weight:400;transition:all .15s;font-family:inherit}
+.nav button:hover{background:#ede9e0}
+.nav button.active{background:#e8e4db;color:#2c2c2a;border-color:#c8c4bc;font-weight:500}
+.section{display:none}.section.active{display:block}
+.card{background:#fff;border:0.5px solid #e0ddd7;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem}
+.card h3{font-size:15px;font-weight:600;margin-bottom:10px;color:#2c2c2a}
+.info{background:#eef4fc;border-left:3px solid #185fa5;border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;font-size:14px;color:#0c447c}
+.warn{background:#fef7ea;border-left:3px solid #ba7517;border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;font-size:14px;color:#633806}
+.ok{background:#f0f7e4;border-left:3px solid #3b6d11;border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;font-size:14px;color:#27500a}
+.danger-box{background:#fef0f0;border-left:3px solid #a32d2d;border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;font-size:14px;color:#791f1f}
+code.block{font-family:monospace;font-size:13px;background:#f0ede7;padding:8px 12px;border-radius:8px;display:block;margin:8px 0;color:#2c2c2a;white-space:pre-wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.stepn{width:28px;height:28px;min-width:28px;background:#eef4fc;color:#185fa5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.stepbody{flex:1;font-size:14px}
+table.ct{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+table.ct th,table.ct td{border:0.5px solid #c8c4bc;padding:9px 12px;text-align:center}
+table.ct th{background:#f0ede7;font-weight:600}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:600}
+.easy{background:#ecf7df;color:#3b6d11}
+.medium{background:#fef7ea;color:#633806}
+.hard{background:#fef0f0;color:#791f1f}
+.pcard{border:0.5px solid #e0ddd7;border-radius:12px;margin-bottom:1rem;overflow:hidden}
+.phdr{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f8f7f4;flex-wrap:wrap}
+.phdr-q{font-size:14px;font-weight:500;flex:1;min-width:200px}
+.pans{display:none;padding:14px 16px;border-top:0.5px solid #e0ddd7;font-size:14px;line-height:1.7;background:#fafaf8}
+.cvs-wrap{background:#f0ede7;border-radius:10px;padding:10px;margin:10px 0}
+canvas{display:block;width:100%;border-radius:6px}
+.sbtn{padding:5px 11px;font-size:12px;border-radius:7px;border:0.5px solid #c8c4bc;background:transparent;cursor:pointer;color:#888780;margin:2px;font-family:inherit}
+.sbtn:hover{background:#f0ede7}
+.sbtn.active{background:#eef4fc;color:#185fa5;border-color:#185fa5}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600}
+.tag-blue{background:#eef4fc;color:#185fa5}
+.tag-green{background:#f0f7e4;color:#3b6d11}
+.tag-amber{background:#fef7ea;color:#633806}
+.tag-red{background:#fef0f0;color:#791f1f}
+.tag-purple{background:#ededfe;color:#3c3489}
+.chrow{display:grid;grid-template-columns:170px 1fr;gap:10px;padding:8px 0;border-bottom:0.5px solid #e8e4db;font-size:13px;align-items:start}
+.chlbl{font-weight:600;color:#888780}
+.chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 0;font-size:13px}
+.cbox{padding:8px 13px;border-radius:8px;font-weight:500;font-size:13px}
+.arrow-sym{color:#888780;font-size:16px}
+label.ctrl{display:flex;align-items:center;gap:8px;font-size:12px;color:#888780}
+.ctrl-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+#ops-desc,#signal-desc{font-size:13px;color:#888780;margin-top:8px;padding:10px;background:#f0ede7;border-radius:8px;line-height:1.6}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#ddd;border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#185fa5;cursor:pointer}
+.sec-hdr{font-size:18px;font-weight:600;margin:0 0 1rem;color:#2c2c2a}
+.mini-mono{font-family:monospace;font-size:12px;background:#f0ede7;padding:4px 8px;border-radius:5px;display:inline}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>DSP Chapter 1 — Complete Masterclass</h1>
+<p class="subtitle">CSE 4631 · Introduction to Signals & Systems · Interactive Study Guide</p>
+
+<div class="nav" role="tablist">
+  <button class="active" onclick="show('big',this)">🎯 Big Picture</button>
+  <button onclick="show('concepts',this)">📡 Core Concepts</button>
+  <button onclick="show('viz',this)">📊 Visualizer</button>
+  <button onclick="show('examples',this)">🧮 Worked Examples</button>
+  <button onclick="show('mistakes',this)">⚠️ Common Mistakes</button>
+  <button onclick="show('practice',this)">💪 Practice</button>
+  <button onclick="show('exam',this)">🎓 Exam Strategy</button>
+  <button onclick="show('cheat',this)">📋 Cheat Sheet</button>
+</div>
+
+<!-- ===== BIG PICTURE ===== -->
+<div id="big" class="section active">
+  <p class="sec-hdr">What is DSP and why does it matter?</p>
+
+  <div class="card">
+    <h3>The Core Idea</h3>
+    <p style="font-size:14px;color:#444;line-height:1.7">The physical world is full of information — sound, light, temperature, pressure. To process this information on computers, we need to understand how to <strong>represent, classify, and manipulate signals mathematically</strong>. That's exactly what this chapter teaches you.</p>
+    <div class="info"><strong>DSP = Digital Signal Processing.</strong> Using digital computers (or processors) to work on signals that were originally analog, after converting them into numbers.</div>
+  </div>
+
+  <div class="card">
+    <h3>Where Chapter 1 fits in the course</h3>
+    <div class="step"><div class="stepn">1</div><div class="stepbody"><strong>Chapter 1: Signals & Signal Types ← You are here</strong><br><span style="color:#888780;font-size:13px">The vocabulary and classification of signals. Foundation for everything else.</span></div></div>
+    <div class="step"><div class="stepn">2</div><div class="stepbody"><strong>Systems & Transformations</strong><br><span style="color:#888780;font-size:13px">How systems process signals: filtering, convolution, LTI systems.</span></div></div>
+    <div class="step"><div class="stepn">3</div><div class="stepbody"><strong>Frequency Domain (Fourier Analysis)</strong><br><span style="color:#888780;font-size:13px">Decomposing signals into frequency components. The key DSP tool.</span></div></div>
+    <div class="step"><div class="stepn">4</div><div class="stepbody"><strong>Sampling & Reconstruction</strong><br><span style="color:#888780;font-size:13px">Nyquist theorem, aliasing, converting between analog and digital.</span></div></div>
+  </div>
+
+  <div class="card">
+    <h3>Real-world signals everywhere</h3>
+    <div class="grid2">
+      <div class="info" style="margin:0"><strong>🎵 Audio s(t)</strong><br><span style="font-size:12px">Air pressure wave. Your microphone converts it to electrical voltage.</span></div>
+      <div class="info" style="margin:0"><strong>🖼️ Image I(x,y)</strong><br><span style="font-size:12px">Brightness at pixel position (x,y). 2D signal.</span></div>
+      <div class="info" style="margin:0"><strong>❤️ ECG v(t)</strong><br><span style="font-size:12px">Heart electrical activity vs time. Life-saving application.</span></div>
+      <div class="info" style="margin:0"><strong>📡 Radio x(t)</strong><br><span style="font-size:12px">Electromagnetic wave modulated to carry voice/data over air.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>The complete DSP processing chain</h3>
+    <div class="chain">
+      <div class="cbox" style="background:#eef4fc;color:#185fa5">🎤 Analog input</div>
+      <span class="arrow-sym">→</span>
+      <div class="cbox" style="background:#fef7ea;color:#633806">A/D Converter<br><span style="font-size:11px;font-weight:400">sample + quantize</span></div>
+      <span class="arrow-sym">→</span>
+      <div class="cbox" style="background:#f0ede7;color:#2c2c2a;border:0.5px solid #c8c4bc">DSP Core<br><span style="font-size:11px;font-weight:400">algorithms & math</span></div>
+      <span class="arrow-sym">→</span>
+      <div class="cbox" style="background:#fef7ea;color:#633806">D/A Converter</div>
+      <span class="arrow-sym">→</span>
+      <div class="cbox" style="background:#eef4fc;color:#185fa5">🔊 Analog output</div>
+    </div>
+    <div class="ok" style="margin-top:10px"><strong>Real example — a phone call:</strong> Voice → Microphone → ADC (8 kHz, 16-bit) → AMR compression → 4G/5G transmission → Decompression → DAC → Speaker. DSP is in every step.</div>
+  </div>
+
+  <div class="card">
+    <h3>Why study signals first?</h3>
+    <p style="font-size:14px;color:#444;line-height:1.7">Just like you can't study grammar without knowing what words are, you can't study signal processing without knowing what signals are. Chapter 1 gives you:</p>
+    <ul style="font-size:14px;color:#444;line-height:2;padding-left:1.2rem">
+      <li>The precise vocabulary (CT, DT, analog, digital, deterministic, random…)</li>
+      <li>Mathematical notation you'll use in every future chapter</li>
+      <li>Intuition about how signals behave when you transform them</li>
+      <li>The 2×2 classification table that appears in almost every exam</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== CORE CONCEPTS ===== -->
+<div id="concepts" class="section">
+  <p class="sec-hdr">Core Concepts — Deep + Intuitive</p>
+
+  <div class="card">
+    <h3>1. What is a Signal?</h3>
+    <div class="info"><strong>Definition:</strong> A signal is any physical quantity that carries information and varies as a function of one or more independent variables such as time, space, or frequency.</div>
+    <code class="block">s = f(variable)
+Examples: s(t), I(x,y), I(x,y,t), s(t) = [s₁(t), s₂(t), s₃(t)]ᵀ</code>
+    <p style="font-size:14px;color:#444;line-height:1.7;margin-top:8px"><strong>Intuition:</strong> Think of a signal as a "story" told by numbers. A temperature record every hour tells the story of how hot or cold it was throughout the day. A music file is a story of air pressure over time.</p>
+    <p style="font-size:13px;color:#888780;margin-top:8px"><strong>Key properties:</strong> Carries information · Can be measured, recorded, reproduced · Can be processed to extract/enhance meaning</p>
+  </div>
+
+  <div class="card">
+    <h3>2. Signal Dimensions & Types</h3>
+    <div class="grid2">
+      <div><div class="tag tag-blue" style="margin-bottom:8px">1D Signal</div><code class="block" style="font-size:12px">s(t) — depends on time only</code><p style="font-size:12px;color:#888780">Examples: audio, ECG, stock prices</p></div>
+      <div><div class="tag tag-purple" style="margin-bottom:8px">Multidimensional</div><code class="block" style="font-size:12px">I(x,y) — depends on x and y</code><p style="font-size:12px;color:#888780">Examples: images (2D), video (3D)</p></div>
+      <div><div class="tag tag-green" style="margin-bottom:8px">Real-valued</div><code class="block" style="font-size:12px">s(t) = A sin(3πt)</code><p style="font-size:12px;color:#888780">Takes only real number values</p></div>
+      <div><div class="tag tag-amber" style="margin-bottom:8px">Complex-valued</div><code class="block" style="font-size:12px">s(t) = Ae^(jωt)</code><p style="font-size:12px;color:#888780">Used in communications/modulation</p></div>
+    </div>
+    <div class="warn"><strong>Multichannel vs Multidimensional (common confusion):</strong><br>
+    • <strong>Multichannel:</strong> multiple signals grouped as a vector → s(t) = [s₁(t), s₂(t), s₃(t)]ᵀ. Example: 3-lead ECG.<br>
+    • <strong>Multidimensional:</strong> one signal depending on multiple variables. Example: I(x,y) is one signal depending on two variables.<br>
+    • Color video I(x,y,t) is BOTH: multichannel (RGB = 3 channels) AND multidimensional (x, y, t).</div>
+  </div>
+
+  <div class="card">
+    <h3>3. Continuous-Time vs Discrete-Time ← Most fundamental distinction</h3>
+    <div class="grid2">
+      <div>
+        <div class="tag tag-blue" style="margin-bottom:8px">Continuous-Time (CT)</div>
+        <p style="font-size:13px;color:#444;line-height:1.6">Defined at <strong>every instant</strong> t ∈ ℝ. No gaps. Like drawing a curve without lifting your pen.</p>
+        <code class="block" style="font-size:12px">Notation: x(t)   ← round brackets!
+t ∈ ℝ (all real numbers)
+x(t) = cos(2πt)</code>
+        <p style="font-size:12px;color:#888780">Examples: microphone voltage, radio waves, temperature sensor readings</p>
+      </div>
+      <div>
+        <div class="tag tag-amber" style="margin-bottom:8px">Discrete-Time (DT)</div>
+        <p style="font-size:13px;color:#444;line-height:1.6">Defined only at <strong>integer indices</strong> n ∈ ℤ. Like a list of measurements taken at equal time intervals.</p>
+        <code class="block" style="font-size:12px">Notation: x[n]   ← square brackets!
+n ∈ ℤ (integers only)
+x[n] = cos(2πn/N)</code>
+        <p style="font-size:12px;color:#888780">Examples: digital audio, stock prices (daily closing), sampled sensor data</p>
+      </div>
+    </div>
+    <div class="warn"><strong>⚠️ Notation is tested in exams!</strong> Round brackets (t) = continuous-time. Square brackets [n] = discrete-time. Never write x(n) for a DT signal.</div>
+    <div class="info"><strong>Stem plot for DT signals:</strong> Drawn as vertical lines (stems) at each integer n. Height of stem = x[n].<br>
+    Real time conversion: <span class="mini-mono">t = n × Ts = n / fs</span><br>
+    If fs = 8000 Hz and n = 160 → t = 160/8000 = 20 ms</div>
+  </div>
+
+  <div class="card">
+    <h3>4. Continuous-Valued vs Discrete-Valued (Quantization)</h3>
+    <div class="grid2">
+      <div>
+        <div class="tag tag-blue" style="margin-bottom:8px">Continuous-Valued</div>
+        <p style="font-size:13px;color:#444">Amplitude can be ANY real number in a range. Infinite precision.</p>
+        <code class="block" style="font-size:12px">x[n] ∈ ℝ
+e.g., 0.731, -1.234, 0.00001</code>
+      </div>
+      <div>
+        <div class="tag tag-green" style="margin-bottom:8px">Discrete-Valued</div>
+        <p style="font-size:13px;color:#444">Amplitude from a <strong>finite set</strong> of levels only. Due to quantization (ADC).</p>
+        <code class="block" style="font-size:12px">x[n] ∈ {L₁, L₂, ..., L_{2^B}}
+B-bit ADC → 2^B levels
+16-bit: 2^16 = 65,536 levels</code>
+      </div>
+    </div>
+    <div class="info"><strong>Why discrete-valued?</strong> Computers store numbers in binary bits. A B-bit ADC divides the amplitude range into 2ᴮ equal steps (quantization). The smaller each step, the better the quality — but more bits = more storage.</div>
+  </div>
+
+  <div class="card">
+    <h3>5. ⭐ The Master 2×2 Classification Table</h3>
+    <p style="font-size:13px;color:#888780;margin-bottom:10px">Every signal falls in exactly one cell. Memorize this cold — it's on every exam.</p>
+    <table class="ct">
+      <tr><th></th><th style="color:#185fa5">Continuous Value<br>(amplitude ∈ ℝ)</th><th style="color:#3b6d11">Discrete Value<br>(amplitude ∈ {L₁…Lₙ})</th></tr>
+      <tr>
+        <th style="color:#185fa5">Continuous Time<br>(t ∈ ℝ)</th>
+        <td><strong>Analog Signal</strong><br><span class="mini-mono">x(t) ∈ ℝ, t ∈ ℝ</span><br><span style="font-size:12px;color:#888780">e.g., microphone voltage, radio wave</span></td>
+        <td><strong>Quantized Analog</strong><br><span class="mini-mono">x(t) ∈ {Lᵢ}, t ∈ ℝ</span><br><span style="font-size:12px;color:#888780">e.g., thermostat (reads all times, fixed levels)</span></td>
+      </tr>
+      <tr>
+        <th style="color:#ba7517">Discrete Time<br>(n ∈ ℤ)</th>
+        <td><strong>Sampled Signal</strong><br><span class="mini-mono">x[n] ∈ ℝ, n ∈ ℤ</span><br><span style="font-size:12px;color:#888780">e.g., ideal DSP computation, floating point</span></td>
+        <td style="background:#eef4fc"><strong>⭐ Digital Signal</strong><br><span class="mini-mono">x[n] ∈ {Lᵢ}, n ∈ ℤ</span><br><span style="font-size:12px;color:#888780">e.g., MP3 file, JPEG image, all computer data</span></td>
+      </tr>
+    </table>
+    <div class="ok"><strong>🧠 Key takeaway:</strong> Only DIGITAL signals can be stored and processed on computers. Real-world analog signals must go through an ADC (samples in time = DT, quantizes values = DV) to become digital.</div>
+  </div>
+
+  <div class="card">
+    <h3>6. Deterministic vs Random Signals</h3>
+    <div class="grid2">
+      <div>
+        <div class="tag tag-green" style="margin-bottom:8px">Deterministic</div>
+        <p style="font-size:13px;color:#444;line-height:1.6">Fully described by a mathematical formula. Future values are <strong>perfectly predictable</strong>. Zero uncertainty.</p>
+        <code class="block" style="font-size:12px">x(t) = sin(t)
+x(t) = e^(-αt) u(t)
+x(t) = A cos(2πf₀t + φ)</code>
+      </div>
+      <div>
+        <div class="tag tag-red" style="margin-bottom:8px">Random (Stochastic)</div>
+        <p style="font-size:13px;color:#444;line-height:1.6">No exact formula. Cannot be precisely predicted. Analyzed using <strong>probability and statistics</strong>.</p>
+        <code class="block" style="font-size:12px">x(t) = thermal noise
+x(t) = speech signal
+x(t) = seismic activity</code>
+      </div>
+    </div>
+    <div class="info"><strong>Insight:</strong> Even though random signals are unpredictable in exact value, different random signals can share the same statistical properties (mean, variance, power spectral density). We use probability theory to study their behavior. Different realizations of noise look different but follow the same statistical distribution.</div>
+  </div>
+
+  <div class="card">
+    <h3>7. What is a System?</h3>
+    <div class="info"><strong>Definition:</strong> A system is any process or device that transforms an input signal into an output signal according to a defined rule or physical law.</div>
+    <code class="block">y(t) = H{x(t)}        where H = system operator</code>
+    <div class="chain" style="margin:12px 0">
+      <div class="cbox" style="background:#eef4fc;color:#185fa5">x(t) Input</div>
+      <span class="arrow-sym" style="font-size:22px">→</span>
+      <div class="cbox" style="background:#f0ede7;color:#2c2c2a;border:0.5px solid #c8c4bc;min-width:80px;text-align:center">System H<br><span style="font-size:11px;font-weight:400">operator</span></div>
+      <span class="arrow-sym" style="font-size:22px">→</span>
+      <div class="cbox" style="background:#f0f7e4;color:#3b6d11">y(t) Output</div>
+    </div>
+    <div class="grid2">
+      <div><strong style="font-size:13px">Amplifier:</strong><code class="block" style="font-size:12px">y(t) = G · x(t)</code></div>
+      <div><strong style="font-size:13px">Time delay:</strong><code class="block" style="font-size:12px">y(t) = x(t − Td)</code></div>
+      <div><strong style="font-size:13px">Integrator:</strong><code class="block" style="font-size:12px">y(t) = ∫_{-∞}^{t} x(τ) dτ</code></div>
+      <div><strong style="font-size:13px">Convolution filter:</strong><code class="block" style="font-size:12px">y[n] = Σ h[k] x[n-k]</code></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>8. Basic Signal Operations — The Four Transformations</h3>
+
+    <div class="step">
+      <div class="stepn">A</div>
+      <div class="stepbody">
+        <strong>Amplitude Scaling: y(t) = A · x(t)</strong>
+        <p style="font-size:13px;color:#444;margin-top:4px">Multiplies height of the signal. Doesn't change shape or timing, only the "tallness."</p>
+        <ul style="font-size:13px;color:#444;padding-left:1.2rem;line-height:1.8">
+          <li>A &gt; 1: amplification (taller)</li>
+          <li>0 &lt; A &lt; 1: attenuation (shorter)</li>
+          <li>A &lt; 0: flip upside down AND scale</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stepn">B</div>
+      <div class="stepbody">
+        <strong>Time Shifting: y(t) = x(t − t₀)</strong>
+        <p style="font-size:13px;color:#444;margin-top:4px">Moves the signal left or right in time. Shape stays identical.</p>
+        <ul style="font-size:13px;color:#444;padding-left:1.2rem;line-height:1.8">
+          <li>t₀ &gt; 0: shift <strong>RIGHT</strong> (delayed — happens later)</li>
+          <li>t₀ &lt; 0: shift <strong>LEFT</strong> (advanced — happens earlier)</li>
+        </ul>
+        <div class="warn" style="margin-top:6px;font-size:13px"><strong>⚠️ Memory trick:</strong> To find where a feature at t=0 moves, solve: t − t₀ = 0 → t = t₀. So x(t−2) moves features to t=+2 (rightward).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stepn">C</div>
+      <div class="stepbody">
+        <strong>Time Scaling: y(t) = x(at)</strong>
+        <p style="font-size:13px;color:#444;margin-top:4px">Stretches or compresses the signal along the time axis.</p>
+        <ul style="font-size:13px;color:#444;padding-left:1.2rem;line-height:1.8">
+          <li>|a| &gt; 1: signal <strong>compresses</strong> (plays faster, shorter duration)</li>
+          <li>|a| &lt; 1: signal <strong>expands</strong> (plays slower, longer duration)</li>
+          <li>New period = Old period / |a|</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="stepn">D</div>
+      <div class="stepbody">
+        <strong>Time Reversal (Folding): y(t) = x(−t)</strong>
+        <p style="font-size:13px;color:#444;margin-top:4px">Flips the signal horizontally around the vertical axis (t=0). Like playing a recording backwards.</p>
+        <p style="font-size:13px;color:#888780;margin-top:4px">Feature originally at t=t₁ moves to t=−t₁.</p>
+      </div>
+    </div>
+
+    <div class="ok">
+      <strong>🧠 Combined operations: y(t) = x(at + b)</strong><br>
+      Step 1: Factor out 'a' → x(a(t + b/a))<br>
+      Step 2: Shift by −b/a (left if b/a &gt; 0, right if b/a &lt; 0)<br>
+      Step 3: Scale by a (compress if |a|&gt;1, expand if |a|&lt;1)<br>
+      Step 4: If a &lt; 0, also reverse in time<br>
+      Step 5: Apply amplitude scaling A separately<br>
+      <strong>Always shift BEFORE scaling!</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VISUALIZER ===== -->
+<div id="viz" class="section">
+  <p class="sec-hdr">Interactive Signal Visualizer</p>
+
+  <div class="card">
+    <h3>Signal Type Explorer</h3>
+    <div style="margin-bottom:10px">
+      <button class="sbtn active" onclick="selSig('ct')">CT Analog</button>
+      <button class="sbtn" onclick="selSig('dt')">DT Sampled</button>
+      <button class="sbtn" onclick="selSig('digital')">Digital (DT+DV)</button>
+      <button class="sbtn" onclick="selSig('random')">Random</button>
+      <button class="sbtn" onclick="selSig('sinusoid')">Sinusoid</button>
+    </div>
+    <div class="cvs-wrap"><canvas id="cMain" height="200"></canvas></div>
+    <div id="signal-desc">Continuous-Time Analog: smooth curve defined at every t ∈ ℝ. This is what comes out of a microphone or sensor.</div>
+  </div>
+
+  <div class="card">
+    <h3>Signal Operations Visualizer</h3>
+    <p style="font-size:13px;color:#888780;margin-bottom:12px">Using x(t) = rectangular pulse (value 1 from t=−0.5 to t=0.5, zero elsewhere). Adjust sliders to see transformations:</p>
+    <div class="ctrl-row">
+      <label class="ctrl">
+        Time shift t₀ — y(t) = x(t − t₀)
+        <input type="range" id="sl-shift" min="-3" max="3" step="0.25" value="0" oninput="redrawOps()">
+        <span id="vshift" style="min-width:32px;font-size:13px;font-weight:600;color:#2c2c2a">0</span>
+      </label>
+      <label class="ctrl">
+        Time scale a — y(t) = x(a·t)
+        <input type="range" id="sl-scale" min="0.25" max="3" step="0.25" value="1" oninput="redrawOps()">
+        <span id="vscale" style="min-width:32px;font-size:13px;font-weight:600;color:#2c2c2a">1</span>
+      </label>
+      <label class="ctrl">
+        Amplitude A — y(t) = A·x(t)
+        <input type="range" id="sl-amp" min="-2" max="2" step="0.25" value="1" oninput="redrawOps()">
+        <span id="vamp" style="min-width:32px;font-size:13px;font-weight:600;color:#2c2c2a">1</span>
+      </label>
+      <label class="ctrl" style="flex-direction:row;align-items:center;gap:8px;justify-content:flex-start;height:auto">
+        <input type="checkbox" id="ck-rev" onchange="redrawOps()" style="width:16px;height:16px;margin:0">
+        Apply time reversal x(−t)
+      </label>
+    </div>
+    <div class="grid2">
+      <div>
+        <p style="font-size:12px;font-weight:600;color:#888780;margin-bottom:6px">Original: x(t)</p>
+        <div class="cvs-wrap" style="padding:8px"><canvas id="cOrig" height="170"></canvas></div>
+      </div>
+      <div>
+        <p id="lbl-trans" style="font-size:12px;font-weight:600;color:#888780;margin-bottom:6px">Transformed: y(t)</p>
+        <div class="cvs-wrap" style="padding:8px"><canvas id="cTrans" height="170"></canvas></div>
+      </div>
+    </div>
+    <div id="ops-desc">No transformation. Adjust the sliders above.</div>
+  </div>
+
+  <div class="card">
+    <h3>The 2×2 Classification Visual</h3>
+    <p style="font-size:13px;color:#888780;margin-bottom:12px">Visualizing what each combination looks like on a graph:</p>
+    <div class="cvs-wrap"><canvas id="cClass" height="320"></canvas></div>
+    <p style="font-size:12px;color:#888780;text-align:center;margin-top:6px">Top row = CT · Bottom row = DT · Left column = CV · Right column = DV (Digital)</p>
+  </div>
+</div>
+
+<!-- ===== WORKED EXAMPLES ===== -->
+<div id="examples" class="section">
+  <p class="sec-hdr">Worked Examples — Step by Step</p>
+
+  <div class="card">
+    <h3>Example 1 — Classify a signal completely</h3>
+    <div class="info"><strong>Problem:</strong> A digital audio file stores music at 44,100 Hz with 16-bit depth. Classify this signal fully.</div>
+    <div class="step"><div class="stepn">1</div><div class="stepbody"><strong>Time axis:</strong> Samples taken every 1/44100 ≈ 22.7 µs → only exists at discrete instants → <em>Discrete-Time</em>. Notation: x[n].</div></div>
+    <div class="step"><div class="stepn">2</div><div class="stepbody"><strong>Amplitude axis:</strong> 16-bit depth → 2¹⁶ = 65,536 levels → amplitude from a finite set → <em>Discrete-Valued</em>.</div></div>
+    <div class="step"><div class="stepn">3</div><div class="stepbody"><strong>Combined:</strong> DT + DV = <em>Digital Signal</em>. Can be stored on a hard drive. ✓</div></div>
+    <div class="step"><div class="stepn">4</div><div class="stepbody"><strong>Dimension:</strong> Depends only on time index n → <em>1D signal</em>.</div></div>
+    <div class="step"><div class="stepn">5</div><div class="stepbody"><strong>Predictability:</strong> A specific recording plays identically every time → <em>Deterministic</em>.</div></div>
+    <div class="ok">✅ Final Answer: 1D, Digital (DT + DV), Deterministic. 65,536 amplitude levels, sampled at 44.1 kHz.</div>
+  </div>
+
+  <div class="card">
+    <h3>Example 2 — Time shifting</h3>
+    <div class="info"><strong>Problem:</strong> Given x(t) = u(t) (unit step: 0 for t&lt;0, 1 for t≥0). Find and describe y(t) = x(t − 3).</div>
+    <div class="step"><div class="stepn">1</div><div class="stepbody"><strong>Identify operation:</strong> y(t) = x(t − 3). This is a time shift with t₀ = +3.</div></div>
+    <div class="step"><div class="stepn">2</div><div class="stepbody"><strong>Direction:</strong> t₀ = +3 &gt; 0 → signal shifts RIGHT by 3 units (delayed by 3 seconds).</div></div>
+    <div class="step"><div class="stepn">3</div><div class="stepbody"><strong>Where does the step happen?</strong> Originally at t=0. Solving: t−3=0 → t=3. Step now occurs at t=3.</div></div>
+    <div class="step"><div class="stepn">4</div><div class="stepbody"><strong>Result:</strong> y(t) = 0 for t &lt; 3, and y(t) = 1 for t ≥ 3.</div></div>
+    <div class="ok">✅ Intuition: The signal does exactly the same thing, just 3 seconds later. Like pressing play at t=3 instead of t=0.</div>
+  </div>
+
+  <div class="card">
+    <h3>Example 3 — Time scaling</h3>
+    <div class="info"><strong>Problem:</strong> Given x(t) = sin(2πt), period T=1s. Find y(t) = x(2t) and z(t) = x(t/2).</div>
+    <div class="step"><div class="stepn">1</div><div class="stepbody"><strong>y(t) = x(2t) = sin(2π·2t) = sin(4πt):</strong><br>a = 2 &gt; 1 → compress in time. New period = T/|a| = 1/2 = 0.5 s. Signal plays FASTER. Two full cycles in 1 second instead of one.</div></div>
+    <div class="step"><div class="stepn">2</div><div class="stepbody"><strong>z(t) = x(t/2) = sin(2π·t/2) = sin(πt):</strong><br>a = 0.5 &lt; 1 → expand in time. New period = T/|a| = 1/0.5 = 2 s. Signal plays SLOWER. Half a cycle in 1 second.</div></div>
+    <div class="ok">✅ Rule to remember: Multiply argument by a &gt; 1 → compress (faster, shorter period). Divide argument (a &lt; 1) → expand (slower, longer period). New period = T₀ / |a|.</div>
+  </div>
+
+  <div class="card">
+    <h3>Example 4 — Time reversal</h3>
+    <div class="info"><strong>Problem:</strong> Given x(t) = t for 0 ≤ t ≤ 2, zero elsewhere (a ramp). Find y(t) = x(−t).</div>
+    <div class="step"><div class="stepn">1</div><div class="stepbody"><strong>Original:</strong> x(t) is nonzero for t ∈ [0, 2]. It's a ramp going from x(0)=0 to x(2)=2.</div></div>
+    <div class="step"><div class="stepn">2</div><div class="stepbody"><strong>Find new domain:</strong> x(−t) is nonzero when −t ∈ [0, 2], i.e., 0 ≤ −t ≤ 2, i.e., −2 ≤ t ≤ 0.</div></div>
+    <div class="step"><div class="stepn">3</div><div class="stepbody"><strong>Find new values:</strong> y(t) = x(−t) = −t for −2 ≤ t ≤ 0.</div></div>
+    <div class="step"><div class="stepn">4</div><div class="stepbody"><strong>Check key points:</strong> y(0) = x(0) = 0 ✓. y(−2) = x(2) = 2 ✓. The ramp now goes from 2 down to 0, on the LEFT side of the axis.</div></div>
+    <div class="ok">✅ Reversal flips the signal around t=0. Whatever was on the right side (positive t) appears mirrored on the left side (negative t).</div>
+  </div>
+
+  <div class="card">
+    <h3>Example 5 — Combined operations (exam-level)</h3>
+    <div class="info"><strong>Problem:</strong> Describe y(t) = x(2t + 4) in terms of transformations of x(t). Apply them in correct order.</div>
+    <div class="step"><div class="stepn">1</div><div class="stepbody"><strong>Factor out the scale:</strong> y(t) = x(2t + 4) = x(2(t + 2)). Now we see: scale a=2, shift = −2 (i.e., shift left by 2).</div></div>
+    <div class="step"><div class="stepn">2</div><div class="stepbody"><strong>Step 1 — Shift:</strong> Replace x(t) with x(t + 2). This shifts the signal LEFT by 2 units.</div></div>
+    <div class="step"><div class="stepn">3</div><div class="stepbody"><strong>Step 2 — Scale:</strong> Replace t with 2t. Since a=2 &gt; 1, compress by factor 2 (makes it faster/narrower).</div></div>
+    <div class="step"><div class="stepn">4</div><div class="stepbody"><strong>Verify with boundary tracking:</strong> If x(t) is nonzero for t ∈ [0, 4], find where y(t) is nonzero.<br>Set 2t + 4 = 0 → t = −2. Set 2t + 4 = 4 → t = 0. So y(t) is nonzero for t ∈ [−2, 0]. Width: 2 (compressed from 4 by factor 2). ✓</div></div>
+    <div class="warn">⚠️ Common mistake: Doing scale BEFORE shift gives the wrong answer. Always shift first (after factoring), then scale.</div>
+  </div>
+
+  <div class="card">
+    <h3>Example 6 — Reading a stem plot & ADC calculation</h3>
+    <div class="info"><strong>Problem:</strong> A speech signal is sampled at fs = 8000 Hz with a 12-bit ADC. (a) How many amplitude levels? (b) What real time is sample n=400? (c) What sample index is t = 50 ms?</div>
+    <div class="step"><div class="stepn">a</div><div class="stepbody"><strong>Amplitude levels:</strong> B = 12 bits → 2¹² = 4,096 levels.</div></div>
+    <div class="step"><div class="stepn">b</div><div class="stepbody"><strong>Real time at n=400:</strong> t = n/fs = 400/8000 = 0.05 s = 50 ms.</div></div>
+    <div class="step"><div class="stepn">c</div><div class="stepbody"><strong>Sample index at t=50ms:</strong> n = t × fs = 0.050 × 8000 = 400.</div></div>
+    <div class="ok">✅ Note: Parts (b) and (c) give the same answer — they are inverse operations of each other! t = n/fs ↔ n = t × fs.</div>
+  </div>
+</div>
+
+<!-- ===== COMMON MISTAKES ===== -->
+<div id="mistakes" class="section">
+  <p class="sec-hdr">Common Mistakes & How to Avoid Them</p>
+
+  <div class="card">
+    <h3>Mistake 1 — "Discrete-Time = Digital"</h3>
+    <div class="warn">❌ <strong>Wrong:</strong> "A sampled signal is a digital signal."</div>
+    <div class="ok">✅ <strong>Correct:</strong> A DT signal has a discrete time axis, but amplitude may still be continuous (any real number). Digital requires BOTH discrete time AND discrete values. A DT signal only becomes digital after quantization by an ADC.</div>
+    <p style="font-size:13px;color:#888780;margin-top:8px"><strong>Example:</strong> Audio sampled at 44.1 kHz in a floating-point buffer (before quantization) is DT but NOT digital. After 16-bit quantization, it becomes digital.</p>
+  </div>
+
+  <div class="card">
+    <h3>Mistake 2 — Time shift direction confusion</h3>
+    <div class="warn">❌ <strong>Wrong:</strong> "x(t − 2) means the signal moves to the LEFT."</div>
+    <div class="ok">✅ <strong>Correct:</strong> x(t − 2) shifts RIGHT (delayed by 2). x(t + 2) shifts LEFT (advanced by 2).</div>
+    <div class="info"><strong>Foolproof method:</strong> To find where a feature at t=t₁ moves, solve: (t − t₀) = t₁ → t = t₁ + t₀. So if t₀=+2, the feature that was at t₁ moves to t₁+2 (rightward). Never guess direction intuitively — always solve algebraically.</div>
+  </div>
+
+  <div class="card">
+    <h3>Mistake 3 — Wrong order of combined operations</h3>
+    <div class="warn">❌ <strong>Wrong order for x(2t + 4):</strong> "Scale by 2 first (compress), then shift right by 4."<br>This gives x(2(t−4)) = x(2t−8) ≠ x(2t+4). Wrong!</div>
+    <div class="ok">✅ <strong>Correct:</strong> Factor first: x(2t + 4) = x(2(t + 2)). Then: (1) shift LEFT by 2, (2) compress by 2. The two approaches give different results because scaling affects where the shift lands.</div>
+  </div>
+
+  <div class="card">
+    <h3>Mistake 4 — Notation errors</h3>
+    <div class="warn">❌ <strong>Wrong:</strong> Writing x(n) for a discrete-time signal (round brackets with n).</div>
+    <div class="ok">✅ <strong>Correct:</strong> x[n] with SQUARE brackets for DT. x(t) with ROUND brackets for CT. This convention is universal in DSP and is marked in exams.</div>
+  </div>
+
+  <div class="card">
+    <h3>Mistake 5 — "Analog = Continuous-Time only"</h3>
+    <div class="warn">❌ <strong>Wrong:</strong> "An analog signal just means the time is continuous."</div>
+    <div class="ok">✅ <strong>Correct:</strong> Analog = Continuous-Time AND Continuous-Valued (both axes are continuous). A signal with continuous time but discrete values is "quantized analog," not "analog."</div>
+  </div>
+
+  <div class="card">
+    <h3>Mistake 6 — Multichannel vs Multidimensional</h3>
+    <div class="warn">❌ <strong>Wrong:</strong> "RGB image is a 3-dimensional signal because it has 3 colors."</div>
+    <div class="ok">✅ <strong>Correct:</strong> RGB image is a <em>multichannel</em> signal (3 channels) that is <em>2-dimensional</em> (depends on x and y). Color video I(x,y,t) is multichannel (3 channels) AND 3-dimensional (x, y, t). These are orthogonal properties.</div>
+  </div>
+
+  <div class="card">
+    <h3>Mistake 7 — Forgetting to check boundaries after transformation</h3>
+    <div class="warn">❌ <strong>Wrong:</strong> Describing the shape of a transformed signal correctly but stating the wrong domain (time interval where it exists).</div>
+    <div class="ok">✅ <strong>Correct:</strong> Always track where the signal boundaries move. Take each endpoint of the original domain, substitute it into the argument, and solve for the new t values. E.g., if original is nonzero for t ∈ [a,b] and y(t)=x(2t+4), find: 2t+4=a → t=(a−4)/2 and 2t+4=b → t=(b−4)/2.</div>
+  </div>
+</div>
+
+<!-- ===== PRACTICE ===== -->
+<div id="practice" class="section">
+  <p class="sec-hdr">Practice Problems — Easy to Hard</p>
+  <p style="font-size:14px;color:#888780;margin-bottom:1rem">Attempt each problem yourself first. Then click "Show Answer" to verify.</p>
+
+  <p style="font-size:14px;font-weight:600;color:#3b6d11;margin-bottom:10px">★ Easy — Concepts & Classification</p>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q1: A thermostat reads temperature continuously but outputs only {18°, 19°, 20°, 21°, 22°}C. What type of signal is this?</span><div style="display:flex;gap:8px;align-items:center"><span class="badge easy">Easy</span><button class="sbtn" onclick="togAns('pa1',this)">Show Answer</button></div></div>
+    <div id="pa1" class="pans"><strong>Answer: Continuous-Time, Discrete-Valued (Quantized Analog).</strong><br><br>• Time: The thermostat reads at all times → t ∈ ℝ → Continuous-Time.<br>• Amplitude: Only 5 fixed values {18,19,20,21,22} → Discrete-Valued.<br>• This is NOT digital (digital needs discrete time too). NOT analog (analog needs continuous values too).<br>• Classification: Quantized Analog — top right cell of the 2×2 table.</div>
+  </div>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q2: Is x(t) = 3e^(−2t)u(t) a deterministic or random signal? Evaluate it at t=0.5.</span><div style="display:flex;gap:8px;align-items:center"><span class="badge easy">Easy</span><button class="sbtn" onclick="togAns('pa2',this)">Show Answer</button></div></div>
+    <div id="pa2" class="pans"><strong>Answer: Deterministic.</strong><br><br>It has an exact mathematical formula. Every future value is perfectly calculable.<br><br>At t = 0.5: x(0.5) = 3e^(−2×0.5)u(0.5) = 3e^(−1) × 1 ≈ 3 × 0.368 = 1.104.<br><br>A random signal would not have a formula that gives you this precision.</div>
+  </div>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q3: Identify what type of signal can be stored on a computer and explain why.</span><div style="display:flex;gap:8px;align-items:center"><span class="badge easy">Easy</span><button class="sbtn" onclick="togAns('pa3',this)">Show Answer</button></div></div>
+    <div id="pa3" class="pans"><strong>Answer: Only Digital signals (DT + DV) can be stored on a computer.</strong><br><br>Reason 1 (Discrete-Time): A computer can only store a finite number of samples. CT signals exist at infinitely many time points — impossible to store all of them.<br>Reason 2 (Discrete-Valued): A computer stores numbers in binary (bits). It can only represent a finite set of amplitude values (2^B levels for B bits). Continuous amplitudes would require infinite precision.</div>
+  </div>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q4: Classify a grayscale JPEG image and a 3-axis accelerometer reading as signals (give all applicable labels).</span><div style="display:flex;gap:8px;align-items:center"><span class="badge easy">Easy</span><button class="sbtn" onclick="togAns('pa4',this)">Show Answer</button></div></div>
+    <div id="pa4" class="pans"><strong>Grayscale JPEG:</strong> 2D (depends on x,y position), Digital (discrete pixel positions + 8-bit values = 256 gray levels), Scalar (one brightness value per pixel), Deterministic (same image always).<br><br><strong>3-axis accelerometer:</strong> CT (reads continuously, t∈ℝ), CV (voltage is continuous), Analog, Multichannel (3 channels: x-axis, y-axis, z-axis acceleration), Random (motion is unpredictable).</div>
+  </div>
+
+  <p style="font-size:14px;font-weight:600;color:#ba7517;margin:1.5rem 0 10px">★★ Medium — Transformations & Calculations</p>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q5: Given x(t) = rectangular pulse (1 for 0≤t≤4, 0 elsewhere). Describe y(t) = x(t/2 − 1) fully (domain + values).</span><div style="display:flex;gap:8px;align-items:center"><span class="badge medium">Medium</span><button class="sbtn" onclick="togAns('pa5',this)">Show Answer</button></div></div>
+    <div id="pa5" class="pans"><strong>Step 1 — Factor:</strong> x(t/2 − 1) = x((1/2)(t − 2)). So a = 1/2, shift = +2 (right).<br><br><strong>Step 2 — Find new domain:</strong> x(t) is 1 for 0 ≤ t ≤ 4. We need: 0 ≤ t/2 − 1 ≤ 4. Solving: 1 ≤ t/2 ≤ 5 → 2 ≤ t ≤ 10.<br><br><strong>Step 3 — Result:</strong> y(t) = 1 for 2 ≤ t ≤ 10, and 0 elsewhere. Width = 8 (original width 4, expanded by factor 1/a = 2).<br><br><strong>Check:</strong> Left edge: t/2−1=0 → t=2 ✓. Right edge: t/2−1=4 → t=10 ✓. Width doubled because |a|=1/2 &lt; 1 → expansion by 1/|a|=2. ✓</div>
+  </div>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q6: A signal is sampled at fs = 44,100 Hz with a 24-bit ADC. (a) How many quantization levels? (b) What is sample index n for t = 5.5 ms?</span><div style="display:flex;gap:8px;align-items:center"><span class="badge medium">Medium</span><button class="sbtn" onclick="togAns('pa6',this)">Show Answer</button></div></div>
+    <div id="pa6" class="pans"><strong>(a) Quantization levels:</strong> B = 24 bits → 2²⁴ = 16,777,216 levels (about 16.8 million). This is professional/studio audio quality, far better than 16-bit (65,536 levels).<br><br><strong>(b) Sample index at t = 5.5 ms:</strong><br>n = t × fs = 0.0055 × 44100 = 242.55 ≈ 242 (round to nearest integer).<br><br>Ts = 1/44100 ≈ 22.68 µs per sample. So 5.5 ms ÷ 22.68 µs ≈ 242 samples.</div>
+  </div>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q7: Given x(t) = u(t) − u(t−3) (pulse from 0 to 3). Sketch and describe y(t) = −x(−t + 6).</span><div style="display:flex;gap:8px;align-items:center"><span class="badge medium">Medium</span><button class="sbtn" onclick="togAns('pa7',this)">Show Answer</button></div></div>
+    <div id="pa7" class="pans"><strong>Step 1 — Identify operations in y(t) = −1 · x(−t + 6) = −1 · x(−(t − 6)):</strong><br>• Amplitude: A = −1 (flip upside down)<br>• a = −1 (time reversal)<br>• shift: factor gives x(−(t−6)) → shift right by 6<br><br><strong>Step 2 — Find domain:</strong> x(t) is 1 for 0 ≤ t ≤ 3. Need: 0 ≤ −t+6 ≤ 3 → −6 ≤ −t ≤ −3 → 3 ≤ t ≤ 6.<br><br><strong>Step 3 — Values:</strong> y(t) = −1 × 1 = −1 for 3 ≤ t ≤ 6, zero elsewhere.<br><br><strong>Describe in words:</strong> Original pulse (height +1, domain [0,3]) was reversed (flipped left-right → domain [−3,0], still height +1), then shifted right by 6 (domain [3,6], still height +1), then flipped amplitude (height −1). Result: downward pulse of amplitude −1 from t=3 to t=6.</div>
+  </div>
+
+  <p style="font-size:14px;font-weight:600;color:#a32d2d;margin:1.5rem 0 10px">★★★ Hard — Exam Level</p>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q8: Given x(t) = t² for −1 ≤ t ≤ 2, zero elsewhere. Find y(t) = 2·x(−t/3 + 1). State domain, formula, and all transformations applied.</span><div style="display:flex;gap:8px;align-items:center"><span class="badge hard">Hard</span><button class="sbtn" onclick="togAns('pa8',this)">Show Answer</button></div></div>
+    <div id="pa8" class="pans"><strong>Step 1 — Parse and factor:</strong><br>y(t) = 2 · x(−t/3 + 1) = 2 · x(−(1/3)(t − 3))<br>So: amplitude A=2, scale a=−1/3 (|a|=1/3 → expand ×3, and negative → reversal), shift = +3 (right).<br><br><strong>Step 2 — Find new domain by solving for original argument range:</strong><br>x(u) is nonzero for −1 ≤ u ≤ 2 where u = −t/3 + 1.<br>Left boundary: −t/3 + 1 = −1 → −t/3 = −2 → t = 6.<br>Right boundary: −t/3 + 1 = 2 → −t/3 = 1 → t = −3.<br>Since the signal is reversed (a &lt; 0), the boundaries swap: t ∈ [−3, 6].<br><br><strong>Step 3 — Formula within domain:</strong><br>y(t) = 2·x(−t/3+1) = 2·(−t/3+1)² for −3 ≤ t ≤ 6, zero elsewhere.<br><br><strong>Step 4 — Summary of transformations applied to x(t):</strong><br>1. Time reverse: x(−t) — flip around t=0<br>2. Expand by 3: x(−t/3) — stretch by factor 3<br>3. Shift right by 3: x(−(t−3)/3) = x(−t/3+1) — move to the right<br>4. Amplitude scale by 2: 2·x(−t/3+1) — double the height<br><br>Width of original: 2−(−1)=3 → Width of transformed: 3 × (1/|a|) = 3 × 3 = 9. Check: 6−(−3)=9. ✓</div>
+  </div>
+
+  <div class="pcard">
+    <div class="phdr"><span class="phdr-q">Q9: True or False with explanation: (a) Every discrete-time signal is a digital signal. (b) x[n] = cos(πn/4) is both DT and deterministic. (c) Multichannel means multidimensional. (d) A 24-bit ADC is always better than a 16-bit ADC.</span><div style="display:flex;gap:8px;align-items:center"><span class="badge hard">Hard</span><button class="sbtn" onclick="togAns('pa9',this)">Show Answer</button></div></div>
+    <div id="pa9" class="pans"><strong>(a) False.</strong> DT means discrete time axis only. Digital requires BOTH discrete time AND discrete values. A DT signal with continuous-valued amplitude (e.g., computed in floating-point) is DT but not digital.<br><br><strong>(b) True.</strong> x[n] uses square brackets → DT. It has a precise formula cos(πn/4) → deterministic. At n=4: x[4] = cos(π) = −1. Predictable at any n.<br><br><strong>(c) False.</strong> Multichannel = multiple signals in a vector (e.g., ECG 3-lead). Multidimensional = one signal depending on multiple variables (e.g., image I(x,y)). They are independent concepts. A signal can be one, both, or neither.<br><br><strong>(d) Not always.</strong> 24-bit gives 2²⁴ = 16.7M levels vs 16-bit's 65,536 levels — 24-bit has much finer amplitude resolution, which is better in most cases. However, it requires more storage and processing power. For some applications (e.g., basic telephony), 16-bit is more than sufficient. "Better" depends on the application requirements.</div>
+  </div>
+</div>
+
+<!-- ===== EXAM STRATEGY ===== -->
+<div id="exam" class="section">
+  <p class="sec-hdr">Exam Strategy — How to Score Maximum Marks</p>
+
+  <div class="card">
+    <h3>Common exam question patterns</h3>
+    <div class="step"><div class="stepn">1</div><div class="stepbody"><strong style="font-size:15px">Classification questions</strong><br><span style="font-size:13px;color:#444">Given a real-world scenario or formula, classify the signal. These are the most frequent. Always tick off the checklist mentally: CT/DT? CV/DV? Deterministic/Random? 1D/Multi? Multichannel?</span></div></div>
+    <div class="step"><div class="stepn">2</div><div class="stepbody"><strong style="font-size:15px">Transformation questions (sketch or describe)</strong><br><span style="font-size:13px;color:#444">Given x(t) and y(t) = expression, describe or sketch y(t). Use the factor method. Track boundaries. Verify with spot-checks.</span></div></div>
+    <div class="step"><div class="stepn">3</div><div class="stepbody"><strong style="font-size:15px">ADC / sampling calculations</strong><br><span style="font-size:13px;color:#444">levels = 2^B, t = n/fs, n = t×fs. Short calculations, easy marks.</span></div></div>
+    <div class="step"><div class="stepn">4</div><div class="stepbody"><strong style="font-size:15px">True/False or MCQ on definitions</strong><br><span style="font-size:13px;color:#444">Know the 2×2 table. Know notation (round vs square brackets). Know that "digital" = DT AND DV, not just one.</span></div></div>
+    <div class="step"><div class="stepn">5</div><div class="stepbody"><strong style="font-size:15px">System identification</strong><br><span style="font-size:13px;color:#444">Given y(t) = H{x(t)}, identify what operation H performs (delay, amplification, integration, etc.)</span></div></div>
+  </div>
+
+  <div class="card">
+    <h3>Problem-solving checklist for transformation questions</h3>
+    <div class="ok">
+      For y(t) = A · x(at + b):<br><br>
+      □ Step 1: Factor → y(t) = A · x(a(t + b/a))<br>
+      □ Step 2: Identify A (amplitude), a (scale/direction), b/a (shift amount)<br>
+      □ Step 3: Note if a &lt; 0 (reversal will happen)<br>
+      □ Step 4: Find new domain by substituting original boundaries into the argument<br>
+      □ Step 5: Write the formula within the new domain<br>
+      □ Step 6: Verify 2-3 specific points (plug t value, check output matches expected)
+    </div>
+    <div class="info">
+      For classification questions:<br><br>
+      □ What type is the independent variable (time, space)?<br>
+      □ Is it defined at every instant? → CT. At integer indices only? → DT.<br>
+      □ Can amplitude be any real number? → CV. From a finite set? → DV.<br>
+      □ DT + DV = Digital (the only kind computers can store).<br>
+      □ Is there an exact formula? → Deterministic. No formula, unpredictable? → Random.<br>
+      □ One variable (time) → 1D. Multiple variables → Multidimensional.<br>
+      □ One value per point → Scalar. Multiple values per point → Multichannel.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Time management strategy</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0">
+      <div class="ok" style="text-align:center"><strong>Easy (1-2 min)</strong><br><span style="font-size:12px">Classification, notation, definitions, ADC calculations</span><br><br><span style="font-size:13px">Do FIRST. Easy marks.</span></div>
+      <div class="warn" style="text-align:center"><strong>Medium (3-5 min)</strong><br><span style="font-size:12px">Single transformation, stem plot reading, boundary tracking</span><br><br><span style="font-size:13px">Use the factor method systematically.</span></div>
+      <div class="danger-box" style="text-align:center"><strong>Hard (5-10 min)</strong><br><span style="font-size:12px">Combined transformations, multi-step problems</span><br><br><span style="font-size:13px">Attempt last. Show ALL steps for partial credit.</span></div>
+    </div>
+    <div class="info"><strong>Partial credit strategy:</strong> Even if you can't complete a hard problem, write: (1) the factored form, (2) the identified parameters (A, a, shift), (3) the transformation order. Examiners award marks for correct method even with a wrong final answer.</div>
+  </div>
+
+  <div class="card">
+    <h3>Things that are always tested</h3>
+    <ul style="font-size:14px;color:#444;line-height:2.2;padding-left:1.2rem">
+      <li>The 2×2 classification table and which cell a given signal belongs to</li>
+      <li>Round vs square bracket notation</li>
+      <li>Time shift direction (t−t₀ moves RIGHT for t₀ &gt; 0)</li>
+      <li>Order of combined operations (shift before scale)</li>
+      <li>ADC levels formula: 2ᴮ</li>
+      <li>Difference between multichannel and multidimensional</li>
+      <li>Why random signals use statistics (not formulas)</li>
+      <li>Definition of a system and the y(t) = H{x(t)} notation</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== CHEAT SHEET ===== -->
+<div id="cheat" class="section">
+  <p class="sec-hdr">📋 Cheat Sheet & Quick Revision Guide</p>
+  <p style="font-size:13px;color:#888780;margin-bottom:1rem">Everything you need for last-minute revision before an exam.</p>
+
+  <div class="card">
+    <h3>⭐ Master Classification Table</h3>
+    <table class="ct">
+      <tr><th></th><th style="color:#185fa5">Continuous Value (CV)</th><th style="color:#3b6d11">Discrete Value (DV)</th></tr>
+      <tr><th style="color:#185fa5">Continuous Time (CT)</th><td><strong>Analog</strong><br><span class="mini-mono">x(t) ∈ ℝ, t ∈ ℝ</span><br>microphone, sensor</td><td><strong>Quantized Analog</strong><br><span class="mini-mono">x(t) ∈ {Lᵢ}, t ∈ ℝ</span><br>thermostat output</td></tr>
+      <tr><th style="color:#ba7517">Discrete Time (DT)</th><td><strong>Sampled</strong><br><span class="mini-mono">x[n] ∈ ℝ, n ∈ ℤ</span><br>floating-point DSP</td><td style="background:#eef4fc"><strong>⭐ Digital</strong><br><span class="mini-mono">x[n] ∈ {Lᵢ}, n ∈ ℤ</span><br>MP3, JPEG, computers</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>All Definitions</h3>
+    <div class="chrow"><span class="chlbl">Signal</span><span>Physical quantity carrying information: s = f(variable). Can be measured, recorded, processed.</span></div>
+    <div class="chrow"><span class="chlbl">CT signal x(t)</span><span>Defined for all t ∈ ℝ. Round brackets. Smooth curve. From real-world sensors.</span></div>
+    <div class="chrow"><span class="chlbl">DT signal x[n]</span><span>Defined only at integers n ∈ ℤ. Square brackets. Stem plot. From sampling.</span></div>
+    <div class="chrow"><span class="chlbl">Analog</span><span>CT + CV. Both axes continuous. e.g., microphone voltage.</span></div>
+    <div class="chrow"><span class="chlbl">Digital</span><span>DT + DV. Both axes discrete. Only type computers can store.</span></div>
+    <div class="chrow"><span class="chlbl">Deterministic</span><span>Has exact mathematical formula. Perfectly predictable. e.g., sin(t), e^(-αt).</span></div>
+    <div class="chrow"><span class="chlbl">Random</span><span>No formula. Unpredictable. Use statistics. e.g., noise, speech, seismic.</span></div>
+    <div class="chrow"><span class="chlbl">Multichannel</span><span>Multiple signals as vector: s(t) = [s₁,s₂,s₃]ᵀ. e.g., ECG 3-lead, RGB.</span></div>
+    <div class="chrow"><span class="chlbl">Multidimensional</span><span>Signal depends on multiple variables. e.g., I(x,y) image, I(x,y,t) video.</span></div>
+    <div class="chrow"><span class="chlbl">System</span><span>Transforms input to output: y(t) = H{x(t)}. e.g., amplifier, filter, delay.</span></div>
+    <div class="chrow"><span class="chlbl">ADC levels</span><span>N = 2^B for B-bit ADC. 16-bit = 65,536. 24-bit = 16,777,216.</span></div>
+    <div class="chrow"><span class="chlbl">Sampling timing</span><span>t = n/fs = n·Ts. Inverse: n = t × fs. Both convert between sample index and real time.</span></div>
+    <div class="chrow"><span class="chlbl">Sinusoid</span><span>x(t) = A cos(2πf₀t + φ). Period T₀ = 1/f₀. Amplitude A. Phase φ.</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Signal Operations Quick Reference</h3>
+    <div class="chrow"><span class="chlbl">Amplitude scale</span><span>y(t) = A·x(t). Stretches/compresses vertically. A&gt;1: amplify. 0&lt;A&lt;1: attenuate. A&lt;0: flip+scale.</span></div>
+    <div class="chrow"><span class="chlbl">Time shift</span><span>y(t) = x(t−t₀). t₀&gt;0: shift RIGHT (delay). t₀&lt;0: shift LEFT (advance). Shape unchanged.</span></div>
+    <div class="chrow"><span class="chlbl">Time scale</span><span>y(t) = x(at). |a|&gt;1: compress/faster. |a|&lt;1: expand/slower. New period = T₀/|a|.</span></div>
+    <div class="chrow"><span class="chlbl">Time reversal</span><span>y(t) = x(−t). Flip around t=0 axis. Feature at t₁ moves to −t₁.</span></div>
+    <div class="chrow"><span class="chlbl">Combined</span><span>y(t) = x(at+b): Factor → x(a(t+b/a)). Order: (1) shift by −b/a, (2) scale by |a|, (3) if a&lt;0 reverse. Always shift BEFORE scale.</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Analog vs Digital Quick Comparison</h3>
+    <table class="ct">
+      <tr><th>Feature</th><th>Analog</th><th>Digital</th></tr>
+      <tr><td>Signal form</td><td>Continuous smooth values</td><td>Discrete binary values (bits)</td></tr>
+      <tr><td>Noise immunity</td><td>Low — noise accumulates</td><td>High — error correction possible</td></tr>
+      <tr><td>Storage</td><td>Degrades (tape, film)</td><td>Lossless (HDD, cloud)</td></tr>
+      <tr><td>Flexibility</td><td>Fixed hardware</td><td>Reprogrammable software</td></tr>
+      <tr><td>Precision</td><td>Limited by components</td><td>Exactly set by bit depth</td></tr>
+      <tr><td>Speed</td><td>Very fast</td><td>Needs fast ADC clock</td></tr>
+    </table>
+    <p style="font-size:12px;color:#888780;margin-top:8px">Neither is universally better. Modern systems combine both — analog for sensing the physical world, digital for storage, transmission, and processing.</p>
+  </div>
+
+  <div class="card">
+    <h3>Key Formulas</h3>
+    <code class="block">Sinusoid:     x(t) = A cos(2πf₀t + φ)    T₀ = 1/f₀
+DT sampling:  t = n·Ts = n/fs             n = t × fs
+ADC:          N = 2^B levels              (B = bit depth)
+System:       y(t) = H{x(t)}
+Color video:  I(x,y,t) = [Iᴿ, Iᴳ, Iᴮ]ᵀ   ← multichannel + 3D
+Quantization: Δ = (x_max − x_min) / 2^B  (step size)</code>
+  </div>
+
+  <div class="card">
+    <h3>Mental Model — Signal Universe Map</h3>
+    <code class="block">Every signal can be described by 6 independent properties:
+
+1. Time axis:      Continuous-Time x(t)  vs  Discrete-Time x[n]
+2. Amplitude axis: Continuous-Value       vs  Discrete-Value
+   → CT + CV = Analog     DT + DV = Digital ⭐ (only type storable on PC)
+
+3. Predictability: Deterministic (formula)  vs  Random (statistics)
+
+4. Dimensions:    1D s(t)  vs  2D I(x,y)  vs  3D I(x,y,t)  vs  ...
+
+5. Channels:      Scalar s(t)  vs  Vector (multichannel) s(t)=[s₁,s₂,s₃]ᵀ
+
+6. Value type:    Real s(t)∈ℝ  vs  Complex s(t)=a+jb</code>
+    <div class="ok" style="margin-top:12px"><strong>🧠 Golden rule:</strong> When you see any signal in an exam — before doing anything else — classify it on ALL 6 properties above. This prevents mistakes and earns classification marks automatically.</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'viz') setTimeout(initViz, 60);
+}
+
+function togAns(id, btn) {
+  const el = document.getElementById(id);
+  const show = el.style.display !== 'block';
+  el.style.display = show ? 'block' : 'none';
+  btn.textContent = show ? 'Hide Answer' : 'Show Answer';
+  btn.classList.toggle('active', show);
+}
+
+function selSig(type) {
+  document.querySelectorAll('#viz .sbtn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  drawMain(type);
+}
+
+const C = {
+  blue: '#185fa5', blueL: '#eef4fc',
+  amber: '#ba7517', amberL: '#fef7ea',
+  green: '#3b6d11', greenL: '#f0f7e4',
+  red: '#a32d2d', redL: '#fef0f0',
+  gray: '#888780', grayL: '#f0ede7',
+  bg: '#f0ede7', line: '#c8c4bc',
+  purple: '#3c3489', purpleL: '#ededfe',
+};
+
+function drawAxes2(ctx, W, H, xr, yr, xlabel) {
+  const p = {l:38, r:12, t:16, b:28};
+  const pw = W-p.l-p.r, ph = H-p.t-p.b;
+  const [x0,x1] = xr, [y0,y1] = yr;
+  const tx = x => p.l + (x-x0)/(x1-x0)*pw;
+  const ty = y => p.t + (1-(y-y0)/(y1-y0))*ph;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#d8d5cf'; ctx.lineWidth = 0.5;
+  for(let x=Math.ceil(x0);x<=x1;x++) { ctx.beginPath();ctx.moveTo(tx(x),p.t);ctx.lineTo(tx(x),p.t+ph);ctx.stroke(); }
+  for(let y=Math.ceil(y0);y<=y1;y++) { ctx.beginPath();ctx.moveTo(p.l,ty(y));ctx.lineTo(p.l+pw,ty(y));ctx.stroke(); }
+  ctx.strokeStyle = '#888780'; ctx.lineWidth = 1;
+  ctx.beginPath();ctx.moveTo(p.l,ty(0));ctx.lineTo(p.l+pw,ty(0));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(tx(0),p.t);ctx.lineTo(tx(0),p.t+ph);ctx.stroke();
+  ctx.fillStyle = '#888780'; ctx.font = '10px sans-serif'; ctx.textAlign='center';
+  [x0,0,x1].forEach(v => {if(v!==0)ctx.fillText(v,tx(v),p.t+ph+16);});
+  ctx.textAlign='right';
+  [-1,0,1].forEach(v => {if(v>=y0&&v<=y1)ctx.fillText(v,p.l-3,ty(v)+4);});
+  ctx.fillStyle='#888780';ctx.textAlign='center';ctx.fillText(xlabel,p.l+pw/2,H-3);
+  return {tx,ty,p,pw,ph};
+}
+
+function drawMain(type) {
+  const cv = document.getElementById('cMain');
+  const W = cv.clientWidth || 600, H = 200;
+  cv.width = W * (window.devicePixelRatio||1);
+  cv.height = H * (window.devicePixelRatio||1);
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+  const {tx,ty} = drawAxes2(ctx,W,H,[-5,5],[-1.5,1.5],type==='ct'||type==='sinusoid'?'t':'n');
+  const descs = {
+    ct:'Continuous-Time Analog x(t): smooth curve defined for every t ∈ ℝ. No gaps. This is what comes out of a microphone or sensor. Notation uses round brackets.',
+    dt:'Discrete-Time signal x[n]: defined only at integer n. Drawn as a stem plot. Amplitude is still continuous (any real number). Obtained by sampling a CT signal. Notation uses square brackets.',
+    digital:'Digital signal: discrete in BOTH time and value. Stems can only land on fixed amplitude levels (shown as dashed lines). This is what a computer actually stores (e.g., 16-bit audio has 65,536 levels).',
+    random:'Random signal: cannot be predicted from a formula. Each realization looks different. Analyzed using probability (mean, variance, power spectrum). Examples: thermal noise, speech, seismic data.',
+    sinusoid:'Deterministic sinusoid x(t) = A cos(2πf₀t + φ): perfectly predictable from its formula at every instant. Parameters: A=amplitude, f₀=frequency, T₀=1/f₀=period, φ=phase.',
+  };
+  document.getElementById('signal-desc').textContent = descs[type];
+  ctx.lineWidth = 2.5;
+  if (type==='ct') {
+    ctx.strokeStyle = C.blue; ctx.beginPath(); let first=true;
+    for(let i=0;i<=800;i++){const t=-5+i*10/800; const y=Math.sin(2*Math.PI*t/2.5); first?(ctx.moveTo(tx(t),ty(y)),first=false):ctx.lineTo(tx(t),ty(y));}
+    ctx.stroke();
+  } else if (type==='sinusoid') {
+    ctx.strokeStyle = C.purple; ctx.beginPath(); let first=true;
+    for(let i=0;i<=800;i++){const t=-5+i*10/800; const y=Math.cos(2*Math.PI*t/2); first?(ctx.moveTo(tx(t),ty(y)),first=false):ctx.lineTo(tx(t),ty(y));}
+    ctx.stroke();
+    ctx.strokeStyle=C.purple+'44'; ctx.setLineDash([4,4]); ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(tx(-5),ty(1));ctx.lineTo(tx(5),ty(1));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(tx(-5),ty(-1));ctx.lineTo(tx(5),ty(-1));ctx.stroke();
+    ctx.setLineDash([]);
+  } else if (type==='dt') {
+    for(let n=-5;n<=5;n++){const y=Math.cos(2*Math.PI*n/8); ctx.strokeStyle=C.amber; ctx.lineWidth=2; ctx.beginPath();ctx.moveTo(tx(n),ty(0));ctx.lineTo(tx(n),ty(y));ctx.stroke(); ctx.beginPath();ctx.arc(tx(n),ty(y),4,0,Math.PI*2);ctx.fillStyle=C.amber;ctx.fill();}
+  } else if (type==='digital') {
+    const lvls = [-1,-0.5,0,0.5,1];
+    ctx.setLineDash([4,4]); ctx.strokeStyle='#c8c4bc'; ctx.lineWidth=0.8;
+    lvls.forEach(l=>{ctx.beginPath();ctx.moveTo(38,ty(l));ctx.lineTo(W-12,ty(l));ctx.stroke();});
+    ctx.setLineDash([]);
+    for(let n=-5;n<=5;n++){const raw=Math.cos(2*Math.PI*n/8); const q=lvls.reduce((a,b)=>Math.abs(b-raw)<Math.abs(a-raw)?b:a); ctx.strokeStyle=C.green;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(tx(n),ty(0));ctx.lineTo(tx(n),ty(q));ctx.stroke();ctx.beginPath();ctx.arc(tx(n),ty(q),4,0,Math.PI*2);ctx.fillStyle=C.green;ctx.fill();}
+  } else if (type==='random') {
+    const vals=[0.3,-0.7,0.1,0.85,-0.4,-0.8,0.6,0.2,-0.55,0.72,-0.2,0.8];
+    for(let n=-5;n<=5;n++){const y=vals[(n+6+12)%12]; ctx.strokeStyle=C.red;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(tx(n),ty(0));ctx.lineTo(tx(n),ty(y));ctx.stroke();ctx.beginPath();ctx.arc(tx(n),ty(y),4,0,Math.PI*2);ctx.fillStyle=C.red;ctx.fill();}
+  }
+}
+
+function redrawOps() {
+  const sh = parseFloat(document.getElementById('sl-shift').value);
+  const sc = parseFloat(document.getElementById('sl-scale').value);
+  const am = parseFloat(document.getElementById('sl-amp').value);
+  const rv = document.getElementById('ck-rev').checked;
+  document.getElementById('vshift').textContent = sh.toFixed(2);
+  document.getElementById('vscale').textContent = sc.toFixed(2);
+  document.getElementById('vamp').textContent = am.toFixed(2);
+
+  function rect(u) { return (u>=-0.5&&u<=0.5)?1:0; }
+
+  function drawSig(cvId, fn, color) {
+    const cv = document.getElementById(cvId);
+    const W = cv.clientWidth || 280, H = 170;
+    cv.width = W*(window.devicePixelRatio||1); cv.height = H*(window.devicePixelRatio||1);
+    cv.style.width=W+'px'; cv.style.height=H+'px';
+    const ctx=cv.getContext('2d'); ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+    const {tx,ty} = drawAxes2(ctx,W,H,[-5,5],[-2.5,2.5],'t');
+    ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.beginPath(); let first=true;
+    const steps=3000;
+    for(let i=0;i<=steps;i++){const t=-5+i*10/steps; const y=fn(t); first?(ctx.moveTo(tx(t),ty(y)),first=false):ctx.lineTo(tx(t),ty(y));}
+    ctx.stroke();
+  }
+
+  drawSig('cOrig', t => rect(t), C.gray);
+  drawSig('cTrans', t => { let arg = rv ? -(sc*t+sh) : sc*t+sh; return am*rect(arg); }, C.blue);
+
+  let lbl = '';
+  if(am!==1) lbl += am.toFixed(1)+'·';
+  lbl += 'x(';
+  if(rv) { if(sc!==1) lbl+=(-sc).toFixed(1)+'t'; else lbl+='-t'; } else { if(sc!==1) lbl+=sc.toFixed(1)+'t'; else lbl+='t'; }
+  if(sh>0) lbl+='+'+sh.toFixed(2); else if(sh<0) lbl+=sh.toFixed(2);
+  lbl+=')';
+  document.getElementById('lbl-trans').textContent = 'Transformed: y(t) = '+lbl;
+
+  let parts=[];
+  if(sh!==0) parts.push(`shift ${sh>0?'right':'left'} by ${Math.abs(sh).toFixed(2)}`);
+  if(sc!==1) parts.push(`scale ×${sc.toFixed(2)} (${sc>1?'compress':'expand'})`);
+  if(rv) parts.push('time reversal (a<0)');
+  if(am!==1) parts.push(`amplitude ×${am.toFixed(2)} (${am<0?'flip+scale':am>1?'amplify':'attenuate'})`);
+  document.getElementById('ops-desc').textContent = parts.length?parts.join(' → '):'No transformation applied. Adjust the sliders.';
+}
+
+function drawClassification() {
+  const cv = document.getElementById('cClass');
+  const W = cv.clientWidth || 640, H = 320;
+  cv.width = W*(window.devicePixelRatio||1); cv.height = H*(window.devicePixelRatio||1);
+  cv.style.width=W+'px'; cv.style.height=H+'px';
+  const ctx = cv.getContext('2d'); ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+  const pw=(W-60)/2, ph=(H-60)/2;
+  const labels = ['Analog\nCT + CV','Quantized Analog\nCT + DV','Sampled\nDT + CV','Digital ⭐\nDT + DV'];
+  const colors = [C.blue, C.purple, C.amber, C.green];
+  const positions = [[10,10],[W/2+10,10],[10,H/2+10],[W/2+10,H/2+10]];
+
+  positions.forEach(([ox,oy],i)=>{
+    const col = colors[i];
+    ctx.fillStyle = col+'18'; ctx.strokeStyle = col; ctx.lineWidth = 1;
+    ctx.beginPath();ctx.roundRect?ctx.roundRect(ox,oy,pw-10,ph-10,8):ctx.rect(ox,oy,pw-10,ph-10);ctx.fill();ctx.stroke();
+    const [title,sub] = labels[i].split('\n');
+    ctx.fillStyle = col; ctx.font='bold 13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(title, ox+(pw-10)/2, oy+24);
+    ctx.fillStyle='#888780'; ctx.font='11px sans-serif';
+    ctx.fillText(sub, ox+(pw-10)/2, oy+40);
+
+    const lx=ox+16, ly=oy+60, lw=pw-42, lh=ph-80;
+    const tx2=x=>lx+x/8*lw+lw/2, ty2=y=>ly+lh/2-(y/1.2*lh/2);
+
+    if(i===0){
+      ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();let f=true;
+      for(let j=0;j<=200;j++){const t=-4+j*8/200;const y=Math.sin(2*Math.PI*t/2.5);f?(ctx.moveTo(tx2(t),ty2(y)),f=false):ctx.lineTo(tx2(t),ty2(y));}
+      ctx.stroke();
+    } else if(i===1){
+      const lvls=[-1,-0.5,0,0.5,1];
+      ctx.setLineDash([3,3]);ctx.strokeStyle='#ccc';ctx.lineWidth=0.5;
+      lvls.forEach(l=>{ctx.beginPath();ctx.moveTo(lx,ty2(l));ctx.lineTo(lx+lw,ty2(l));ctx.stroke();});
+      ctx.setLineDash([]);
+      ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();let f=true;
+      for(let j=0;j<=400;j++){const t=-4+j*8/400;const raw=0.7*Math.sin(2*Math.PI*t/2.5);const q=lvls.reduce((a,b)=>Math.abs(b-raw)<Math.abs(a-raw)?b:a);f?(ctx.moveTo(tx2(t),ty2(q)),f=false):ctx.lineTo(tx2(t),ty2(q));}
+      ctx.stroke();
+    } else if(i===2){
+      for(let n=-4;n<=4;n++){const y=0.9*Math.cos(2*Math.PI*n/7);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(tx2(n),ty2(0));ctx.lineTo(tx2(n),ty2(y));ctx.stroke();ctx.beginPath();ctx.arc(tx2(n),ty2(y),3,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+    } else {
+      const lvls=[-1,-0.5,0,0.5,1];
+      ctx.setLineDash([3,3]);ctx.strokeStyle='#ccc';ctx.lineWidth=0.5;
+      lvls.forEach(l=>{ctx.beginPath();ctx.moveTo(lx,ty2(l));ctx.lineTo(lx+lw,ty2(l));ctx.stroke();});
+      ctx.setLineDash([]);
+      for(let n=-4;n<=4;n++){const raw=0.9*Math.cos(2*Math.PI*n/7);const q=lvls.reduce((a,b)=>Math.abs(b-raw)<Math.abs(a-raw)?b:a);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(tx2(n),ty2(0));ctx.lineTo(tx2(n),ty2(q));ctx.stroke();ctx.beginPath();ctx.arc(tx2(n),ty2(q),3,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+    }
+  });
+
+  ctx.fillStyle='#888780'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('← Continuous Time →', W/2, H-8);
+  ctx.save(); ctx.translate(12,H/2); ctx.rotate(-Math.PI/2); ctx.fillText('← Discrete Time | Continuous Time →', 0,0); ctx.restore();
+}
+
+function initViz() {
+  drawMain('ct');
+  redrawOps();
+  drawClassification();
+}
+
+setTimeout(()=>drawMain('ct'), 200);
+</script>
+</body>
+</html>

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numerical Errors — Complete Mastery Guide | CSEMath4641 Lecture 2</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f7f6f3;--bg3:#eeecea;
+  --text:#1a1917;--text2:#5c5a55;--text3:#908e88;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.2);
+  --accent:#1565c0;--acc-bg:#e3edf9;--acc-text:#0a3d78;--acc-bdr:rgba(21,101,192,0.3);
+  --green-bg:#e8f5e9;--green-text:#2e7d32;--green-bdr:rgba(46,125,50,0.28);
+  --amber-bg:#fff8e1;--amber-text:#e65100;--amber-bdr:rgba(230,81,0,0.28);
+  --red-bg:#fde8e8;--red-text:#b71c1c;--red-bdr:rgba(183,28,28,0.28);
+  --purple-bg:#f3e8ff;--purple-text:#6b21a8;--purple-bdr:rgba(107,33,168,0.28);
+  --teal-bg:#e0f7fa;--teal-text:#00695c;--teal-bdr:rgba(0,105,92,0.28);
+  --r:8px;--rl:14px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --mono:'SF Mono','Fira Code',Consolas,monospace;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1b1a18;--bg2:#242320;--bg3:#2d2c29;
+  --text:#e5e3db;--text2:#9a9891;--text3:#6a6860;
+  --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.18);
+  --accent:#6aa3e8;--acc-bg:#0d2540;--acc-text:#90c4f8;--acc-bdr:rgba(100,163,232,0.28);
+  --green-bg:#0d2e10;--green-text:#81c784;--green-bdr:rgba(80,160,82,0.3);
+  --amber-bg:#2e1a00;--amber-text:#ffb74d;--amber-bdr:rgba(220,120,0,0.3);
+  --red-bg:#3b0a0a;--red-text:#ef9a9a;--red-bdr:rgba(180,60,60,0.3);
+  --purple-bg:#1e0f35;--purple-text:#ce93d8;--purple-bdr:rgba(160,100,210,0.3);
+  --teal-bg:#003330;--teal-text:#80cbc4;--teal-bdr:rgba(0,160,140,0.3);
+}}
+body{font-family:var(--font);font-size:15px;line-height:1.7;color:var(--text);background:var(--bg);min-height:100vh}
+
+/* ── NAV ── */
+.topbar{background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 1.5rem}
+.topbar-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:12px;height:54px}
+.logo{font-size:13px;font-weight:600;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.logo span{color:var(--accent)}
+.nscroll{overflow-x:auto;scrollbar-width:none;flex:1}
+.nscroll::-webkit-scrollbar{display:none}
+.nav{display:flex;gap:4px;min-width:max-content;padding:6px 0}
+.nb{background:none;border:1px solid var(--border);border-radius:var(--r);padding:4px 11px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:var(--font);transition:all .15s}
+.nb:hover{background:var(--bg2);color:var(--text)}
+.nb.on{background:var(--acc-bg);color:var(--acc-text);border-color:var(--acc-bdr)}
+
+/* ── LAYOUT ── */
+.page{max-width:960px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.hero{margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+.hero h1{font-size:27px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;line-height:1.25}
+.hero p{color:var(--text2);font-size:14px}
+.tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:11px;padding:2px 9px;border-radius:20px;background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+
+.sec{padding-bottom:2.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+.sec:last-child{border-bottom:none;margin-bottom:0}
+.sec-h{font-size:21px;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:12px;letter-spacing:-.3px}
+.sec-n{width:30px;height:30px;border-radius:50%;background:var(--acc-bg);color:var(--acc-text);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--acc-bdr)}
+.sub-h{font-size:15px;font-weight:700;margin:1.25rem 0 .5rem;color:var(--text)}
+p{margin:.5rem 0;font-size:14px}
+p:first-child{margin-top:0}
+ul,ol{padding-left:1.4rem;margin:.4rem 0}
+li{margin:.25rem 0;font-size:13.5px;line-height:1.65}
+strong{font-weight:700}
+em{font-style:italic}
+
+/* ── CARDS ── */
+.card{border:1px solid var(--border);border-radius:var(--rl);padding:.9rem 1.2rem;margin:.7rem 0;background:var(--bg)}
+.cb{background:var(--acc-bg);border-color:var(--acc-bdr)}
+.cg{background:var(--green-bg);border-color:var(--green-bdr)}
+.ca{background:var(--amber-bg);border-color:var(--amber-bdr)}
+.cr{background:var(--red-bg);border-color:var(--red-bdr)}
+.cp{background:var(--purple-bg);border-color:var(--purple-bdr)}
+.ct{background:var(--teal-bg);border-color:var(--teal-bdr)}
+.card-title{font-weight:700;font-size:14px;margin-bottom:.35rem}
+
+.insight{border-left:3px solid var(--accent);padding:.7rem 1rem;background:var(--bg2);border-radius:0 var(--r) var(--r) 0;margin:.7rem 0;font-size:13.5px}
+.trick{border-left:3px solid var(--amber-text);padding:.7rem 1rem;background:var(--amber-bg);border-radius:0 var(--r) var(--r) 0;margin:.55rem 0;font-size:13.5px}
+.warn{border-left:3px solid var(--red-text);padding:.7rem 1rem;background:var(--red-bg);border-radius:0 var(--r) var(--r) 0;margin:.55rem 0;font-size:13.5px}
+
+/* ── FORMULA ── */
+.formula{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1.25rem;font-family:var(--mono);font-size:13.5px;text-align:center;margin:.7rem 0;letter-spacing:.15px}
+.formula.big{font-size:15px;padding:1rem 1.5rem}
+.formula-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.25rem;font-family:var(--font)}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:.7rem 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:.7rem 0}
+@media(max-width:620px){.g2,.g3{grid-template-columns:1fr}}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin:.7rem 0}
+.sc2{padding:.85rem;background:var(--bg2);border-radius:var(--r);border:1px solid var(--border)}
+.sc2 .sl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:.4rem}
+.sc2 .sv{font-family:var(--mono);font-size:12px;line-height:1.6}
+
+/* ── TABLES ── */
+.tw{overflow-x:auto;margin:.7rem 0;border:1px solid var(--border);border-radius:var(--rl)}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{background:var(--bg2);padding:8px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);font-weight:700;font-size:11px;font-family:var(--font);color:var(--text2);white-space:nowrap;text-align:center}
+table.t th:last-child{border-right:none}
+table.t td{padding:7px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center;font-family:var(--mono);font-size:12px}
+table.t td:last-child{border-right:none}
+table.t tr:last-child td{border-bottom:none}
+table.t tr:nth-child(even) td{background:var(--bg2)}
+.hi{font-weight:700;color:var(--acc-text)}
+.pos{color:var(--green-text)}
+.neg{color:var(--red-text)}
+.sig{background:rgba(220,255,220,.35);font-weight:700}
+.nsig{color:var(--text3)}
+
+/* ── STEPS ── */
+.steps{list-style:none;margin:.7rem 0}
+.step{display:flex;gap:11px;align-items:flex-start;padding:.8rem 1rem;border-radius:var(--r);margin-bottom:5px;border:1px solid var(--border);background:var(--bg);transition:background .15s}
+.step:hover{background:var(--bg2)}
+.sn{min-width:27px;height:27px;border-radius:50%;background:var(--acc-bg);color:var(--acc-text);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;border:1px solid var(--acc-bdr)}
+.sc{flex:1;font-size:13.5px;line-height:1.6}
+.st{font-weight:700;margin-bottom:3px}
+
+/* ── PRACTICE ── */
+.prac{border:1px solid var(--border);border-radius:var(--rl);margin:.7rem 0;overflow:hidden}
+.prac-q{padding:.95rem 1.2rem;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;background:var(--bg);user-select:none;font-size:13.5px}
+.prac-q:hover{background:var(--bg2)}
+.prac-a{padding:.95rem 1.2rem;background:var(--bg2);border-top:1px solid var(--border);display:none;font-size:13.5px}
+.prac-a.open{display:block}
+.ti{font-size:14px;color:var(--text2);flex-shrink:0;transition:transform .2s}
+.prac-q.open .ti{transform:rotate(180deg)}
+.badge{font-size:11px;padding:2px 9px;border-radius:20px;white-space:nowrap;font-weight:600}
+.be{background:var(--green-bg);color:var(--green-text);border:1px solid var(--green-bdr)}
+.bm{background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-bdr)}
+.bh{background:var(--red-bg);color:var(--red-text);border:1px solid var(--red-bdr)}
+.bc{background:var(--purple-bg);color:var(--purple-text);border:1px solid var(--purple-bdr)}
+
+/* ── SIG DIGIT DEMO ── */
+.sigdemo{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin:.7rem 0}
+.sigdemo-q{padding:.9rem 1.2rem;background:var(--bg);display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)}
+.num-display{font-family:var(--mono);font-size:18px;font-weight:700;letter-spacing:2px;cursor:pointer;flex:1}
+.num-display span.sig-d{color:var(--green-text);border-bottom:2.5px solid var(--green-text)}
+.num-display span.nsig-d{color:var(--text3)}
+.sig-count{font-size:13px;color:var(--acc-text);font-weight:700;min-width:120px}
+.reveal-btn{background:none;border:1px solid var(--border2);border-radius:var(--r);padding:4px 12px;font-size:12px;cursor:pointer;color:var(--text2);font-family:var(--font)}
+.reveal-btn:hover{background:var(--bg2)}
+.sig-explain{padding:.75rem 1.2rem;font-size:13px;background:var(--bg2);display:none}
+.sig-explain.open{display:block}
+
+/* ── ERROR CALCULATOR ── */
+.calc-wrap{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin:.7rem 0;background:var(--bg)}
+.calc-head{background:var(--acc-bg);padding:.75rem 1.2rem;border-bottom:1px solid var(--acc-bdr);font-size:14px;font-weight:700;color:var(--acc-text)}
+.calc-body{padding:1rem 1.2rem}
+.calc-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:10px}
+.calc-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.calc-field label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.calc-field input{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:7px 10px;font-size:14px;font-family:var(--mono);color:var(--text);width:100%;outline:none}
+.calc-field input:focus{border-color:var(--accent)}
+.calc-btn{background:var(--acc-bg);color:var(--acc-text);border:1px solid var(--acc-bdr);border-radius:var(--r);padding:8px 18px;font-size:13.5px;cursor:pointer;font-family:var(--font);font-weight:600;white-space:nowrap}
+.calc-btn:hover{filter:brightness(.95)}
+.calc-results{margin-top:8px;display:none}
+.calc-results.show{display:block}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:var(--r);margin-bottom:4px;background:var(--bg2);font-size:13.5px}
+.res-label{color:var(--text2)}
+.res-val{font-family:var(--mono);font-weight:700;color:var(--acc-text)}
+
+/* ── CANVAS ── */
+.canvas-wrap{border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin:.7rem 0;background:var(--bg)}
+canvas{display:block;width:100%}
+
+/* ── SOURCES DIAGRAM ── */
+.tree{display:flex;flex-direction:column;align-items:center;gap:0;margin:.7rem 0}
+.tree-root{background:var(--acc-bg);border:1.5px solid var(--acc-bdr);border-radius:var(--rl);padding:.65rem 1.4rem;font-size:14px;font-weight:700;color:var(--acc-text);text-align:center}
+.tree-line{width:2px;height:24px;background:var(--border2);margin:0 auto}
+.tree-branches{display:flex;gap:16px;justify-content:center;width:100%}
+.tree-branch{display:flex;flex-direction:column;align-items:center;flex:1;max-width:250px}
+.tree-branch-node{border:1.5px solid var(--border2);border-radius:var(--rl);padding:.65rem 1rem;font-size:13.5px;font-weight:700;color:var(--text);text-align:center;background:var(--bg);width:100%}
+.tree-branch-node.round{border-color:var(--red-bdr);background:var(--red-bg);color:var(--red-text)}
+.tree-branch-node.trunc{border-color:var(--purple-bdr);background:var(--purple-bg);color:var(--purple-text)}
+.tree-branch-desc{font-size:12px;color:var(--text2);text-align:center;margin-top:6px;line-height:1.4}
+
+/* ── FOOTER ── */
+.footer{text-align:center;font-size:12px;color:var(--text3);padding:2rem 0 1rem;border-top:1px solid var(--border);margin-top:2rem}
+
+/* ── MISC ── */
+sub{font-size:.8em;vertical-align:sub}sup{font-size:.8em;vertical-align:super}
+.ck{color:var(--green-text);font-weight:700}
+.xx{color:var(--red-text);font-weight:700}
+code{font-family:var(--mono);font-size:.9em;background:var(--bg2);padding:1px 4px;border-radius:4px;border:1px solid var(--border)}
+@media(max-width:620px){.page{padding:1.25rem 1rem 3rem}.topbar{padding:0 1rem}.hero h1{font-size:21px}.sec-h{font-size:18px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo"><span>CSEMath4641</span> · Lecture 2</div>
+    <div class="nscroll"><div class="nav" id="nav">
+      <button class="nb on" onclick="go(1)">1 · Big Picture</button>
+      <button class="nb" onclick="go(2)">2 · Error Types</button>
+      <button class="nb" onclick="go(3)">3 · Sources</button>
+      <button class="nb" onclick="go(4)">4 · Sig Digits</button>
+      <button class="nb" onclick="go(5)">5 · Float & Computer</button>
+      <button class="nb" onclick="go(6)">6 · Propagation</button>
+      <button class="nb" onclick="go(7)">7 · Worked Examples</button>
+      <button class="nb" onclick="go(8)">8 · Visual & Intuition</button>
+      <button class="nb" onclick="go(9)">9 · Mistakes</button>
+      <button class="nb" onclick="go(10)">10 · Exam Strategy</button>
+      <button class="nb" onclick="go(11)">11 · Practice</button>
+      <button class="nb" onclick="go(12)">12 · Exam Mastery</button>
+      <button class="nb" onclick="go(13)">13 · Summary</button>
+    </div></div>
+  </div>
+</div>
+
+<div class="page">
+
+<div class="hero">
+  <h1>Numerical Errors — Complete Mastery Guide</h1>
+  <p>CSEMath4641 · Lecture 2 · Islamic University of Technology · Syed Rifat Raiyan</p>
+  <div class="tags">
+    <span class="tag">Error Types</span><span class="tag">True Error</span><span class="tag">Approximate Error</span>
+    <span class="tag">Significant Digits</span><span class="tag">Round-off Error</span><span class="tag">Truncation Error</span>
+    <span class="tag">Interactive Calculator</span><span class="tag">13 Sections</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 1 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s1">
+  <div class="sec-h"><span class="sec-n">1</span> Big Picture — Why Errors Matter</div>
+
+  <div class="sub-h">The core problem (lecture slide 3)</div>
+  <p>In any numerical analysis, <strong>errors will always arise</strong> during calculations. This is unavoidable — whether we are solving a root-finding problem, integrating a function, or differentiating numerically. The goal is not to eliminate errors (impossible) but to:</p>
+  <div class="g3">
+    <div class="card cb"><div class="card-title">🔍 Identify</div><p style="font-size:13px">Where is the error coming from? What type is it?</p></div>
+    <div class="card ca"><div class="card-title">📏 Quantify</div><p style="font-size:13px">How large is the error? Is it acceptable?</p></div>
+    <div class="card cg"><div class="card-title">⬇️ Minimize</div><p style="font-size:13px">How can we reduce it to meet our tolerance?</p></div>
+  </div>
+  <p>This lecture focuses on the first two — <strong>identifying and quantifying</strong> errors.</p>
+
+  <div class="sub-h">Why computers can't represent numbers perfectly</div>
+  <p>Computers store numbers in binary (base-2) using a <strong>finite number of bits</strong>. Numbers like 1/3 = 0.333333… or π = 3.14159… require <em>infinite</em> digits. A finite register must truncate them — this is the root cause of round-off error. Every time you do arithmetic on a computer, you are operating on approximate values.</p>
+  <div class="insight"><strong>Analogy:</strong> Imagine measuring a 1/3 cup of flour with a measuring cup that only shows 2 decimal places. You pour 0.33 cups. That 0.00333… you lost every time adds up over a recipe with 20 such steps — eventually your bread comes out wrong. Computers face the same problem at scale.</div>
+
+  <div class="sub-h">Real-world consequences of numerical errors</div>
+  <div class="g2">
+    <div class="card cr"><div class="card-title">⚠️ Ariane 5 Rocket (1996)</div><p style="font-size:13px">A 64-bit float was incorrectly converted to a 16-bit integer. The overflow caused the guidance system to crash. The rocket self-destructed 37 seconds after launch. Loss: $500 million.</p></div>
+    <div class="card ca"><div class="card-title">⚠️ Patriot Missile (1991)</div><p style="font-size:13px">A round-off error in time representation (1/10 second) accumulated over 100 hours = 0.34 second tracking error. A Scud missile was not intercepted. 28 soldiers killed.</p></div>
+  </div>
+  <div class="trick">🧠 <strong>The mindset shift:</strong> In pure math, 1/3 + 1/3 + 1/3 = 1. In computer arithmetic, it might be 0.9999999999999999. That tiny gap is what this entire lecture is about.</div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 2 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s2">
+  <div class="sec-h"><span class="sec-n">2</span> Types of Errors</div>
+
+  <!-- TRUE ERROR -->
+  <div class="sub-h">2A · True Error (E<sub>t</sub>) — slides 4–8</div>
+  <div class="card cb">
+    <div class="card-title">Definition</div>
+    <p style="font-size:13.5px">True error E<sub>t</sub> is the difference between the <strong>true (exact)</strong> value and the <strong>approximate</strong> value. Also called the <em>exact error</em> or ground truth error.</p>
+  </div>
+  <div class="formula big"><b>E<sub>t</sub> = True Value − Approximate Value</b></div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Intuition</div>
+      <p style="font-size:13px">Think of archery. The bullseye is the "true value." Where your arrow actually lands is the "approximate value." The distance between them is the true error. E<sub>t</sub> can be positive (you undershoot) or negative (you overshoot).</p>
+    </div>
+    <div class="card ca">
+      <div class="card-title">⚠️ The problem with true error alone</div>
+      <p style="font-size:13px">E<sub>t</sub> = −0.749 seems small. But for a function of order 10<sup>−6</sup>, the same problem gives E<sub>t</sub> = −0.749 × 10<sup>−6</sup>. The error <em>magnitude</em> alone does not tell you how bad the approximation is. We need <strong>scale invariance</strong> — enter relative error.</p>
+    </div>
+  </div>
+
+  <div class="sub-h">2B · Relative True Error (ε<sub>t</sub>) — slides 9–10</div>
+  <div class="card cb">
+    <div class="card-title">Definition</div>
+    <p style="font-size:13.5px">The ratio of the true error to the true value. It tells you what <em>fraction</em> of the true value your error represents.</p>
+  </div>
+  <div class="formula big"><b>ε<sub>t</sub> = True Error / True Value = E<sub>t</sub> / True Value</b></div>
+  <div class="formula">Percentage form: |ε<sub>t</sub>| × 100%</div>
+  <div class="insight"><strong>Intuition:</strong> Missing by 1 kg when weighing a 1000 kg elephant is acceptable (0.1% error). Missing by 1 kg when weighing a 2 kg baby is catastrophic (50% error). The relative error captures this context — same absolute error, completely different significance.</div>
+
+  <div class="sub-h">2C · Approximate Error (E<sub>a</sub>) — slides 11–14</div>
+  <div class="card ct">
+    <div class="card-title">The Practical Problem</div>
+    <p style="font-size:13.5px">When solving a problem <em>numerically</em>, we will <strong>only have access to approximate values</strong> — we don't know the true answer! (If we did, we wouldn't need numerical methods.) So we measure error by comparing successive iterations.</p>
+  </div>
+  <div class="formula big"><b>E<sub>a</sub> = Present Approximation − Previous Approximation</b></div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Intuition</div>
+      <p style="font-size:13px">If you are iteratively zooming in on an answer, the difference between your current guess and previous guess tells you how much you've still changed. When this gap is tiny, you've converged.</p>
+    </div>
+    <div class="card ca">
+      <div class="card-title">Same limitation as E<sub>t</sub></div>
+      <p style="font-size:13px">Again, magnitude alone is misleading. E<sub>a</sub> = −0.383 might be large for a problem with answers near 1, but tiny for a problem with answers near 1,000.</p>
+    </div>
+  </div>
+
+  <div class="sub-h">2D · Relative Approximate Error (ε<sub>a</sub>) — slides 15–16</div>
+  <div class="card cb">
+    <div class="card-title">Definition — the most important formula in iterative methods</div>
+    <p style="font-size:13.5px">Ratio of approximate error to the <em>present</em> approximation. This is the formula from Lecture 1's bisection method stopping criterion.</p>
+  </div>
+  <div class="formula big"><b>ε<sub>a</sub> = E<sub>a</sub> / Present Approximation = (x<sub>m</sub><sup>new</sup> − x<sub>m</sub><sup>old</sup>) / x<sub>m</sub><sup>new</sup></b></div>
+  <div class="formula">Percentage form: |ε<sub>a</sub>| × 100%</div>
+  <div class="formula">Absolute form: |ε<sub>a</sub>| = |Present − Previous| / |Present| × 100%</div>
+
+  <div class="sub-h">Summary of all four error types</div>
+  <div class="tw"><table class="t">
+    <thead><tr><th>Error Type</th><th>Symbol</th><th>Formula</th><th>Needs true value?</th><th>Used when</th></tr></thead>
+    <tbody>
+      <tr><td class="hi">True Error</td><td>E<sub>t</sub></td><td>True − Approx</td><td class="pos">Yes</td><td>True answer known (testing)</td></tr>
+      <tr><td class="hi">Relative True Error</td><td>ε<sub>t</sub></td><td>E<sub>t</sub> / True Value</td><td class="pos">Yes</td><td>Comparing scale-invariantly</td></tr>
+      <tr><td class="hi">Approximate Error</td><td>E<sub>a</sub></td><td>Present − Previous</td><td class="neg">No</td><td>Iterative methods</td></tr>
+      <tr><td class="hi">Relative Approx. Error</td><td>ε<sub>a</sub></td><td>E<sub>a</sub> / Present</td><td class="neg">No</td><td>Stopping criterion (iterative)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sub-h">Interactive Error Calculator</div>
+  <div class="calc-wrap">
+    <div class="calc-head">🔢 Calculate any error type — enter your values</div>
+    <div class="calc-body">
+      <div class="calc-row">
+        <div class="calc-field"><label>True / Exact Value</label><input type="number" id="cv-true" placeholder="e.g. 9.5140" step="any"></div>
+        <div class="calc-field"><label>Current Approximation</label><input type="number" id="cv-curr" placeholder="e.g. 10.263" step="any"></div>
+        <div class="calc-field"><label>Previous Approximation</label><input type="number" id="cv-prev" placeholder="e.g. 9.8800" step="any"></div>
+        <button class="calc-btn" onclick="calcErrors()">Calculate →</button>
+      </div>
+      <div class="calc-results" id="calc-res"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 3 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s3">
+  <div class="sec-h"><span class="sec-n">3</span> Sources of Errors</div>
+
+  <p>Error in solving an engineering or science problem can arise from several factors (slide 24):</p>
+  <div class="g2" style="margin:.7rem 0">
+    <div class="card"><div class="card-title">General sources</div><ul><li><strong>Modeling technique</strong> — the mathematical model uses assumptions that are not perfectly valid</li><li><strong>Mistakes in programs</strong> — bugs in code, incorrect implementation</li><li><strong>Measurement errors</strong> — physical quantities have measurement uncertainty</li></ul></div>
+    <div class="card cb"><div class="card-title">The two inherent numerical sources</div><p style="font-size:13px">In applications of numerical methods themselves, the two errors we focus on are:</p><ul><li><strong>Round-off Error</strong> — caused by approximating <em>numbers</em></li><li><strong>Truncation Error</strong> — caused by approximating <em>mathematical procedures</em></li></ul></div>
+  </div>
+
+  <div class="sub-h">3A · Round-off Error (slide 25)</div>
+  <div class="card cr">
+    <div class="card-title">What it is</div>
+    <p style="font-size:13.5px">A computer can <strong>only represent a number approximately</strong>. Computers store numbers in binary using a finite number of bits. Many real numbers need infinitely many digits (binary or decimal) and must be <em>chopped</em> or <em>rounded</em> to fit in finite memory.</p>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-title">Classic examples</div><ul><li><code>1/3</code> = 0.333333… → stored as 0.333333 → error = 0.0000003̄</li><li><code>π</code> = 3.14159265… → approximated in every program</li><li><code>√2</code> = 1.41421356… → irrational, can never be exact</li></ul></div>
+    <div class="card"><div class="card-title">Why it happens</div><p style="font-size:13px">Computers store numbers in registers with a <strong>finite number of bits</strong>. A 64-bit float has 52 bits of mantissa — about 15-17 significant decimal digits. Any number requiring more precision is automatically rounded. Computers would need infinite bits to be exact.</p></div>
+  </div>
+  <div class="trick">🧠 <strong>Memory trick:</strong> Round-off = rounding a <em>number</em> to fit in memory. Think of it as chopping the tail off an infinite decimal to make it fit in your pocket.</div>
+
+  <div class="sub-h">3B · Truncation Error (slides 26–31)</div>
+  <div class="card cp">
+    <div class="card-title">What it is</div>
+    <p style="font-size:13.5px">Truncation error is the error caused by <strong>approximating a mathematical procedure</strong>. It arises when we replace an exact mathematical operation (infinite series, infinitesimal limit) with a finite approximation.</p>
+  </div>
+
+  <p style="margin-top:.75rem"><strong>Three classic examples from your lecture:</strong></p>
+  <ul class="steps">
+    <li class="step">
+      <span class="sn" style="background:var(--purple-bg);color:var(--purple-text);border-color:var(--purple-bdr)">1</span>
+      <div class="sc">
+        <div class="st">Chopping an infinite series</div>
+        The Maclaurin series for eˣ is: e<sup>x</sup> = 1 + x + x²/2! + x³/3! + x⁴/4! + … (infinite terms)<br>
+        If we use only 3 terms: e<sup>x</sup> ≈ 1 + x + x²/2!<br>
+        <strong>Truncation error = x³/3! + x⁴/4! + …</strong> (all the dropped terms)
+      </div>
+    </li>
+    <li class="step">
+      <span class="sn" style="background:var(--purple-bg);color:var(--purple-text);border-color:var(--purple-bdr)">2</span>
+      <div class="sc">
+        <div class="st">Finite step size for derivatives</div>
+        The exact definition of a derivative requires h → 0: f′(x) = lim<sub>h→0</sub> [f(x+h)−f(x)]/h<br>
+        In numerical methods, we use a <em>finite</em> h: f′(x) ≈ [f(x+h)−f(x)]/h<br>
+        <strong>Truncation error is caused by using a finite h instead of h → 0.</strong><br>
+        Example: f(x) = x², f′(3) = 6 (exact), with h = 0.2: f′(3) ≈ (3.2²−3²)/0.2 = 1.24/0.2 = 6.2 → Truncation error = 6 − 6.2 = <strong>−0.2</strong>
+      </div>
+    </li>
+    <li class="step">
+      <span class="sn" style="background:var(--purple-bg);color:var(--purple-text);border-color:var(--purple-bdr)">3</span>
+      <div class="sc">
+        <div class="st">Finite rectangles for integration</div>
+        The exact integral ∫<sub>3</sub><sup>9</sup> x² dx = [x³/3]<sub>3</sub><sup>9</sup> = (729−27)/3 = <strong>234</strong><br>
+        Using 2 rectangles of equal width: (3²)(3) + (6²)(3) = 27 + 108 = <strong>135</strong><br>
+        <strong>Truncation error = 234 − 135 = 99</strong> (huge — only 2 rectangles is a poor approximation!)
+      </div>
+    </li>
+  </ul>
+  <div class="trick">💡 <strong>Memory trick:</strong> Truncation = truncating (cutting short) a <em>procedure</em>. The procedure wants to go to infinity (infinite series, h→0, infinite rectangles), but you stop it early.</div>
+
+  <div class="sub-h">Round-off vs Truncation — the key difference</div>
+  <div class="g2">
+    <div class="card cr"><div class="card-title">Round-off Error</div><p style="font-size:13px">Error in <strong>representing numbers</strong>. Caused by finite memory. Reduced by using more bits (double vs single precision). <em>Cannot be eliminated entirely.</em></p></div>
+    <div class="card cp"><div class="card-title">Truncation Error</div><p style="font-size:13px">Error in <strong>approximating procedures</strong>. Caused by finite terms/steps. Reduced by using more terms or smaller step size h. <em>Can be made arbitrarily small in principle.</em></p></div>
+  </div>
+
+  <div class="sub-h">The Sources of Error Hierarchy</div>
+  <div class="tree">
+    <div class="tree-root">Numerical Error</div>
+    <div class="tree-line"></div>
+    <div class="tree-branches">
+      <div class="tree-branch">
+        <div class="tree-branch-node round">Round-off Error</div>
+        <div class="tree-branch-desc">Approximating <strong>numbers</strong><br>Finite bits in memory<br>Examples: 1/3, π, √2<br>Reduced by: more bits / double precision</div>
+      </div>
+      <div class="tree-branch">
+        <div class="tree-branch-node trunc">Truncation Error</div>
+        <div class="tree-branch-desc">Approximating <strong>procedures</strong><br>Finite terms / step size<br>Examples: series, h→0, rectangles<br>Reduced by: more terms / smaller h</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 4 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s4">
+  <div class="sec-h"><span class="sec-n">4</span> Significant Digits &amp; Accuracy</div>
+
+  <div class="sub-h">What are significant digits? (slides 17–19)</div>
+  <p>Significant figures (also called significant digits, precision, or resolution) are the digits in a number that are <strong>reliable and necessary</strong> to indicate the quantity. These are the digits you can actually trust.</p>
+  <div class="card cb"><div class="card-title">Practical example from your lecture</div>
+  <p style="font-size:13.5px">Thermal expansion coefficient of steel = 6.47 μin/in/°F = <strong>0.00000647</strong> in/in/°F<br>
+  If written to 2 decimal places: 0.00 in/in/°F — all the information is lost!<br>
+  This is why engineering uses <strong>scientific notation</strong>: 6.47 × 10<sup>−6</sup> preserves all 3 significant digits.</p></div>
+
+  <div class="sub-h">The 4 rules for counting significant digits (slide 18)</div>
+  <ul class="steps">
+    <li class="step"><span class="sn" style="background:var(--green-bg);color:var(--green-text);border-color:var(--green-bdr)">1</span><div class="sc"><div class="st">Non-zero digits are ALWAYS significant</div>1, 2, 3, 4, 5, 6, 7, 8, 9 — every non-zero digit counts. In 2.789, all 4 digits are significant.</div></li>
+    <li class="step"><span class="sn" style="background:var(--green-bg);color:var(--green-text);border-color:var(--green-bdr)">2</span><div class="sc"><div class="st">Zeros BETWEEN non-zero digits are ALWAYS significant</div>4008 has 4 significant digits (the two zeros are sandwiched between 4 and 8). 4208.07 has 6 sig digits.</div></li>
+    <li class="step"><span class="sn" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red-bdr)">3</span><div class="sc"><div class="st">LEADING zeros are NEVER significant</div>0.0439 has only 3 sig digits (4, 3, 9). The leading zeros just mark the position of the decimal — they carry no information.</div></li>
+    <li class="step"><span class="sn" style="background:var(--amber-bg);color:var(--amber-text);border-color:var(--amber-bdr)">4</span><div class="sc"><div class="st">TRAILING zeros are significant ONLY if the number has a decimal point</div>4.590 has 4 sig digits (trailing zero after decimal is significant). 78800 has only 3 (ambiguous). 78800. has 5 (explicit decimal point signals all zeros are significant).</div></li>
+  </ul>
+
+  <div class="sub-h">Significant digit examples (from lecture quiz, slides 20–21)</div>
+  <div id="sigdemos"></div>
+
+  <div class="sub-h">Exact numbers have infinite significant digits (slide 19)</div>
+  <p>If you have exactly 5 books, that's 5.000000… — an infinite number of significant digits. Exact counted quantities are not limited by measurement precision.</p>
+
+  <div class="sub-h">The key relationship: ε<sub>a</sub> and significant digits (slides 22–24)</div>
+  <div class="card cb">
+    <div class="card-title">Critical formula — memorise this</div>
+    <p style="font-size:13.5px">If you want at least <strong>m significant digits</strong> to be correct in your answer, you need the absolute relative approximate error to satisfy:</p>
+    <div class="formula big">|ε<sub>a</sub>| ≤ 0.5 × 10<sup>(2 − m)</sup> %</div>
+    <p style="font-size:13px">Equivalently: stop iterating when |ε<sub>a</sub>| ≤ ε<sub>s</sub> = 0.5 × 10<sup>(2−m)</sup>%</p>
+  </div>
+  <div class="tw"><table class="t">
+    <thead><tr><th>Desired sig digits (m)</th><th>Tolerance ε<sub>s</sub> = 0.5 × 10<sup>(2-m)</sup>%</th><th>Must achieve |ε<sub>a</sub>| ≤</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>0.5 × 10¹ = 5%</td><td>5%</td></tr>
+      <tr><td>2</td><td>0.5 × 10⁰ = 0.5%</td><td>0.5%</td></tr>
+      <tr><td>3</td><td>0.5 × 10⁻¹ = 0.05%</td><td>0.05%</td></tr>
+      <tr><td>4</td><td>0.5 × 10⁻² = 0.005%</td><td>0.005%</td></tr>
+      <tr><td>5</td><td>0.5 × 10⁻³ = 0.0005%</td><td>0.0005%</td></tr>
+    </tbody>
+  </table></div>
+  <div class="insight"><strong>How to find m from a given |ε<sub>a</sub>|:</strong> From the formula |ε<sub>a</sub>| ≤ 0.5 × 10<sup>(2−m)</sup>, solve for m: m ≤ 2 − log<sub>10</sub>(|ε<sub>a</sub>|/0.5). Take the floor of m. That many digits are at least correct.</div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 5 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s5">
+  <div class="sec-h"><span class="sec-n">5</span> Floating Point &amp; Computer Representation</div>
+
+  <div class="sub-h">Why computers introduce round-off error</div>
+  <p>All modern computers use the <strong>IEEE 754 floating-point standard</strong>. A number is stored as: <code>±1.fraction × 2<sup>exponent</sup></code>. The "fraction" part has a fixed number of bits (52 bits in double precision). This means only numbers expressible in this form can be stored exactly. Everything else must be rounded.</p>
+
+  <div class="g2">
+    <div class="card"><div class="card-title">What CAN'T be stored exactly</div><ul><li>Any fraction whose denominator isn't a power of 2</li><li>1/3, 1/5, 1/6, 1/7, 1/9, 1/10…</li><li>Irrational numbers: π, √2, e, ln(2)…</li><li>Very large numbers: 10<sup>300</sup> may overflow</li><li>Very small differences: catastrophic cancellation</li></ul></div>
+    <div class="card"><div class="card-title">What CAN be stored exactly</div><ul><li>Integers (within range)</li><li>Fractions with power-of-2 denominators: 1/2, 1/4, 3/8…</li><li>Small integers: 0, 1, 2, 3, ..., 2<sup>53</sup></li></ul><p style="font-size:12px;margin-top:.5rem">Even 0.1 cannot be stored exactly in binary! It repeats: 0.0001100110011…</p></div>
+  </div>
+
+  <div class="sub-h">Binary representation — the intuition</div>
+  <p>Just as 1/3 in decimal = 0.333… (repeating), many simple fractions in decimal become repeating in binary:</p>
+  <div class="formula">0.1 (decimal) = 0.000110011001100110011… (binary, repeating forever)</div>
+  <p>A 64-bit double stores about 52 bits of the fraction — then it stops. The leftover is your round-off error.</p>
+
+  <div class="sub-h">Chop vs Round (slide 25)</div>
+  <div class="g2">
+    <div class="card cr"><div class="card-title">Chopping (truncation to n digits)</div><p style="font-size:13px">Simply drop all digits past position n. 0.333333… → 0.333333. Always introduces error in one direction (always makes number smaller in magnitude). Asymmetric bias.</p></div>
+    <div class="card cg"><div class="card-title">Rounding (to n digits)</div><p style="font-size:13px">Look at digit n+1. If ≥ 5, round up the last kept digit. 0.333333… → 0.333333 (same here). 3.14159 → 3.1416 (round up). More balanced — errors can go either direction.</p></div>
+  </div>
+
+  <div class="sub-h">The dilemma: smaller h doesn't always mean better (slide 31)</div>
+  <div class="warn">For the numerical derivative f′(x) ≈ [f(x+h)−f(x)]/h: making h very small reduces <strong>truncation error</strong> but increases <strong>round-off error</strong> (because f(x+h) and f(x) become very similar, and their difference loses significant digits — "catastrophic cancellation"). There is an <em>optimal</em> h.</div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 6 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s6">
+  <div class="sec-h"><span class="sec-n">6</span> Error Propagation</div>
+
+  <div class="sub-h">How small errors spread through calculations</div>
+  <p>When you perform a sequence of arithmetic operations on approximate numbers, each operation can amplify, shrink, or compound the errors. This is called <strong>error propagation</strong>.</p>
+
+  <div class="g2">
+    <div class="card cb"><div class="card-title">Addition / Subtraction</div><p style="font-size:13px">Errors add roughly: Δ(a±b) ≈ Δa + Δb. If a and b are close in value and you subtract them, relative error can explode — <strong>catastrophic cancellation</strong>.</p></div>
+    <div class="card cb"><div class="card-title">Multiplication / Division</div><p style="font-size:13px">Relative errors add: Δ(ab)/ab ≈ Δa/a + Δb/b. A 0.01% error in both a and b gives roughly 0.02% relative error in their product.</p></div>
+  </div>
+
+  <div class="sub-h">Catastrophic cancellation — the silent killer</div>
+  <div class="card cr">
+    <div class="card-title">Example</div>
+    <p style="font-size:13.5px">Suppose the true values are a = 1.000001 and b = 1.000000, and your computer stores both rounded to 6 significant digits: â = 1.00000, b̂ = 1.00000.<br>
+    Then â − b̂ = 0, but the true a − b = 0.000001. You've lost all your significant digits in one subtraction!</p>
+  </div>
+
+  <div class="sub-h">Why repeated operations amplify errors</div>
+  <p>In iterative numerical methods (bisection, Newton-Raphson etc.), each iteration involves multiple operations. Errors compound:</p>
+  <ul>
+    <li>Each function evaluation has round-off error</li>
+    <li>Each arithmetic operation introduces another tiny error</li>
+    <li>Over hundreds of iterations, these accumulate</li>
+    <li>Well-designed algorithms are <strong>stable</strong> — errors don't grow exponentially</li>
+    <li>Poorly designed algorithms are <strong>unstable</strong> — tiny initial error grows to dominate the result</li>
+  </ul>
+  <div class="trick">🧠 <strong>Key insight:</strong> Numerical stability is why we care about the ORDER in which we perform operations, not just the operations themselves. (1000000 + 1) − 1000000 gives a very different floating-point result than 1000000 − 1000000 + 1, even though both equal 1 in exact arithmetic.</div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 7 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s7">
+  <div class="sec-h"><span class="sec-n">7</span> Worked Examples</div>
+
+  <!-- EXAMPLE 1 -->
+  <div class="sub-h">Example 1 — True Error (from lecture, slides 5–7)</div>
+  <div class="card cb"><div class="card-title">Problem</div><p style="font-size:13.5px">For f(x) = 7e<sup>0.5x</sup>, using the finite difference approximation f′(x) ≈ [f(x+h)−f(x)]/h with h = 0.3, find: (a) approximate value of f′(2), (b) true value of f′(2), (c) true error.</p></div>
+  <div class="card">
+    <div class="card-title">Solution</div>
+    <p><strong>Part (a) — Approximate value:</strong></p>
+    <div class="formula" style="text-align:left">f′(2) ≈ [f(2+0.3) − f(2)] / 0.3 = [f(2.3) − f(2)] / 0.3<br>
+= [7e<sup>0.5(2.3)</sup> − 7e<sup>0.5(2)</sup>] / 0.3<br>
+= [7e<sup>1.15</sup> − 7e<sup>1.0</sup>] / 0.3<br>
+= [22.107 − 19.028] / 0.3<br>
+= 3.079 / 0.3 = <b>10.263</b></div>
+    <p><strong>Part (b) — True value (using calculus):</strong></p>
+    <div class="formula" style="text-align:left">f(x) = 7e<sup>0.5x</sup> → f′(x) = 7 × 0.5 × e<sup>0.5x</sup> = 3.5e<sup>0.5x</sup><br>
+f′(2) = 3.5 × e<sup>0.5(2)</sup> = 3.5 × e<sup>1</sup> = 3.5 × 2.71828 = <b>9.5140</b></div>
+    <p><strong>Part (c) — True error:</strong></p>
+    <div class="formula" style="text-align:left">E<sub>t</sub> = True value − Approximate value = 9.5140 − 10.263 = <b>−0.749</b></div>
+    <div class="insight">The negative sign means we <em>overestimated</em> — our approximation (10.263) is above the true value (9.5140). The finite step h = 0.3 is too large; the secant line slope overshoots the tangent.</div>
+  </div>
+
+  <!-- EXAMPLE 2 -->
+  <div class="sub-h">Example 2 — Relative True Error (slide 10)</div>
+  <div class="card">
+    <div class="card-title">Continuing from Example 1</div>
+    <div class="formula" style="text-align:left">ε<sub>t</sub> = True Error / True Value = −0.749 / 9.5140 = −0.078726<br>
+Percentage: ε<sub>t</sub> = −0.078726 × 100% = −7.8726%<br>
+Absolute: |ε<sub>t</sub>| = 7.8726%</div>
+    <div class="insight"><strong>Now we can properly interpret the error:</strong> Our approximation is off by 7.87% of the true value. This is meaningful regardless of the scale of f(x). For a function 10<sup>6</sup> times smaller, the relative error would still be 7.87%.</div>
+  </div>
+
+  <!-- EXAMPLE 3 -->
+  <div class="sub-h">Example 3 — Approximate Error (slides 12–13)</div>
+  <div class="card cb"><div class="card-title">Problem</div><p style="font-size:13.5px">For f(x) = 7e<sup>0.5x</sup>, compute f′(2) using h = 0.3 and h = 0.15. Find the approximate error for the h = 0.15 estimate.</p></div>
+  <div class="card">
+    <div class="card-title">Solution</div>
+    <p><strong>f′(2) with h = 0.3 (previous approximation):</strong> = 10.263 (from Example 1)</p>
+    <p><strong>f′(2) with h = 0.15 (present approximation):</strong></p>
+    <div class="formula" style="text-align:left">f′(2) ≈ [f(2.15) − f(2)] / 0.15 = [7e<sup>1.075</sup> − 7e<sup>1.0</sup>] / 0.15<br>
+= [20.510 − 19.028] / 0.15 = 1.482 / 0.15 = <b>9.8800</b></div>
+    <p><strong>Approximate Error:</strong></p>
+    <div class="formula" style="text-align:left">E<sub>a</sub> = Present Approximation − Previous Approximation<br>
+= 9.8800 − 10.263 = <b>−0.38300</b></div>
+  </div>
+
+  <!-- EXAMPLE 4 -->
+  <div class="sub-h">Example 4 — Relative Approximate Error (slide 16)</div>
+  <div class="card">
+    <div class="card-title">Solution (continuing from Example 3)</div>
+    <div class="formula" style="text-align:left">ε<sub>a</sub> = E<sub>a</sub> / Present Approximation = −0.38300 / 9.8800 = −0.038765<br>
+Percentage: ε<sub>a</sub> × 100% = −3.8765%<br>
+Absolute: |ε<sub>a</sub>| = 3.8765%</div>
+  </div>
+
+  <!-- EXAMPLE 5 -->
+  <div class="sub-h">Example 5 — Significant digits from Maclaurin series (slides 23–24)</div>
+  <div class="card cb"><div class="card-title">Problem</div><p style="font-size:13.5px">Use 6 terms of the Maclaurin series for eˣ to compute e<sup>0.7</sup>. How many significant digits can be trusted? (Without knowing the true answer.)</p></div>
+  <div class="card">
+    <div class="card-title">Solution</div>
+    <p><strong>5-term approximation (previous):</strong></p>
+    <div class="formula" style="text-align:left">e<sup>0.7</sup> ≈ 1 + 0.7 + (0.7²/2!) + (0.7³/3!) + (0.7⁴/4!) = 1 + 0.7 + 0.245 + 0.0572 + 0.01 = <b>2.0122</b></div>
+    <p><strong>6-term approximation (current):</strong></p>
+    <div class="formula" style="text-align:left">e<sup>0.7</sup> ≈ 2.0122 + (0.7⁵/5!) = 2.0122 + 0.0014 = <b>2.0136</b></div>
+    <p><strong>Absolute relative approximate error:</strong></p>
+    <div class="formula" style="text-align:left">|ε<sub>a</sub>| = |2.0136 − 2.0122| / 2.0136 × 100% = 0.0014/2.0136 × 100% = <b>0.069527%</b></div>
+    <p><strong>How many significant digits are correct?</strong></p>
+    <div class="formula" style="text-align:left">Need: |ε<sub>a</sub>| ≤ 0.5 × 10<sup>(2−m)</sup>%
+For m=2: 0.5 × 10<sup>0</sup> = 0.5% — is 0.069527% ≤ 0.5%? YES ✓
+For m=3: 0.5 × 10<sup>−1</sup> = 0.05% — is 0.069527% ≤ 0.05%? NO ✗
+∴ At least <b>2 significant digits</b> are correct in the answer 2.0136</div>
+    <div class="insight">(Verification: true e<sup>0.7</sup> ≈ 2.01375 — indeed, "2.0" matches, but the third digit is not reliable.)</div>
+  </div>
+
+  <!-- EXAMPLE 6 -->
+  <div class="sub-h">Example 6 — Truncation error for derivative (slide 30)</div>
+  <div class="card">
+    <div class="card-title">Problem: f(x) = x², find f′(3) numerically with h = 0.2</div>
+    <div class="formula" style="text-align:left">f′(3) = 2x|<sub>x=3</sub> = 6 (exact, from calculus)
+<br><br>Numerical approximation:
+f′(3) ≈ [f(3.2) − f(3)] / 0.2 = [(3.2)² − (3)²] / 0.2 = [10.24 − 9] / 0.2 = 1.24/0.2 = 6.2
+<br><br>Truncation Error = Exact Value − Approximate Value = 6 − 6.2 = <b>−0.2</b></div>
+    <div class="insight">Reducing h would reduce this truncation error — but too small h causes round-off error to dominate. There's an optimal h.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 8 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s8">
+  <div class="sec-h"><span class="sec-n">8</span> Visualisation &amp; Intuition</div>
+
+  <div class="sub-h">The error target analogy</div>
+  <div class="canvas-wrap"><canvas id="targetCanvas" height="220"></canvas></div>
+  <p style="font-size:12px;color:var(--text3);text-align:center;margin-top:.25rem">Accuracy (closeness to true value) vs Precision (consistency of repeated estimates). Can be high/low independently.</p>
+
+  <div class="sub-h">Truncation error visualised — numerical integration</div>
+  <div class="canvas-wrap"><canvas id="integCanvas" height="200"></canvas></div>
+  <p style="font-size:12px;color:var(--text3);text-align:center;margin-top:.25rem">∫₃⁹ x² dx: exact area = 234 (under the curve), 2-rectangle approximation = 135 (grey boxes). Truncation error = 99 = the un-shaded gaps.</p>
+
+  <div class="sub-h">How the relative error links to scale invariance</div>
+  <div class="card cb">
+    <p style="font-size:13.5px">True Error E<sub>t</sub> = −0.749 for both f(x) = 7e<sup>0.5x</sup> and f(x) = 7×10<sup>−6</sup>e<sup>0.5x</sup>.<br>
+    But the Relative True Error |ε<sub>t</sub>| = 7.87% for BOTH cases.<br>
+    This is why relative error is the correct measure — it's scale-invariant. The error as a fraction of the true value is the same regardless of how large or small the quantities are.</p>
+  </div>
+
+  <div class="sub-h">Mental model: the three zones of a number</div>
+  <div class="g3">
+    <div class="card cg"><div class="card-title">🎯 Zero error zone</div><p style="font-size:12.5px">E<sub>t</sub> = 0, |ε<sub>a</sub>| = 0. Perfect answer. Impossible in general with finite-precision computers.</p></div>
+    <div class="card cb"><div class="card-title">✅ Acceptable zone</div><p style="font-size:12.5px">|ε<sub>a</sub>| ≤ ε<sub>s</sub> (below tolerance). Enough significant digits for your purpose. Stop iterating.</p></div>
+    <div class="card cr"><div class="card-title">⚠️ Unacceptable zone</div><p style="font-size:12.5px">|ε<sub>a</sub>| > ε<sub>s</sub>. Not enough significant digits yet. Keep iterating or use more terms.</p></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 9 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s9">
+  <div class="sec-h"><span class="sec-n">9</span> Common Mistakes</div>
+
+  <div class="warn">⚠️ <strong>Mistake 1: Confusing E<sub>t</sub> with ε<sub>t</sub></strong><br>
+  E<sub>t</sub> is the raw error (units preserved). ε<sub>t</sub> is the dimensionless ratio. Always check: does the problem ask for the error, the relative error, or the percentage relative error? These are three different answers.</div>
+
+  <div class="warn">⚠️ <strong>Mistake 2: Wrong denominator in relative error</strong><br>
+  ε<sub>t</sub> = E<sub>t</sub> / <em>True Value</em> (not approximate value). ε<sub>a</sub> = E<sub>a</sub> / <em>Present (current) approximation</em> (not previous). Mixing these up is the #1 formula error.</div>
+
+  <div class="warn">⚠️ <strong>Mistake 3: Forgetting the absolute value</strong><br>
+  Relative errors are often reported as absolute values |ε<sub>t</sub>| and |ε<sub>a</sub>|. The sign of the error tells you direction (overestimate vs underestimate), but for comparing against tolerance, you use the absolute value. Always apply |…| when comparing to ε<sub>s</sub>.</div>
+
+  <div class="warn">⚠️ <strong>Mistake 4: Wrong formula for E<sub>a</sub></strong><br>
+  E<sub>a</sub> = <em>Present</em> − <em>Previous</em> (not Previous − Present, not |Present| − |Previous|). The order matters because the sign tells you if you went up or down in successive approximations.</div>
+
+  <div class="warn">⚠️ <strong>Mistake 5: Confusing truncation error with round-off error</strong><br>
+  Students often say "we stopped at n terms so that's round-off error." No — cutting a series short is truncation error. Round-off error is about finite bit representation of individual numbers. Keeping more terms reduces truncation; using double precision reduces round-off.</div>
+
+  <div class="warn">⚠️ <strong>Mistake 6: Counting significant digits incorrectly</strong><br>
+  "0.0045 has 4 significant digits" — WRONG. Leading zeros are never significant. 0.0045 has only 2 significant digits (4 and 5). Write it in scientific notation to avoid confusion: 4.5 × 10<sup>−3</sup>.</div>
+
+  <div class="warn">⚠️ <strong>Mistake 7: Assuming lower E<sub>t</sub> always means better approximation</strong><br>
+  As your lecture emphasises (slide 8): a low true error does NOT necessarily mean a good approximation. A true error of 0.001 for a function of order 10<sup>−6</sup> would be catastrophic. Always use relative error for interpreting "how good is my approximation."</div>
+
+  <div class="warn">⚠️ <strong>Mistake 8: Significant digits in 78800 vs 78800.</strong><br>
+  78800 (no decimal point) = 3 significant digits (ambiguous trailing zeros). 78800. (with explicit decimal) = 5 significant digits. The decimal point is the signal.</div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 10 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s10">
+  <div class="sec-h"><span class="sec-n">10</span> Problem-Solving Strategy</div>
+
+  <div class="sub-h">The universal exam protocol for error problems</div>
+  <ul class="steps">
+    <li class="step"><span class="sn">1</span><div class="sc"><div class="st">Read carefully — identify what's asked</div>Is it E<sub>t</sub>, ε<sub>t</sub>, E<sub>a</sub>, or ε<sub>a</sub>? As a percentage? As an absolute value? Write down the formula before calculating.</div></li>
+    <li class="step"><span class="sn">2</span><div class="sc"><div class="st">Identify your values</div>Label: true value, approximate value, present approximation, previous approximation. Write them clearly before substituting into formulas.</div></li>
+    <li class="step"><span class="sn">3</span><div class="sc"><div class="st">Apply the correct formula</div>E<sub>t</sub> = True − Approx. ε<sub>t</sub> = E<sub>t</sub>/True. E<sub>a</sub> = Present − Previous. ε<sub>a</sub> = E<sub>a</sub>/Present. Double-check your denominator every time.</div></li>
+    <li class="step"><span class="sn">4</span><div class="sc"><div class="st">Check sign vs absolute value</div>The question may ask for the signed value or |…|. Report both if unsure: e.g. "ε<sub>t</sub> = −7.87%, |ε<sub>t</sub>| = 7.87%"</div></li>
+    <li class="step"><span class="sn">5</span><div class="sc"><div class="st">For significant digits: use the tolerance formula</div>To check m correct digits, verify |ε<sub>a</sub>| ≤ 0.5 × 10<sup>(2-m)</sup>%. Check m=1, 2, 3… until the condition fails. The largest m that satisfies it is your answer.</div></li>
+  </ul>
+
+  <div class="sub-h">Fast calculation tricks</div>
+  <ul>
+    <li>For ε<sub>t</sub>: compute E<sub>t</sub> first, then divide by true value. Don't mix the formulas.</li>
+    <li>For the tolerance formula: 0.5 × 10<sup>(2−m)</sup>% means 5%, 0.5%, 0.05%, 0.005% for m = 1, 2, 3, 4. Memorise this row.</li>
+    <li>Significant digits: write the number in scientific notation — all digits in the coefficient are significant.</li>
+    <li>If given two approximations and asked for |ε<sub>a</sub>|: always divide by the <em>more recent / smaller step size / more terms</em> value.</li>
+    <li>E<sub>t</sub> negative → you overestimated. E<sub>t</sub> positive → you underestimated. Useful for self-checking.</li>
+  </ul>
+
+  <div class="trick">📝 <strong>Viva answer for "what is relative error and why do we need it?"</strong><br>
+  "Relative error is the ratio of the true error to the true value, expressed as a fraction or percentage. We need it because the magnitude of the true error alone is not interpretable without context — an error of 1 unit is catastrophic when the true value is 2, but negligible when it is 1,000,000. The relative error provides scale-invariant measurement of approximation quality."</div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 11 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s11">
+  <div class="sec-h"><span class="sec-n">11</span> Practice Problems</div>
+  <p>Click to reveal full worked solutions.</p>
+
+  <div class="prac">
+    <div class="prac-q" onclick="tog(this)"><div><span class="badge be" style="margin-right:8px">Easy</span><strong>P1:</strong> The true value of a measurement is 25.0 and the approximate value is 24.3. Find (a) the true error E<sub>t</sub>, (b) the relative true error ε<sub>t</sub> as a percentage, (c) |ε<sub>t</sub>|.</div><span class="ti">▾</span></div>
+    <div class="prac-a">
+      <p><strong>(a) True Error:</strong></p>
+      <div class="formula" style="text-align:left">E<sub>t</sub> = True Value − Approximate Value = 25.0 − 24.3 = <b>+0.7</b></div>
+      <p>Positive → we underestimated the true value.</p>
+      <p><strong>(b) Relative True Error:</strong></p>
+      <div class="formula" style="text-align:left">ε<sub>t</sub> = E<sub>t</sub> / True Value = 0.7 / 25.0 = 0.028 = <b>2.8%</b></div>
+      <p><strong>(c) Absolute Relative True Error:</strong></p>
+      <div class="formula" style="text-align:left">|ε<sub>t</sub>| = |0.028| = 0.028 = <b>2.8%</b></div>
+      <p style="font-size:12.5px;color:var(--text2)">Interpretation: Our approximation is off by 2.8% of the true value.</p>
+    </div>
+  </div>
+
+  <div class="prac">
+    <div class="prac-q" onclick="tog(this)"><div><span class="badge be" style="margin-right:8px">Easy</span><strong>P2:</strong> Count the significant digits in each: (a) 3.0070, (b) 0.00502, (c) 1500, (d) 1500., (e) 1.500 × 10³.</div><span class="ti">▾</span></div>
+    <div class="prac-a">
+      <div class="tw"><table class="t"><thead><tr><th>Number</th><th>Significant Digits</th><th>Which digits?</th></tr></thead><tbody>
+        <tr><td>3.0070</td><td class="hi">5</td><td>3,0,0,7,0 — non-zeros significant; zeros between non-zeros significant; trailing zero after decimal significant</td></tr>
+        <tr><td>0.00502</td><td class="hi">3</td><td>5,0,2 — leading zeros not significant; zero between 5 and 2 is significant</td></tr>
+        <tr><td>1500</td><td class="hi">2 (min)</td><td>1,5 — trailing zeros without decimal are ambiguous. At minimum, 2 sig digits.</td></tr>
+        <tr><td>1500.</td><td class="hi">4</td><td>1,5,0,0 — explicit decimal point makes all trailing zeros significant</td></tr>
+        <tr><td>1.500 × 10³</td><td class="hi">4</td><td>1,5,0,0 — scientific notation removes all ambiguity</td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+
+  <div class="prac">
+    <div class="prac-q" onclick="tog(this)"><div><span class="badge bm" style="margin-right:8px">Medium</span><strong>P3:</strong> Two successive approximations for a root are x<sub>prev</sub> = 3.25 and x<sub>curr</sub> = 2.875. Find (a) E<sub>a</sub>, (b) |ε<sub>a</sub>|%. Also, how many significant digits are at least correct in x<sub>curr</sub> = 2.875?</div><span class="ti">▾</span></div>
+    <div class="prac-a">
+      <p><strong>(a) Approximate Error:</strong></p>
+      <div class="formula" style="text-align:left">E<sub>a</sub> = Present − Previous = 2.875 − 3.25 = <b>−0.375</b></div>
+      <p><strong>(b) Absolute Relative Approximate Error:</strong></p>
+      <div class="formula" style="text-align:left">|ε<sub>a</sub>| = |E<sub>a</sub> / Present| × 100 = |−0.375 / 2.875| × 100 = 0.13043 × 100 = <b>13.04%</b></div>
+      <p><strong>Significant digits:</strong></p>
+      <div class="formula" style="text-align:left">For m=1: 0.5 × 10¹ = 5%. Is 13.04% ≤ 5%? NO
+For m=0: threshold is 50%. Is 13.04% ≤ 50%? YES
+∴ <b>0 significant digits</b> are guaranteed correct (error &gt; 5%)</div>
+      <p style="font-size:12.5px;color:var(--text2)">This corresponds to bisection method Iteration 3 from Lecture 1 — at 13% error, we haven't converged yet for even 1 reliable significant digit.</p>
+    </div>
+  </div>
+
+  <div class="prac">
+    <div class="prac-q" onclick="tog(this)"><div><span class="badge bm" style="margin-right:8px">Medium</span><strong>P4:</strong> The Maclaurin series for sin(x) is sin(x) = x − x³/3! + x⁵/5! − … Using 3 terms and then 4 terms for x = 0.5 rad, find: the approximate error E<sub>a</sub> and |ε<sub>a</sub>|%. How many sig digits can be trusted?</div><span class="ti">▾</span></div>
+    <div class="prac-a">
+      <p><strong>3-term approximation (previous):</strong></p>
+      <div class="formula" style="text-align:left">sin(0.5) ≈ 0.5 − (0.5³/6) + (0.5⁵/120) = 0.5 − 0.020833 + 0.000260 = <b>0.479427</b></div>
+      <p><strong>4-term approximation (current):</strong></p>
+      <div class="formula" style="text-align:left">sin(0.5) ≈ 0.479427 − (0.5⁷/5040) = 0.479427 − 0.0000015 = <b>0.479426</b></div>
+      <p><strong>Approximate Error:</strong></p>
+      <div class="formula" style="text-align:left">E<sub>a</sub> = 0.479426 − 0.479427 = −0.0000015</div>
+      <p><strong>|ε<sub>a</sub>|%:</strong></p>
+      <div class="formula" style="text-align:left">|ε<sub>a</sub>| = |−0.0000015 / 0.479426| × 100 = 0.000313% = 3.13 × 10⁻⁴%</div>
+      <p><strong>Significant digits:</strong> 0.000313% &lt; 0.05% (m=3 threshold), so at least <strong>3 significant digits</strong> are correct. Also 0.000313% &lt; 0.005% (m=4 threshold)? 0.000313 &lt; 0.005? Yes. And &lt; 0.0005% (m=5)? 0.000313 &lt; 0.0005? Yes! At least <strong>5 significant digits</strong> are correct. (True value: sin(0.5) = 0.479426 — indeed all 6 shown digits match.)</p>
+    </div>
+  </div>
+
+  <div class="prac">
+    <div class="prac-q" onclick="tog(this)"><div><span class="badge bh" style="margin-right:8px">Hard</span><strong>P5 (Conceptual):</strong> Explain why making the step size h extremely small (e.g. h = 10<sup>−20</sup>) does NOT improve the numerical derivative. What two competing errors are involved?</div><span class="ti">▾</span></div>
+    <div class="prac-a">
+      <p>This is the tension between truncation error and round-off error in numerical differentiation:</p>
+      <div class="g2">
+        <div class="card cp"><div class="card-title">Truncation Error decreases as h → 0</div><p style="font-size:13px">The formula f′(x) ≈ [f(x+h)−f(x)]/h gets more accurate as h shrinks. The truncation error for forward difference is O(h) — proportional to h. Smaller h = smaller truncation error.</p></div>
+        <div class="card cr"><div class="card-title">Round-off Error INCREASES as h → 0</div><p style="font-size:13px">f(x+h) and f(x) become very close. Their difference f(x+h)−f(x) becomes very small. But both values have inherent round-off errors of order ε<sub>machine</sub> ≈ 10<sup>−16</sup>. When we divide a tiny difference by h, we amplify the round-off. As h → 10<sup>−20</sup>, the numerator is dominated by noise.</p></div>
+      </div>
+      <p><strong>Optimal h:</strong> There's an optimal h ≈ √ε<sub>machine</sub> ≈ 10<sup>−8</sup> that minimises total error. This is why taking h = 10<sup>−20</sup> is a terrible idea — you can't calculate that many bits of precision!</p>
+      <div class="insight">This is why lecture slide 31 asks: "Is it a good idea to take h = 10<sup>−20</sup>?" The answer is NO — computers cannot represent the difference between x and x + 10<sup>−20</sup> in finite precision, so you'd effectively compute [f(x) − f(x)] / h = 0/h = 0, which is wildly wrong.</div>
+    </div>
+  </div>
+
+  <div class="prac">
+    <div class="prac-q" onclick="tog(this)"><div><span class="badge bc" style="margin-right:8px">Conceptual</span><strong>P6:</strong> A student computes two approximations: x₁ = 1000.1 and x₂ = 1000.0 (previous). The approximate error is E<sub>a</sub> = 0.1. Another student computes x₁ = 0.0001 and x₂ = 0.0000 (previous), E<sub>a</sub> = 0.0001. Which approximation is better and why?</div><span class="ti">▾</span></div>
+    <div class="prac-a">
+      <p><strong>Student 1:</strong> |ε<sub>a</sub>| = |0.1 / 1000.1| × 100 = 0.00999% → extremely good!</p>
+      <p><strong>Student 2:</strong> |ε<sub>a</sub>| = |0.0001 / 0.0001| × 100 = 100% → terrible!</p>
+      <p>Even though Student 2's absolute error (0.0001) is much smaller than Student 1's (0.1), the <strong>relative approximate error tells a completely different story</strong>. Student 1 has a 0.01% relative error; Student 2 has 100%. Student 1's approximation is orders of magnitude better.</p>
+      <div class="insight">This demonstrates exactly why your lecture emphasises: <em>"A low approximate error doesn't necessarily translate to a good approximation. We need scale invariance — the relative error."</em></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 12 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s12">
+  <div class="sec-h"><span class="sec-n">12</span> Exam Mastery</div>
+
+  <div class="sub-h">All formulas — one reference</div>
+  <div class="sgrid">
+    <div class="sc2"><div class="sl">True Error</div><div class="sv">E<sub>t</sub> = True − Approx</div></div>
+    <div class="sc2"><div class="sl">Relative True Error</div><div class="sv">ε<sub>t</sub> = E<sub>t</sub> / True Value</div></div>
+    <div class="sc2"><div class="sl">% Relative True Error</div><div class="sv">|ε<sub>t</sub>| × 100%</div></div>
+    <div class="sc2"><div class="sl">Approximate Error</div><div class="sv">E<sub>a</sub> = Present − Previous</div></div>
+    <div class="sc2"><div class="sl">Relative Approx. Error</div><div class="sv">ε<sub>a</sub> = E<sub>a</sub> / Present</div></div>
+    <div class="sc2"><div class="sl">% Rel. Approx. Error</div><div class="sv">|ε<sub>a</sub>| × 100%</div></div>
+    <div class="sc2"><div class="sl">Sig digit tolerance</div><div class="sv">|ε<sub>a</sub>| ≤ 0.5 × 10<sup>(2−m)</sup>%</div></div>
+    <div class="sc2"><div class="sl">Numerical derivative</div><div class="sv">f′(x) ≈ [f(x+h)−f(x)] / h</div></div>
+    <div class="sc2"><div class="sl">Maclaurin series eˣ</div><div class="sv">1 + x + x²/2! + x³/3! + …</div></div>
+  </div>
+
+  <div class="sub-h">Frequently repeated exam patterns</div>
+  <div class="tw"><table class="t">
+    <thead><tr><th>Pattern</th><th>What to do</th><th>Key formula</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left;font-weight:500">Given true & approx value → find errors</td><td style="text-align:left">Compute E<sub>t</sub>, then ε<sub>t</sub>, then |ε<sub>t</sub>|%</td><td>E<sub>t</sub> = True − Approx</td></tr>
+      <tr><td style="text-align:left;font-weight:500">Given two successive approx → find errors</td><td style="text-align:left">Compute E<sub>a</sub>, then ε<sub>a</sub>, then |ε<sub>a</sub>|%</td><td>E<sub>a</sub> = Present − Previous</td></tr>
+      <tr><td style="text-align:left;font-weight:500">Count significant digits</td><td style="text-align:left">Apply 4 rules: non-zero/sandwiched zero/leading zero/trailing zero</td><td>Scientific notation removes ambiguity</td></tr>
+      <tr><td style="text-align:left;font-weight:500">|ε<sub>a</sub>| given → how many sig digits?</td><td style="text-align:left">Test m = 1,2,3… until |ε<sub>a</sub>| > 0.5×10<sup>(2-m)</sup>%</td><td>|ε<sub>a</sub>| ≤ 0.5×10<sup>(2-m)</sup>%</td></tr>
+      <tr><td style="text-align:left;font-weight:500">Maclaurin series with n terms → |ε<sub>a</sub>|</td><td style="text-align:left">Compute (n-1)-term and n-term sums, then apply ε<sub>a</sub> formula</td><td>ε<sub>a</sub> = |curr−prev| / |curr| × 100%</td></tr>
+      <tr><td style="text-align:left;font-weight:500">Classify error source</td><td style="text-align:left">Round-off = finite bits for numbers; Truncation = finite steps for procedures</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="sub-h">Quick revision shortcuts</div>
+  <ul>
+    <li><strong>Tolerance row:</strong> m=1→5%, m=2→0.5%, m=3→0.05%, m=4→0.005%. Each step divides by 10.</li>
+    <li><strong>Sign of E<sub>t</sub>:</strong> Positive = underestimate (approx too small). Negative = overestimate (approx too large).</li>
+    <li><strong>Sign of E<sub>a</sub>:</strong> If current approximation went down from previous, E<sub>a</sub> is negative. If went up, E<sub>a</sub> is positive.</li>
+    <li><strong>Denominator check:</strong> ε<sub>t</sub> denominator = TRUE value. ε<sub>a</sub> denominator = PRESENT (current) approximation.</li>
+    <li><strong>Scientific notation test:</strong> 4.500 × 10³ — count digits in the coefficient part only → 4 sig digits.</li>
+  </ul>
+</div>
+
+<!-- ════════════════════════════════════ -->
+<!-- SECTION 13 -->
+<!-- ════════════════════════════════════ -->
+<div class="sec" id="s13">
+  <div class="sec-h"><span class="sec-n">13</span> Summary &amp; Mental Models</div>
+
+  <div class="sub-h">The big-picture mental model</div>
+  <div class="card cb">
+    <p><strong>Numerical errors are unavoidable — our job is to measure and control them.</strong> Three steps: Identify (where does it come from?), Quantify (how large is it?), Minimize (can we reduce it?). This lecture gives you the vocabulary and formulas for identifying and quantifying.</p>
+  </div>
+
+  <div class="sub-h">Memory tricks</div>
+  <div class="trick">🎯 <strong>E<sub>t</sub> vs ε<sub>t</sub>:</strong> "E is the raw Error (in units). ε is the fraction (epsilon = 'fractional part'). Divide E by the True value to get ε." Same pattern: E<sub>a</sub> → ε<sub>a</sub> by dividing by the Present approximation.</div>
+  <div class="trick">🎯 <strong>Present vs Previous:</strong> For E<sub>a</sub> = Present − Previous: "you report how much you moved from where you were." For ε<sub>a</sub>: "you normalise by where you are now (present)."</div>
+  <div class="trick">🎯 <strong>Round-off vs Truncation:</strong> "Round-off rounds a NUMBER (memory limit). Truncation truncates a PROCEDURE (stopping the math early)."</div>
+  <div class="trick">🎯 <strong>Sig digits tolerance table:</strong> 5%, 0.5%, 0.05%, 0.005%… just keep dividing by 10. Want 1 digit → 5%. Want 2 → 0.5%. Want 3 → 0.05%.</div>
+  <div class="trick">🎯 <strong>Leading zeros never count:</strong> "Zeros before the first non-zero are just decimal placeholders, like leading zeros in a phone number." 0.0047 → the zeros are just telling you how small it is. Only 4 and 7 matter.</div>
+
+  <div class="sub-h">Key concepts at a glance</div>
+  <div class="sgrid">
+    <div class="sc2"><div class="sl">True Error</div><div class="sv">Known when true answer is available. True − Approx. Can be +/−.</div></div>
+    <div class="sc2"><div class="sl">Relative True Error</div><div class="sv">Scale-invariant. Fraction of true value that's wrong. Works for any scale.</div></div>
+    <div class="sc2"><div class="sl">Approximate Error</div><div class="sv">Used when true value unknown. Compares successive iterations.</div></div>
+    <div class="sc2"><div class="sl">Relative Approx. Error</div><div class="sv">The stopping criterion in iterative methods. |ε<sub>a</sub>| ≤ ε<sub>s</sub> → stop.</div></div>
+    <div class="sc2"><div class="sl">Significant Digits</div><div class="sv">Reliable digits. 4 rules. Leading zeros don't count. Use sci notation.</div></div>
+    <div class="sc2"><div class="sl">Round-off Error</div><div class="sv">Finite bits → approximate numbers. Reduced by higher precision (64-bit).</div></div>
+    <div class="sc2"><div class="sl">Truncation Error</div><div class="sv">Approximate procedures. Series, h→0, rectangles. Reduced by more terms/steps.</div></div>
+    <div class="sc2"><div class="sl">Sig digits formula</div><div class="sv">|ε<sub>a</sub>| ≤ 0.5 × 10<sup>(2−m)</sup>% guarantees m correct digits.</div></div>
+  </div>
+
+  <div class="sub-h">After completing this guide you should be able to:</div>
+  <div class="card cg">
+    <ul>
+      <li>Compute E<sub>t</sub>, ε<sub>t</sub>, E<sub>a</sub>, ε<sub>a</sub> from scratch for any given problem</li>
+      <li>Explain why relative error is more meaningful than absolute error</li>
+      <li>Count significant digits in any number using the 4 rules</li>
+      <li>Determine how many significant digits are correct from |ε<sub>a</sub>|</li>
+      <li>Classify any given error as round-off or truncation and explain why</li>
+      <li>Explain why very small h does not always improve numerical derivatives</li>
+      <li>Solve Maclaurin series problems and determine sig digit correctness</li>
+      <li>Explain numerical errors confidently in a viva or exam setting</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">CSEMath4641 · Lecture 2 · Islamic University of Technology · Syed Rifat Raiyan<br>Numerical Errors Complete Mastery Guide — All 13 sections</div>
+
+</div><!-- .page -->
+
+<script>
+// ── NAVIGATION ──
+function go(n){
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('on',i===n-1));
+  const el=document.getElementById('s'+n);
+  if(el){const top=el.getBoundingClientRect().top+window.scrollY-62;window.scrollTo({top,behavior:'smooth'});}
+}
+const secs=Array.from({length:13},(_,i)=>document.getElementById('s'+(i+1)));
+function updateNav(){
+  const y=window.scrollY+80;let active=0;
+  secs.forEach((s,i)=>{if(s&&s.offsetTop<=y)active=i;});
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('on',i===active));
+}
+window.addEventListener('scroll',updateNav,{passive:true});
+
+// ── PRACTICE TOGGLES ──
+function tog(el){
+  const a=el.nextElementSibling;const open=a.classList.toggle('open');
+  el.classList.toggle('open',open);el.querySelector('.ti').textContent=open?'▴':'▾';
+}
+
+// ── ERROR CALCULATOR ──
+function calcErrors(){
+  const tv=parseFloat(document.getElementById('cv-true').value);
+  const cv=parseFloat(document.getElementById('cv-curr').value);
+  const pv=parseFloat(document.getElementById('cv-prev').value);
+  const res=document.getElementById('calc-res');
+  let html='';
+
+  if(!isNaN(tv)&&!isNaN(cv)){
+    const Et=tv-cv;
+    const et_pct=(Et/tv)*100;
+    html+=`<div class="res-row"><span class="res-label">True Error E<sub>t</sub></span><span class="res-val">${Et.toFixed(6)}</span></div>`;
+    html+=`<div class="res-row"><span class="res-label">Relative True Error ε<sub>t</sub></span><span class="res-val">${(Et/tv).toFixed(6)}</span></div>`;
+    html+=`<div class="res-row"><span class="res-label">|ε<sub>t</sub>| %</span><span class="res-val">${Math.abs(et_pct).toFixed(4)}%</span></div>`;
+  }
+  if(!isNaN(cv)&&!isNaN(pv)){
+    const Ea=cv-pv;
+    const ea_pct=(Ea/cv)*100;
+    html+=`<div class="res-row" style="margin-top:6px"><span class="res-label">Approx. Error E<sub>a</sub></span><span class="res-val">${Ea.toFixed(6)}</span></div>`;
+    html+=`<div class="res-row"><span class="res-label">Relative Approx. Error ε<sub>a</sub></span><span class="res-val">${(Ea/cv).toFixed(6)}</span></div>`;
+    html+=`<div class="res-row"><span class="res-label">|ε<sub>a</sub>| %</span><span class="res-val">${Math.abs(ea_pct).toFixed(4)}%</span></div>`;
+    // Sig digits
+    const absEa=Math.abs(ea_pct);
+    let m=0;
+    for(let mi=1;mi<=8;mi++){const tol=0.5*Math.pow(10,2-mi);if(absEa<=tol)m=mi;else break;}
+    html+=`<div class="res-row"><span class="res-label">Significant digits correct (from |ε<sub>a</sub>|)</span><span class="res-val">≥ ${m}</span></div>`;
+  }
+  if(!html){res.innerHTML='<div style="color:var(--text2);font-size:13px">Enter at least "True Value + Current Approx" or "Current + Previous Approx"</div>';res.classList.add('show');return;}
+  res.innerHTML=html;res.classList.add('show');
+}
+
+// ── SIGNIFICANT DIGIT DEMOS ──
+const sigData=[
+  {num:'81',       sig:[1,1],                explanation:'Both digits (8 and 1) are non-zero → both significant. 2 sig digits.'},
+  {num:'26.2',     sig:[1,1,1],              explanation:'All digits non-zero → all significant. 3 sig digits.'},
+  {num:'0.007',    sig:[0,0,0,1],            explanation:'Leading zeros before 7 are not significant. Only the 7 counts. 1 sig digit.'},
+  {num:'5200.38',  sig:[1,1,1,1,1,1],        explanation:'All digits: 5,2,0,0,3,8. Zeros between non-zeros and decimal-containing number → all 6 significant.'},
+  {num:'380.0',    sig:[1,1,1,1],            explanation:'3,8,0 (zero sandwiched at end with decimal),0 (trailing after decimal) → 4 sig digits.'},
+  {num:'78800',    sig:[1,1,1,0,0],          explanation:'No decimal point. Trailing zeros are ambiguous. Minimum 3 sig digits (7,8,8). The 00 may or may not be significant.'},
+  {num:'78800.',   sig:[1,1,1,1,1],          explanation:'Explicit decimal point makes ALL trailing zeros significant → 5 sig digits.'},
+];
+
+function buildSigDemos(){
+  const wrap=document.getElementById('sigdemos');
+  sigData.forEach((d,idx)=>{
+    const chars=d.num.split('').filter(c=>c!='.');
+    const dotIdx=d.num.indexOf('.');
+    let dispHTML='';
+    let ci=0;
+    for(let i=0;i<d.num.length;i++){
+      const ch=d.num[i];
+      if(ch==='.'){dispHTML+='<span style="font-size:20px">.</span>';continue;}
+      const isSig=d.sig[ci]===1;
+      dispHTML+=`<span class="${isSig?'sig-d':'nsig-d'}">${ch}</span>`;ci++;
+    }
+    const count=d.sig.filter(x=>x===1).length;
+    const div=document.createElement('div');div.className='sigdemo';
+    div.innerHTML=`<div class="sigdemo-q">
+      <div class="num-display" id="nd${idx}">${dispHTML}</div>
+      <div class="sig-count">✔ ${count} sig digit${count!==1?'s':''}</div>
+      <button class="reveal-btn" onclick="toggleSigEx(${idx})">Explain</button>
+    </div>
+    <div class="sig-explain" id="se${idx}">${d.explanation}</div>`;
+    wrap.appendChild(div);
+  });
+}
+function toggleSigEx(idx){
+  const el=document.getElementById('se'+idx);el.classList.toggle('open');
+}
+buildSigDemos();
+
+// ── TARGET CANVAS ──
+(function(){
+  const c=document.getElementById('targetCanvas');
+  const dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.offsetWidth||700;
+  const H=220;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const bg=isDark?'#1b1a18':'#fff';const txt=isDark?'#c5c3bb':'#3a3835';
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  function drawTarget(cx,cy,r,label,shots,color){
+    const rings=[r,r*.66,r*.33];
+    const cols=isDark?['#3a3a3a','#5a5a5a','#8a0000']:['#ddd','#aaa','#cc0000'];
+    rings.forEach((ri,i)=>{ctx.beginPath();ctx.arc(cx,cy,ri,0,Math.PI*2);ctx.fillStyle=cols[i];ctx.fill();ctx.strokeStyle=isDark?'rgba(255,255,255,0.15)':'rgba(0,0,0,0.2)';ctx.lineWidth=0.5;ctx.stroke();});
+    shots.forEach(([dx,dy])=>{ctx.beginPath();ctx.arc(cx+dx,cy+dy,4,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();});
+    ctx.fillStyle=txt;ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillText(label,cx,cy+r+18);
+  }
+
+  const s=80,gap=W/5;
+  drawTarget(gap*1,H/2-10,s,'High Accuracy\nHigh Precision',[[2,-1],[1,3],[-2,1],[3,-2]],isDark?'#64b5f6':'#1565c0');
+  drawTarget(gap*2,H/2-10,s,'Low Accuracy\nHigh Precision',[[-30,-25],[-28,-28],[-32,-23],[-29,-26]],isDark?'#81c784':'#2e7d32');
+  drawTarget(gap*3,H/2-10,s,'High Accuracy\nLow Precision',[[20,-15],[-18,22],[15,18],[-22,-20]],isDark?'#ffb74d':'#e65100');
+  drawTarget(gap*4,H/2-10,s,'Low Accuracy\nLow Precision',[[-30,15],[25,-25],[-10,35],[30,20]],isDark?'#ef9a9a':'#b71c1c');
+  ctx.fillStyle=txt;ctx.font='10px sans-serif';ctx.textAlign='center';
+})();
+
+// ── INTEGRATION CANVAS ──
+(function(){
+  const c=document.getElementById('integCanvas');
+  const dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.offsetWidth||700;const H=200;
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const bg=isDark?'#1b1a18':'#fff';const txt=isDark?'#c5c3bb':'#3a3835';
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const ml=50,mr=20,mt=20,mb=30;
+  const cw=W-ml-mr,ch=H-mt-mb;
+  const xMin=0,xMax=12,yMin=0,yMax=100;
+  const px=x=>ml+(x-xMin)/(xMax-xMin)*cw;
+  const py=y=>mt+(1-(y-yMin)/(yMax-yMin))*ch;
+  const f=x=>x*x;
+
+  // Draw rectangles (approx)
+  const rects=[[3,6],[6,9]];
+  rects.forEach(([a,b])=>{
+    const h=f(a),bw=px(b)-px(a);
+    ctx.fillStyle=isDark?'rgba(100,100,100,0.55)':'rgba(180,180,180,0.65)';
+    ctx.fillRect(px(a),py(h),bw,py(0)-py(h));
+    ctx.strokeStyle=isDark?'rgba(255,255,255,0.2)':'rgba(0,0,0,0.25)';
+    ctx.lineWidth=0.5;ctx.strokeRect(px(a),py(h),bw,py(0)-py(h));
+  });
+
+  // Draw exact area fill
+  ctx.beginPath();ctx.moveTo(px(3),py(0));
+  for(let xi=3;xi<=9;xi+=0.05){ctx.lineTo(px(xi),py(f(xi)));}
+  ctx.lineTo(px(9),py(0));ctx.closePath();
+  ctx.fillStyle=isDark?'rgba(100,160,255,0.15)':'rgba(21,101,192,0.1)';ctx.fill();
+
+  // Draw curve
+  ctx.beginPath();let first=true;
+  for(let xi=0;xi<=xMax;xi+=0.05){
+    const yi=f(xi);if(yi>yMax+5){first=true;continue;}
+    first?ctx.moveTo(px(xi),py(yi)):ctx.lineTo(px(xi),py(yi));first=false;
+  }
+  ctx.strokeStyle=isDark?'#6aa3e8':'#1565c0';ctx.lineWidth=2;ctx.stroke();
+
+  // Axes
+  ctx.strokeStyle=isDark?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ml,mt);ctx.lineTo(ml,mt+ch);ctx.lineTo(ml+cw,mt+ch);ctx.stroke();
+
+  // Labels
+  ctx.fillStyle=txt;ctx.font='10px sans-serif';ctx.textAlign='center';
+  [3,6,9].forEach(x=>ctx.fillText(x,px(x),H-mb+14));
+  ctx.textAlign='right';[0,30,60,90].forEach(y=>{if(y<=yMax)ctx.fillText(y,ml-5,py(y)+3);});
+  ctx.font='bold 11px sans-serif';ctx.fillStyle=isDark?'#6aa3e8':'#1565c0';
+  ctx.textAlign='left';ctx.fillText('y = x²',px(9.2),py(85));
+  ctx.fillStyle=isDark?'#999':'#555';ctx.font='10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('Grey = 2-rectangle approx (area=135)',W/2,H-3);
+  ctx.fillStyle=isDark?'#6aa3e8':'#1565c0';
+  ctx.fillText('Blue shading = exact area (=234)',W/2,H-15);
+})();
+</script>
+</body>
+</html>
