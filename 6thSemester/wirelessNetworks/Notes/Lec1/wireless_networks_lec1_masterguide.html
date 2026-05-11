@@ -1,0 +1,719 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+:root{--nav-w:200px}
+#app{display:flex;gap:0;font-family:var(--font-sans);font-size:15px;line-height:1.7;color:var(--color-text-primary);min-height:600px}
+#nav{width:var(--nav-w);flex-shrink:0;border-right:0.5px solid var(--color-border-tertiary);padding:1rem 0;position:sticky;top:0;max-height:98vh;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:13px;cursor:pointer;color:var(--color-text-secondary);border-left:2px solid transparent;transition:all 0.15s}
+.nav-item:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+.nav-item.active{color:var(--color-text-primary);border-left-color:#1D9E75;background:var(--color-background-secondary);font-weight:500}
+.nav-item i{font-size:16px;flex-shrink:0}
+.nav-section{font-size:11px;font-weight:500;color:var(--color-text-tertiary);padding:12px 16px 4px;letter-spacing:0.06em;text-transform:uppercase}
+#content{flex:1;padding:1.5rem 2rem;overflow-y:auto;max-height:98vh}
+.page{display:none}.page.active{display:block}
+h1{font-size:22px;font-weight:500;margin-bottom:0.5rem;color:var(--color-text-primary)}
+h2{font-size:18px;font-weight:500;margin:1.5rem 0 0.75rem;color:var(--color-text-primary)}
+h3{font-size:16px;font-weight:500;margin:1.25rem 0 0.5rem;color:var(--color-text-primary)}
+p{margin-bottom:0.75rem;color:var(--color-text-secondary)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);font-weight:500;margin-bottom:1rem}
+.tag-blue{background:#E6F1FB;color:#0C447C}
+.tag-teal{background:#E1F5EE;color:#0F6E56}
+.tag-amber{background:#FAEEDA;color:#854F0B}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.card-accent{border-left:3px solid #1D9E75;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.card-blue{border-left:3px solid #378ADD;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.card-amber{border-left:3px solid #EF9F27;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.card-red{border-left:3px solid #E24B4A;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:1rem}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 16px}
+.metric-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
+.metric-val{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.formula-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:12px 16px;font-family:var(--font-mono);font-size:14px;margin:0.75rem 0;color:var(--color-text-primary)}
+.expand-btn{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:none;cursor:pointer;padding:0;font-size:15px;font-weight:500;color:var(--color-text-primary);text-align:left}
+.expand-body{display:none;margin-top:0.75rem;padding-top:0.75rem;border-top:0.5px solid var(--color-border-tertiary)}
+.expand-body.open{display:block}
+.expand-icon{transition:transform 0.2s;font-size:16px;color:var(--color-text-secondary)}
+.expand-icon.open{transform:rotate(180deg)}
+.barrier-icon{width:36px;height:36px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.barrier-row{display:flex;gap:12px;align-items:flex-start}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:1rem}
+th{padding:8px 10px;text-align:left;font-weight:500;font-size:12px;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary)}
+td{padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+td:first-child{color:var(--color-text-primary);font-weight:500}
+.quiz-q{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:0.75rem}
+.quiz-q p.q{font-weight:500;color:var(--color-text-primary);margin-bottom:0.5rem}
+.quiz-ans{display:none;padding-top:0.75rem;border-top:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);font-size:14px}
+.quiz-ans.show{display:block}
+.show-btn{font-size:12px;padding:4px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:none;cursor:pointer;color:var(--color-text-secondary)}
+.show-btn:hover{background:var(--color-background-primary)}
+.cheat-row{display:flex;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.cheat-term{font-weight:500;min-width:150px;color:var(--color-text-primary)}
+.cheat-def{color:var(--color-text-secondary);flex:1}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 10px;border-radius:20px;margin:2px;font-weight:500}
+.pill-teal{background:#E1F5EE;color:#0F6E56}
+.pill-blue{background:#E6F1FB;color:#185FA5}
+.pill-amber{background:#FAEEDA;color:#854F0B}
+.pill-red{background:#FCEBEB;color:#A32D2D}
+.confuse-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:0.75rem}
+.confuse-header{display:grid;grid-template-columns:1fr 1fr;background:var(--color-background-secondary)}
+.confuse-col{padding:10px 14px;font-size:13px;font-weight:500}
+.confuse-col.teal{color:#0F6E56;border-right:0.5px solid var(--color-border-tertiary)}
+.confuse-col.amber{color:#854F0B}
+.confuse-body{display:grid;grid-template-columns:1fr 1fr;font-size:13px}
+.confuse-cell{padding:10px 14px;color:var(--color-text-secondary);border-right:0.5px solid var(--color-border-tertiary);border-top:0.5px solid var(--color-border-tertiary)}
+.confuse-cell:last-child{border-right:none}
+.progress-bar{height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden;margin-bottom:1.5rem}
+.progress-fill{height:100%;background:#1D9E75;border-radius:2px;transition:width 0.3s}
+#quiz-score{font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem}
+.snr-demo{padding:1rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin:0.75rem 0}
+.snr-bar-wrap{height:20px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;margin:6px 0;position:relative}
+.snr-bar-noise{height:100%;background:#F7C1C1;position:absolute;left:0;top:0}
+.snr-bar-sig{height:100%;background:#5DCAA5;position:absolute;left:0;top:0;transition:width 0.3s}
+.snr-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-tertiary)}
+</style>
+
+<h2 class="sr-only">Wireless Networks Lecture 1 — Interactive Study Guide covering fundamentals, barriers, and design adaptations</h2>
+
+<div id="app">
+  <nav id="nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" data-page="bigpic"><i class="ti ti-antenna" aria-hidden="true"></i> Big Picture</div>
+    <div class="nav-item" data-page="wiredvs"><i class="ti ti-arrows-left-right" aria-hidden="true"></i> Wired vs Wireless</div>
+    <div class="nav-section">Core Barriers</div>
+    <div class="nav-item" data-page="attenuation"><i class="ti ti-signal-4g" aria-hidden="true"></i> Signal Attenuation</div>
+    <div class="nav-item" data-page="noise"><i class="ti ti-wave-sine" aria-hidden="true"></i> Noise & Interference</div>
+    <div class="nav-item" data-page="multipath"><i class="ti ti-arrows-shuffle" aria-hidden="true"></i> Multipath Fading</div>
+    <div class="nav-item" data-page="doppler"><i class="ti ti-car" aria-hidden="true"></i> Doppler Shift</div>
+    <div class="nav-item" data-page="hidden"><i class="ti ti-eye-off" aria-hidden="true"></i> Hidden Terminal</div>
+    <div class="nav-section">Technical</div>
+    <div class="nav-item" data-page="formulas"><i class="ti ti-math-function" aria-hidden="true"></i> Formulas & dB</div>
+    <div class="nav-item" data-page="snrber"><i class="ti ti-chart-line" aria-hidden="true"></i> SNR & BER</div>
+    <div class="nav-section">Mastery</div>
+    <div class="nav-item" data-page="confusions"><i class="ti ti-help-circle" aria-hidden="true"></i> Confusions</div>
+    <div class="nav-item" data-page="quiz"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Quiz Prep</div>
+    <div class="nav-item" data-page="cheatsheet"><i class="ti ti-list-check" aria-hidden="true"></i> Cheat Sheet</div>
+  </nav>
+
+  <div id="content">
+
+    <!-- BIG PICTURE -->
+    <div class="page active" id="page-bigpic">
+      <span class="tag tag-teal">Lecture 1 — Foundation</span>
+      <h1>What is Wireless Networking?</h1>
+      <p>Wireless networking is the transmission of data between devices using electromagnetic radio waves instead of physical cables. The fundamental objective is to <strong>move a message from point A to point B</strong> with the required quality, at minimum cost.</p>
+
+      <div class="grid2">
+        <div class="metric"><div class="metric-label">Quality measures</div><div class="metric-val" style="font-size:14px;line-height:1.6">BER · Delay · Data Rate</div></div>
+        <div class="metric"><div class="metric-label">Resource costs</div><div class="metric-val" style="font-size:14px;line-height:1.6">Power · Bandwidth · Complexity</div></div>
+      </div>
+
+      <h2>Why does wireless matter?</h2>
+      <div class="card card-accent">
+        <p style="margin:0"><strong>Three key motivations:</strong> eliminates physical cabling in difficult areas · enables user mobility · lower installation cost in many environments</p>
+      </div>
+
+      <h2>The three course questions</h2>
+      <div class="card" style="margin-bottom:8px"><div class="barrier-row"><div class="barrier-icon" style="background:#E1F5EE"><i class="ti ti-network" style="color:#0F6E56" aria-hidden="true"></i></div><div><p style="margin:0;font-weight:500">How does a wireless network work?</p><p style="margin:0;font-size:13px">Architecture, protocols, signal propagation</p></div></div></div>
+      <div class="card" style="margin-bottom:8px"><div class="barrier-row"><div class="barrier-icon" style="background:#FAEEDA"><i class="ti ti-alert-triangle" style="color:#854F0B" aria-hidden="true"></i></div><div><p style="margin:0;font-weight:500">What are the limitations?</p><p style="margin:0;font-size:13px">Attenuation, interference, fading, mobility, security</p></div></div></div>
+      <div class="card"><div class="barrier-row"><div class="barrier-icon" style="background:#E6F1FB"><i class="ti ti-rocket" style="color:#185FA5" aria-hidden="true"></i></div><div><p style="margin:0;font-weight:500">How do we address them?</p><p style="margin:0;font-size:13px">MIMO, QoS, WPA3, adaptive modulation, mesh networks</p></div></div></div>
+
+      <h2>Wireless is a broadcast medium</h2>
+      <p>Unlike wired, all wireless devices share the same air. Every transmission can be heard by everyone nearby — this is both a feature (no cabling) and a source of most wireless problems (interference, security, hidden terminals).</p>
+
+      <h2>Five barriers of wireless (preview)</h2>
+      <table>
+        <tr><th>#</th><th>Barrier</th><th>Core problem</th></tr>
+        <tr><td>1</td><td>Signal Attenuation</td><td>Signal weakens with distance & obstacles</td></tr>
+        <tr><td>2</td><td>Noise & Interference</td><td>Competing signals corrupt data</td></tr>
+        <tr><td>3</td><td>Multipath Fading</td><td>Reflections distort signal at receiver</td></tr>
+        <tr><td>4</td><td>Doppler Shift</td><td>Motion changes received frequency</td></tr>
+        <tr><td>5</td><td>Hidden Terminal Problem</td><td>Undetected collisions at receiver</td></tr>
+      </table>
+    </div>
+
+    <!-- WIRED VS WIRELESS -->
+    <div class="page" id="page-wiredvs">
+      <span class="tag tag-blue">Comparison</span>
+      <h1>Wired vs Wireless</h1>
+      <p>Understanding the key differences helps you understand <em>why</em> wireless is harder to engineer than wired.</p>
+
+      <div class="card card-accent">
+        <p style="margin:0;font-weight:500">Most important insight</p>
+        <p style="margin-top:4px;margin-bottom:0">In wired networks, each cable is a <em>separate, dedicated channel</em>. In wireless, <em>everyone shares one medium</em> — the air. This single fact explains most wireless challenges.</p>
+      </div>
+
+      <table>
+        <tr><th>Parameter</th><th>Wired</th><th>Wireless</th></tr>
+        <tr><td>Medium</td><td>Copper / Fiber</td><td>Air (Radio waves)</td></tr>
+        <tr><td>Standard</td><td>IEEE 802.3 (Ethernet)</td><td>IEEE 802.11 (Wi-Fi)</td></tr>
+        <tr><td>Working principle</td><td>CSMA/CD — collision <em>detection</em></td><td>CSMA/CA — collision <em>avoidance</em></td></tr>
+        <tr><td>BER (bit error rate)</td><td>~10⁻¹² (excellent)</td><td>~10⁻⁶ or worse (poor)</td></tr>
+        <tr><td>Attenuation</td><td>Very low</td><td>High</td></tr>
+        <tr><td>Interference</td><td>Low (cross-talk only)</td><td>High (shared spectrum)</td></tr>
+        <tr><td>Security</td><td>High (hard to tap)</td><td>Lower (eavesdropping easy)</td></tr>
+        <tr><td>Speed</td><td>Up to 1 Gbps+</td><td>Moderate to low</td></tr>
+        <tr><td>Mobility</td><td>Limited</td><td>High</td></tr>
+        <tr><td>Connection type</td><td>Dedicated</td><td>Shared</td></tr>
+        <tr><td>Install cost</td><td>High</td><td>Low</td></tr>
+      </table>
+
+      <h2>Why CSMA/CD fails in wireless</h2>
+      <p>In Ethernet (wired), a device listens while transmitting and can detect if its signal collided. In wireless, the transmitting node's own signal drowns out any other signal it might try to detect — so collision <em>detection</em> is impossible. Instead, Wi-Fi uses CSMA/CA — it <em>avoids</em> collisions by waiting and using random backoff timers before transmitting.</p>
+
+      <h2>Communication requirements by application</h2>
+      <table>
+        <tr><th>App</th><th>Max BER</th><th>Max delay</th><th>Data rate</th></tr>
+        <tr><td>Cell phone (voice)</td><td>&lt; 0.1%</td><td>&lt; 100 ms</td><td>10–15 kbps</td></tr>
+        <tr><td>Email</td><td>&lt; 10⁻⁹</td><td>&lt; 1 day</td><td>irrelevant</td></tr>
+        <tr><td>Mobile broadband</td><td>&lt; 10⁻⁵</td><td>&lt; seconds</td><td>&lt; 80 Mbps</td></tr>
+        <tr><td>Video streaming</td><td>10⁻⁶</td><td>&lt; 100 ms</td><td>1–100 Mbps</td></tr>
+      </table>
+      <p style="font-size:13px">Key insight: one-size-fits-all protocol design does NOT work for wireless — voice tolerates high BER but needs low delay; email tolerates long delay but needs very low BER.</p>
+    </div>
+
+    <!-- SIGNAL ATTENUATION -->
+    <div class="page" id="page-attenuation">
+      <span class="tag tag-amber">Barrier 1</span>
+      <h1>Signal Attenuation</h1>
+      <p>Attenuation means the signal gets weaker as it travels. In wireless, this happens in two ways: signals <em>disperse</em> as they travel farther, and they <em>lose energy</em> as they pass through matter.</p>
+
+      <div class="card card-accent">
+        <p style="margin:0"><strong>Intuition:</strong> Think of a flashlight. The farther you are, the dimmer and more spread-out the light. Walls block even more. Radio waves behave the same way.</p>
+      </div>
+
+      <h2>Three propagation ranges</h2>
+      <div class="card" style="margin-bottom:8px">
+        <div class="barrier-row">
+          <div class="barrier-icon" style="background:#E1F5EE"><i class="ti ti-broadcast" style="color:#0F6E56" aria-hidden="true"></i></div>
+          <div><p style="margin:0;font-weight:500">Transmission range</p><p style="margin:0;font-size:13px;color:var(--color-text-secondary)">Signal is strong enough for reliable communication. Low error rate.</p></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:8px">
+        <div class="barrier-row">
+          <div class="barrier-icon" style="background:#FAEEDA"><i class="ti ti-eye" style="color:#854F0B" aria-hidden="true"></i></div>
+          <div><p style="margin:0;font-weight:500">Detection range</p><p style="margin:0;font-size:13px;color:var(--color-text-secondary)">Signal can be sensed but not decoded. No useful communication possible.</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="barrier-row">
+          <div class="barrier-icon" style="background:#FCEBEB"><i class="ti ti-radio-off" style="color:#A32D2D" aria-hidden="true"></i></div>
+          <div><p style="margin:0;font-weight:500">Interference range</p><p style="margin:0;font-size:13px;color:var(--color-text-secondary)">Signal cannot even be detected — only adds noise to other transmissions.</p></div>
+        </div>
+      </div>
+
+      <h2>Fading types</h2>
+      <table>
+        <tr><th>Type</th><th>Cause</th><th>Timescale</th></tr>
+        <tr><td>Path loss</td><td>Free-space spreading over distance</td><td>Slow / distance</td></tr>
+        <tr><td>Slow fading (long-term)</td><td>Large obstacles, shadowing</td><td>Seconds to minutes</td></tr>
+        <tr><td>Fast fading (short-term)</td><td>Multipath interference, small movement</td><td>Milliseconds</td></tr>
+      </table>
+
+      <h2>Why higher frequencies attenuate more</h2>
+      <p>Higher frequency signals are absorbed more by walls, rain, and air molecules. This is why 5 GHz Wi-Fi is faster but has shorter range than 2.4 GHz — it attenuates faster through obstacles.</p>
+
+      <h2>Impact on BER</h2>
+      <div class="card card-red">
+        <p style="margin:0">Lower received signal → lower SNR → harder to distinguish 1s from 0s → higher bit error rate. The receiver needs the signal to be above a minimum threshold called <strong>receiver sensitivity</strong>.</p>
+      </div>
+
+      <h2>Solution strategies</h2>
+      <p><span class="pill pill-teal">MIMO antennas</span><span class="pill pill-teal">Mesh networks</span><span class="pill pill-teal">Repeaters/relays</span><span class="pill pill-blue">Increase TX power</span><span class="pill pill-amber">Adaptive modulation</span></p>
+    </div>
+
+    <!-- NOISE & INTERFERENCE -->
+    <div class="page" id="page-noise">
+      <span class="tag tag-amber">Barrier 2</span>
+      <h1>Noise & Interference</h1>
+      <p>Even if your signal reaches the receiver, if competing signals or random noise corrupt it, the receiver cannot correctly decode your bits.</p>
+
+      <h2>Four categories of noise</h2>
+      <div class="card" style="margin-bottom:8px">
+        <button class="expand-btn" onclick="toggleExpand(this)">
+          <span>Thermal noise</span><i class="ti ti-chevron-down expand-icon" aria-hidden="true"></i>
+        </button>
+        <div class="expand-body">
+          <p>Caused by the random motion of electrons in any conductor. Present in ALL electronic devices. Increases with temperature and affects all frequencies uniformly. You cannot eliminate it, only manage it.</p>
+          <p style="font-size:13px"><strong>Real world:</strong> This is why electronics run cooler in refrigerated server rooms — less thermal noise.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:8px">
+        <button class="expand-btn" onclick="toggleExpand(this)">
+          <span>Impulse noise</span><i class="ti ti-chevron-down expand-icon" aria-hidden="true"></i>
+        </button>
+        <div class="expand-body">
+          <p>Sudden short-duration high-energy spikes. Caused by lightning, switching equipment, or power line disturbances. Particularly harmful to digital communication — can corrupt multiple bits at once.</p>
+          <p style="font-size:13px"><strong>Real world:</strong> Your Wi-Fi drops right when a microwave turns on nearby.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:8px">
+        <button class="expand-btn" onclick="toggleExpand(this)">
+          <span>Intermodulation noise</span><i class="ti ti-chevron-down expand-icon" aria-hidden="true"></i>
+        </button>
+        <div class="expand-body">
+          <p>Occurs when signals at different frequencies mix in a nonlinear device, producing additional unwanted signals at sum/difference frequencies. Affects amplifiers and mixers.</p>
+        </div>
+      </div>
+      <div class="card">
+        <button class="expand-btn" onclick="toggleExpand(this)">
+          <span>Crosstalk</span><i class="ti ti-chevron-down expand-icon" aria-hidden="true"></i>
+        </button>
+        <div class="expand-body">
+          <p>Unwanted signal leakage between adjacent cables or channels. More common in wired systems but can occur in wireless due to adjacent channel interference.</p>
+        </div>
+      </div>
+
+      <h2>ISM Band — the crowded spectrum</h2>
+      <div class="card card-blue">
+        <p style="margin:0;font-weight:500">ISM = Industrial, Scientific, Medical band</p>
+        <p style="margin-top:6px;margin-bottom:0">License-free spectrum — anyone can transmit here with no regulatory approval (just power limits). This makes it crowded and interference-prone.</p>
+      </div>
+      <table>
+        <tr><th>Frequency</th><th>Users</th></tr>
+        <tr><td>2.4 GHz</td><td>Wi-Fi (802.11b/g/n), Bluetooth, microwave ovens, baby monitors</td></tr>
+        <tr><td>5.8 GHz</td><td>Wi-Fi (802.11a/n/ac), radar, ISM devices</td></tr>
+        <tr><td>915 MHz</td><td>IoT, Zigbee, LPWAN</td></tr>
+      </table>
+
+      <h2>SINR formula</h2>
+      <div class="formula-box">SINR = S / (N + I)<br><br>S = Signal power &nbsp;·&nbsp; N = Noise power &nbsp;·&nbsp; I = Interference power<br><br>Large SINR → easier to extract signal from noise → lower BER</div>
+
+      <h2>Solution strategies</h2>
+      <p><span class="pill pill-teal">Directional antennas</span><span class="pill pill-teal">Adaptive frequency selection</span><span class="pill pill-blue">Cognitive radio</span><span class="pill pill-blue">Smart AP placement</span><span class="pill pill-amber">QoS policies</span></p>
+    </div>
+
+    <!-- MULTIPATH FADING -->
+    <div class="page" id="page-multipath">
+      <span class="tag tag-amber">Barrier 3</span>
+      <h1>Multipath Fading</h1>
+      <p>Radio waves don't travel in a straight line only. They bounce off buildings, cars, trees, and the ground, taking <em>many different paths</em> to reach the receiver — each with a different delay. When these copies add up at the receiver, they can reinforce or cancel each other.</p>
+
+      <div class="card card-accent">
+        <p style="margin:0"><strong>Intuition:</strong> Imagine dropping a stone in a pond. Ripples reflect off the walls and overlap. Some waves add up (constructive), others cancel (destructive). Your Wi-Fi signal does exactly this in a room full of walls.</p>
+      </div>
+
+      <h2>Three propagation mechanisms</h2>
+      <div class="grid2">
+        <div class="card">
+          <p style="font-weight:500;margin-bottom:4px">Reflection (λ ≪ D)</p>
+          <p style="font-size:13px;margin:0">Signal bounces off large surfaces (walls, floors). Wavelength much smaller than obstacle. Most common effect.</p>
+        </div>
+        <div class="card">
+          <p style="font-weight:500;margin-bottom:4px">Diffraction (λ ≈ D)</p>
+          <p style="font-size:13px;margin:0">Signal bends around edges of obstacles. Wavelength similar to obstacle size. Enables coverage around corners.</p>
+        </div>
+        <div class="card">
+          <p style="font-weight:500;margin-bottom:4px">Scattering (λ ≫ D)</p>
+          <p style="font-size:13px;margin:0">Signal scatters off small objects (rain drops, foliage). Wavelength larger than obstacle.</p>
+        </div>
+      </div>
+
+      <h2>Fast vs slow fading</h2>
+      <table>
+        <tr><th>Type</th><th>Cause</th><th>Speed of change</th><th>Effect</th></tr>
+        <tr><td>Fast (short-term) fading</td><td>Constructive/destructive interference between multipaths</td><td>Milliseconds (small movement)</td><td>Rapid power fluctuations</td></tr>
+        <tr><td>Slow (long-term) fading</td><td>Moving behind a large obstacle</td><td>Seconds/minutes</td><td>Gradual average power change</td></tr>
+        <tr><td>Path loss</td><td>Distance spreading</td><td>Very slow</td><td>Monotonic power decrease</td></tr>
+      </table>
+
+      <h2>Impact on BER</h2>
+      <div class="card card-red">
+        <p style="margin:0">Multipath causes <strong>inter-symbol interference (ISI)</strong> — a copy of an earlier symbol arrives while the next symbol is being received. This blurs the signal, increasing errors. At worst, perfect cancellation can completely null the signal even at close range.</p>
+      </div>
+
+      <h2>Real-world example</h2>
+      <p>Your phone has perfect signal outside a building. You step inside and signal drops sharply — you've moved from constructive to destructive multipath interference. Walking 30cm in any direction may improve it again.</p>
+
+      <h2>Solution strategies</h2>
+      <p><span class="pill pill-teal">OFDM</span><span class="pill pill-teal">MIMO</span><span class="pill pill-blue">Diversity techniques</span><span class="pill pill-blue">Equalization</span><span class="pill pill-amber">Antenna selection</span></p>
+    </div>
+
+    <!-- DOPPLER SHIFT -->
+    <div class="page" id="page-doppler">
+      <span class="tag tag-amber">Barrier 4</span>
+      <h1>Doppler Shift (Mobility)</h1>
+      <p>When either the transmitter or receiver is moving, the received frequency differs from the transmitted frequency. This is the same effect as a police siren sounding higher-pitched as it approaches you and lower as it moves away.</p>
+
+      <div class="card card-accent">
+        <p style="margin:0"><strong>Intuition:</strong> If you're running toward a speaker, you hit more sound waves per second than if you were standing still. More waves per second = higher perceived frequency. Radio works the same way.</p>
+      </div>
+
+      <h2>How Doppler causes high BER</h2>
+      <div class="card" style="margin-bottom:8px"><div class="barrier-row"><div class="barrier-icon" style="background:#FAEEDA"><i class="ti ti-refresh" style="color:#854F0B" aria-hidden="true"></i></div><div><p style="margin:0;font-weight:500">Carrier frequency offset</p><p style="margin:0;font-size:13px">Received frequency ≠ expected frequency → receiver loses lock on signal</p></div></div></div>
+      <div class="card" style="margin-bottom:8px"><div class="barrier-row"><div class="barrier-icon" style="background:#FCEBEB"><i class="ti ti-clock" style="color:#A32D2D" aria-hidden="true"></i></div><div><p style="margin:0;font-weight:500">Synchronization loss</p><p style="margin:0;font-size:13px">Timing references drift → receiver decodes bits at wrong moments</p></div></div></div>
+      <div class="card"><div class="barrier-row"><div class="barrier-icon" style="background:#FAEEDA"><i class="ti ti-trending-up" style="color:#854F0B" aria-hidden="true"></i></div><div><p style="margin:0;font-weight:500">Increased channel variation rate</p><p style="margin:0;font-size:13px">Channel changes faster than the receiver can track → unpredictable errors</p></div></div></div>
+
+      <h2>Doppler effect chain</h2>
+      <div class="formula-box">Movement → frequency shift → carrier offset → sync errors → symbol misinterpretation → ↑ BER</div>
+
+      <h2>Real-world example</h2>
+      <p>On a fast train with LTE, the base station at 1800 MHz may experience ~100 Hz Doppler shift. For fast-moving vehicles or aircraft, this can reach several kHz — enough to cause significant decoding errors without correction.</p>
+
+      <h2>Handover problem</h2>
+      <p>As a mobile user moves between access points, the network must switch the connection — this is called a <strong>handover</strong>. Each handover can cause latency spikes or brief packet loss, especially problematic for real-time voice calls.</p>
+
+      <h2>Solution strategies</h2>
+      <p><span class="pill pill-teal">Doppler compensation algorithms</span><span class="pill pill-teal">Fast handoff techniques</span><span class="pill pill-blue">Mobile IP support</span><span class="pill pill-amber">Pilot-based channel tracking</span></p>
+    </div>
+
+    <!-- HIDDEN TERMINAL -->
+    <div class="page" id="page-hidden">
+      <span class="tag tag-amber">Barrier 5</span>
+      <h1>Hidden Terminal Problem</h1>
+      <p>This is one of the most important wireless-specific problems. It arises because nodes can only detect signals from their <em>neighbors</em> — not from everyone.</p>
+
+      <div class="card card-accent">
+        <p style="margin:0;font-weight:500">Classic scenario: A–B–C</p>
+        <p style="margin-top:6px;margin-bottom:0">A and C are both in range of B, but A and C are <em>out of range</em> of each other. A thinks it's safe to transmit to B (no one is sending). C also thinks it's safe. Both transmit simultaneously — their signals collide at B, corrupting the data. Neither A nor C can detect this collision because neither can hear the other.</p>
+      </div>
+
+      <h2>Why this doesn't happen in wired networks</h2>
+      <p>In Ethernet, all devices share a single wire. When any device transmits, every other device detects the signal with sufficient strength. CSMA/CD works perfectly — collisions are detected and corrected. In wireless, signal strength drops with distance, so A and C genuinely cannot hear each other.</p>
+
+      <table>
+        <tr><th>Property</th><th>Wired</th><th>Wireless</th></tr>
+        <tr><td>Can all nodes hear each other?</td><td>Yes</td><td>Not always</td></tr>
+        <tr><td>Hidden terminal problem?</td><td>No</td><td>Yes</td></tr>
+        <tr><td>Collisions detectable at sender?</td><td>Yes (CSMA/CD)</td><td>No (use CSMA/CA)</td></tr>
+      </table>
+
+      <h2>Impact on BER</h2>
+      <div class="card card-red">
+        <p style="margin:0">Undetected collisions at the receiver → corrupted frames → link layer retransmission → increased effective BER and reduced throughput</p>
+      </div>
+
+      <h2>Solution: RTS/CTS</h2>
+      <p>IEEE 802.11 uses a <strong>Request To Send / Clear To Send</strong> handshake. Before transmitting, A sends a short RTS to B. B replies with CTS heard by everyone in B's range — including C. C then knows to stay quiet. This "reserves" the channel before the actual data transmission.</p>
+
+      <div class="formula-box">A → RTS → B → CTS → (A transmits, C hears CTS and waits)</div>
+    </div>
+
+    <!-- FORMULAS -->
+    <div class="page" id="page-formulas">
+      <span class="tag tag-blue">Technical</span>
+      <h1>Formulas & Decibels</h1>
+      <p>The decibel (dB) system is used throughout wireless communications to express power ratios compactly. You must understand this for any quantitative question.</p>
+
+      <h2>Why use decibels?</h2>
+      <p>Wireless power spans enormous ranges — from 10 W at a transmitter to 0.000001 mW at a distant receiver. Working with such numbers directly is impractical. The log scale compresses huge ranges into manageable numbers.</p>
+
+      <h2>Core dB formula</h2>
+      <div class="formula-box">Power ratio in dB = 10 × log₁₀(P₂ / P₁)<br><br>P₂ / P₁ = 10^(dB value / 10)</div>
+
+      <h2>Key reference points to memorize</h2>
+      <table>
+        <tr><th>dB value</th><th>Power ratio</th><th>Memory trick</th></tr>
+        <tr><td>0 dB</td><td>1× (no change)</td><td>Log(1) = 0</td></tr>
+        <tr><td>3 dB</td><td>2× (double)</td><td>"3 dB = factor of 2"</td></tr>
+        <tr><td>10 dB</td><td>10×</td><td>"10 dB = factor of 10"</td></tr>
+        <tr><td>20 dB</td><td>100×</td><td>10 dB + 10 dB = 10×10</td></tr>
+        <tr><td>30 dB</td><td>1000×</td><td>Three factors of 10</td></tr>
+        <tr><td>-10 dB</td><td>0.1× (loss)</td><td>Negative = attenuation</td></tr>
+        <tr><td>-30 dB</td><td>0.001×</td><td>1/1000 of original</td></tr>
+      </table>
+
+      <h2>dBm — power relative to 1 mW</h2>
+      <div class="formula-box">P (dBm) = 10 × log₁₀(P in mW)<br><br>Example: 0.001 mW = -30 dBm<br>Example: 1 mW = 0 dBm<br>Example: 1000 mW (1W) = 30 dBm</div>
+
+      <h2>Maximum tolerable path loss</h2>
+      <div class="formula-box">Max path loss (dB) = P_tx (dBm) − P_rx_sensitivity (dBm)<br><br>Example: Tx power = 20 dBm, Rx sensitivity = -80 dBm<br>→ Max path loss = 20 − (−80) = 100 dB</div>
+      <p style="font-size:13px">This tells you the maximum distance/obstacle budget the link can tolerate.</p>
+
+      <h2>Worked example from lecture</h2>
+      <div class="card card-blue">
+        <p style="margin-bottom:4px;font-weight:500">Lecture example: 70 dB path loss</p>
+        <p style="font-size:13px;margin-bottom:4px">Source = 10 W. At distance d₁: 40 dB loss. At distance d₂: 30 dB more loss.</p>
+        <p style="font-size:13px;margin:0">Total path loss = 40 + 30 = 70 dB → power ratio = 10^7 → received power = 10 W / 10,000,000 = 1 μW = 10⁻⁶ W</p>
+      </div>
+
+      <h2>dBW</h2>
+      <div class="formula-box">P (dBW) = 10 × log₁₀(P in Watts)<br><br>100 W = 20 dBW &nbsp;·&nbsp; 1 W = 0 dBW &nbsp;·&nbsp; 1 mW = −30 dBW</div>
+    </div>
+
+    <!-- SNR & BER -->
+    <div class="page" id="page-snrber">
+      <span class="tag tag-blue">Technical</span>
+      <h1>SNR, BER, and Modulation</h1>
+      <p>Signal-to-Noise Ratio (SNR) and Bit Error Rate (BER) are the two most critical performance metrics in wireless. They are inversely related.</p>
+
+      <h2>Definitions</h2>
+      <div class="formula-box">SNR (dB) = 10 × log₁₀(Signal Power / Noise Power)<br><br>Higher SNR → cleaner signal → lower BER → higher throughput</div>
+
+      <div class="snr-demo">
+        <p style="font-size:13px;font-weight:500;margin-bottom:8px">Interactive SNR demo — drag to adjust signal power:</p>
+        <label style="font-size:12px;color:var(--color-text-secondary)">Signal power: <span id="sig-val">60</span>%</label>
+        <input type="range" min="10" max="90" value="60" id="snr-slider" style="width:100%;margin:6px 0">
+        <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">
+          <span style="min-width:50px">Noise</span>
+          <div class="snr-bar-wrap" style="flex:1;position:relative">
+            <div class="snr-bar-noise" id="noise-bar" style="width:40%"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">
+          <span style="min-width:50px">Signal</span>
+          <div class="snr-bar-wrap" style="flex:1;position:relative">
+            <div class="snr-bar-sig" id="sig-bar" style="width:60%"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px">
+          <div class="metric" style="flex:1;padding:8px 12px"><div class="metric-label">SNR</div><div class="metric-val" id="snr-display" style="font-size:18px">1.7 dB</div></div>
+          <div class="metric" style="flex:1;padding:8px 12px"><div class="metric-label">Quality</div><div class="metric-val" id="snr-quality" style="font-size:14px;color:#0F6E56">Fair</div></div>
+        </div>
+      </div>
+
+      <h2>SNR vs BER tradeoff</h2>
+      <p>Different modulation schemes offer different throughputs at different BER levels. The key table from the lecture:</p>
+      <table>
+        <tr><th>Modulation</th><th>Data rate</th><th>Required SNR for low BER</th><th>Robustness</th></tr>
+        <tr><td>BPSK</td><td>1 Mbps</td><td>Low (~10 dB)</td><td>Most robust</td></tr>
+        <tr><td>QAM-16</td><td>4 Mbps</td><td>Medium (~20 dB)</td><td>Moderate</td></tr>
+        <tr><td>QAM-256</td><td>8 Mbps</td><td>High (~30 dB)</td><td>Least robust</td></tr>
+      </table>
+
+      <h2>Rate adaptation — the key wireless technique</h2>
+      <div class="card card-accent">
+        <p style="margin:0;font-weight:500">Idea: match modulation to current channel quality</p>
+        <p style="margin-top:6px;margin-bottom:0">As a device moves farther from the base station, SNR drops and BER rises. Rather than failing completely, the system switches to a lower-rate, more robust modulation (e.g., from QAM-256 → BPSK). Speed drops but connection is maintained.</p>
+      </div>
+
+      <div class="formula-box">SNR high → use QAM-256 (8 Mbps) → fast but fragile<br>SNR drops → switch to QAM-16 (4 Mbps) → moderate<br>SNR very low → switch to BPSK (1 Mbps) → slow but reliable</div>
+
+      <h2>Dealing with high BER in wireless</h2>
+      <table>
+        <tr><th>Approach</th><th>How</th><th>Trade-off</th></tr>
+        <tr><td>Increase TX power</td><td>Raises SNR</td><td>Drains battery, creates more interference</td></tr>
+        <tr><td>Error detection codes</td><td>Add redundant bits (CRC)</td><td>Uses extra bandwidth</td></tr>
+        <tr><td>Link-layer retransmission</td><td>Re-send corrupted frames</td><td>Adds delay</td></tr>
+        <tr><td>Rate adaptation</td><td>Use robust modulation</td><td>Lower throughput</td></tr>
+      </table>
+    </div>
+
+    <!-- CONFUSIONS -->
+    <div class="page" id="page-confusions">
+      <span class="tag tag-blue">Study help</span>
+      <h1>Common confusions & tricky areas</h1>
+
+      <div class="confuse-card">
+        <div class="confuse-header"><div class="confuse-col teal">CSMA/CD</div><div class="confuse-col amber">CSMA/CA</div></div>
+        <div class="confuse-body">
+          <div class="confuse-cell"><strong>Collision Detection</strong> — used in wired Ethernet (802.3). Sender transmits and simultaneously listens. If it hears a collision, it stops and retries.</div>
+          <div class="confuse-cell"><strong>Collision Avoidance</strong> — used in wireless Wi-Fi (802.11). Sender waits for channel to be clear, then waits a random backoff time before transmitting. Cannot detect collisions once started.</div>
+        </div>
+      </div>
+
+      <div class="confuse-card">
+        <div class="confuse-header"><div class="confuse-col teal">Fast fading</div><div class="confuse-col amber">Slow fading</div></div>
+        <div class="confuse-body">
+          <div class="confuse-cell">Rapid ms-scale power fluctuations from constructive/destructive multipath. Changes with tiny movements (cm scale).</div>
+          <div class="confuse-cell">Gradual average power changes as user moves through large-scale obstacles. Changes over seconds/minutes.</div>
+        </div>
+      </div>
+
+      <div class="confuse-card">
+        <div class="confuse-header"><div class="confuse-col teal">Noise (N)</div><div class="confuse-col amber">Interference (I)</div></div>
+        <div class="confuse-body">
+          <div class="confuse-cell">Random, unavoidable thermal/impulse noise. Always present. Formula: SINR uses N in denominator.</div>
+          <div class="confuse-cell">Structured signals from other transmitters (other Wi-Fi, microwaves). Sometimes avoidable by changing frequency.</div>
+        </div>
+      </div>
+
+      <div class="confuse-card">
+        <div class="confuse-header"><div class="confuse-col teal">Attenuation</div><div class="confuse-col amber">Fading</div></div>
+        <div class="confuse-body">
+          <div class="confuse-cell">Gradual loss of signal power with distance or through matter. Predictable and smooth.</div>
+          <div class="confuse-cell">Rapid, random power variations caused by multipath interference. Unpredictable — can be severe even at short range.</div>
+        </div>
+      </div>
+
+      <div class="confuse-card">
+        <div class="confuse-header"><div class="confuse-col teal">SNR increase</div><div class="confuse-col amber">BER change</div></div>
+        <div class="confuse-body">
+          <div class="confuse-cell">SNR increases when: signal power rises OR noise/interference decreases. Good for communication.</div>
+          <div class="confuse-cell">BER decreases as SNR increases (inverse relationship). Higher SNR → fewer bit errors. These move in opposite directions!</div>
+        </div>
+      </div>
+
+      <h2>Common mistakes on exams</h2>
+      <div class="card card-red">
+        <p style="margin-bottom:6px;font-weight:500">Mistakes to avoid:</p>
+        <p style="margin-bottom:4px;font-size:14px">1. Saying wireless uses CSMA/CD — it uses CSMA/CA (CA = Collision Avoidance)</p>
+        <p style="margin-bottom:4px;font-size:14px">2. Confusing dB as an absolute unit — dB always expresses a ratio between two powers</p>
+        <p style="margin-bottom:4px;font-size:14px">3. Saying multipath always reduces signal — sometimes it increases it (constructive interference)</p>
+        <p style="margin-bottom:4px;font-size:14px">4. Forgetting hidden terminal problem only applies to wireless, not wired</p>
+        <p style="margin-bottom:0;font-size:14px">5. Confusing BER of 10⁻¹² (wired, excellent) with 10⁻⁶ (wireless, common)</p>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="page" id="page-quiz">
+      <span class="tag tag-teal">Quiz preparation</span>
+      <h1>Quiz questions & strong answers</h1>
+      <p>Click "Show answer" to reveal a model answer for each question.</p>
+      <div id="quiz-score"></div>
+      <div class="progress-bar"><div class="progress-fill" id="qprogress" style="width:0%"></div></div>
+
+      <div class="quiz-q">
+        <p class="q">Q1. Why is wireless bit error rate much higher than wired? Name three specific causes.</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> Wireless BER (commonly 10⁻⁶) is far higher than wired (10⁻¹²) because: (1) Signal attenuation — signals weaken with distance and through obstacles, lowering SNR; (2) Multipath fading — reflected copies of the signal arrive with different delays, causing destructive interference or inter-symbol interference; (3) Interference — the shared ISM spectrum means competing devices (other Wi-Fi, microwaves) add noise. Additionally, Doppler shift from mobility and hidden terminal collisions further corrupt data.</div>
+      </div>
+      <div class="quiz-q">
+        <p class="q">Q2. Explain the hidden terminal problem with an example. Why doesn't it occur in wired networks?</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> In an A–B–C topology where A and C are both in range of B but not of each other: A checks the channel, hears nothing, and starts transmitting to B. Simultaneously, C also checks, hears nothing, and transmits to B. Both signals collide at B, corrupting the data. Neither A nor C detects this because neither can hear the other's transmission. In wired Ethernet, all nodes share a single physical medium — every transmission is detectable by all nodes with sufficient signal strength, so CSMA/CD works and collisions are caught immediately at the sender.</div>
+      </div>
+      <div class="quiz-q">
+        <p class="q">Q3. A transmitter outputs 30 dBm and the receiver sensitivity is −70 dBm. What is the maximum tolerable path loss? If the path loss at 100m is 60 dB, can this link work?</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> Max path loss = P_tx − P_rx = 30 − (−70) = 100 dB. At 100m with 60 dB loss, the received power = 30 − 60 = −30 dBm. Since −30 dBm &gt; −70 dBm (receiver sensitivity), yes — the link works with 40 dB of margin remaining.</div>
+      </div>
+      <div class="quiz-q">
+        <p class="q">Q4. What is rate adaptation and why is it necessary in wireless but not wired networks?</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> Rate adaptation dynamically changes the modulation scheme based on current channel quality. As a device moves farther from the AP, SNR drops and BER rises. The system switches from high-rate, high-SNR-requiring modulation (QAM-256 at 8 Mbps) to lower-rate, robust modulation (BPSK at 1 Mbps). This is necessary because wireless channels are time-varying — quality changes with position and environment. Wired channels are stable and do not require this.</div>
+      </div>
+      <div class="quiz-q">
+        <p class="q">Q5. What does 3 dB mean in terms of power? What does a 30 dB path loss represent?</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> 3 dB corresponds to a power ratio of approximately 2× (doubling or halving). A 30 dB path loss means the received power is 10³ = 1000 times smaller than the transmitted power. Using the formula: P₂/P₁ = 10^(30/10) = 10³ = 1000.</div>
+      </div>
+      <div class="quiz-q">
+        <p class="q">Q6. Compare CSMA/CD and CSMA/CA. Why can't wireless use collision detection?</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> CSMA/CD (Collision Detection, used in 802.3 Ethernet): a sender transmits and simultaneously monitors the channel; if it detects a collision, it stops and waits. CSMA/CA (Collision Avoidance, used in 802.11 Wi-Fi): the sender waits until the channel is idle, then waits an additional random backoff period before transmitting. Collision detection is impossible in wireless because the transmitting device's own signal is orders of magnitude stronger than any incoming signal it could simultaneously detect, effectively masking any collision it might hear.</div>
+      </div>
+      <div class="quiz-q">
+        <p class="q">Q7. What are the three basic propagation mechanisms in wireless? State when each occurs.</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> (1) Reflection (λ ≪ D): occurs when the signal wavelength is much smaller than the obstacle — signal bounces off surfaces like buildings and floors. Most common in urban environments. (2) Diffraction (λ ≈ D): occurs when wavelength is comparable to obstacle size — signal bends around edges, enabling coverage around corners. (3) Scattering (λ ≫ D): occurs when the wavelength is much larger than the obstacle (e.g., rain drops, foliage) — signal scatters in many directions, reducing power and causing dispersion.</div>
+      </div>
+      <div class="quiz-q">
+        <p class="q">Q8. Name four types of noise in wireless communications and describe each briefly.</p>
+        <button class="show-btn" onclick="showAns(this)">Show answer</button>
+        <div class="quiz-ans"><strong>Answer:</strong> (1) Thermal noise: random electron motion in any conductor; present always, increases with temperature. (2) Impulse noise: sudden high-energy spikes from lightning or switching equipment; can corrupt many bits. (3) Intermodulation noise: mixing of signals at different frequencies in nonlinear devices, producing unwanted frequency components. (4) Crosstalk: unwanted signal leakage between adjacent channels or cables.</div>
+      </div>
+    </div>
+
+    <!-- CHEAT SHEET -->
+    <div class="page" id="page-cheatsheet">
+      <span class="tag tag-teal">Rapid revision</span>
+      <h1>Cheat sheet — Lecture 1</h1>
+
+      <h2>Key definitions</h2>
+      <div class="cheat-row"><span class="cheat-term">Path loss</span><span class="cheat-def">Power reduction due to free-space spreading with distance</span></div>
+      <div class="cheat-row"><span class="cheat-term">SNR / SINR</span><span class="cheat-def">Signal / (Noise + Interference) — bigger = better communication</span></div>
+      <div class="cheat-row"><span class="cheat-term">BER</span><span class="cheat-def">Bit error rate — fraction of bits received incorrectly</span></div>
+      <div class="cheat-row"><span class="cheat-term">Multipath fading</span><span class="cheat-def">Signal copies via reflection/diffraction/scatter arrive at different delays</span></div>
+      <div class="cheat-row"><span class="cheat-term">Doppler shift</span><span class="cheat-def">Frequency change caused by relative motion between TX and RX</span></div>
+      <div class="cheat-row"><span class="cheat-term">Hidden terminal</span><span class="cheat-def">Two nodes transmit simultaneously to a third, unaware of each other</span></div>
+      <div class="cheat-row"><span class="cheat-term">ISM band</span><span class="cheat-def">License-free spectrum (2.4 GHz, 5.8 GHz etc.); crowded, interference-prone</span></div>
+      <div class="cheat-row"><span class="cheat-term">Rate adaptation</span><span class="cheat-def">Dynamically change modulation (BPSK↔QAM256) based on SNR</span></div>
+      <div class="cheat-row"><span class="cheat-term">CSMA/CD</span><span class="cheat-def">Wired Ethernet — detect collisions while transmitting</span></div>
+      <div class="cheat-row"><span class="cheat-term">CSMA/CA</span><span class="cheat-def">Wireless Wi-Fi — avoid collisions with backoff before transmitting</span></div>
+      <div class="cheat-row"><span class="cheat-term">dBm</span><span class="cheat-def">10 × log₁₀(P in mW) — power relative to 1 mW</span></div>
+      <div class="cheat-row"><span class="cheat-term">Receiver sensitivity</span><span class="cheat-def">Minimum power needed for the receiver to decode the signal</span></div>
+
+      <h2>Critical formulas</h2>
+      <div class="formula-box">dB = 10 × log₁₀(P₂/P₁) &nbsp;·&nbsp; P₂/P₁ = 10^(dB/10)
+
+dBm = 10 × log₁₀(P_mW) &nbsp;·&nbsp; dBW = 10 × log₁₀(P_W)
+
+SINR = S / (N + I)
+
+Max path loss = P_tx(dBm) − P_rx_sensitivity(dBm)</div>
+
+      <h2>dB quick reference</h2>
+      <div class="grid2">
+        <div class="metric"><div class="metric-label">3 dB</div><div class="metric-val">× 2</div></div>
+        <div class="metric"><div class="metric-label">10 dB</div><div class="metric-val">× 10</div></div>
+        <div class="metric"><div class="metric-label">20 dB</div><div class="metric-val">× 100</div></div>
+        <div class="metric"><div class="metric-label">30 dB</div><div class="metric-val">× 1000</div></div>
+        <div class="metric"><div class="metric-label">−3 dB</div><div class="metric-val">× 0.5</div></div>
+        <div class="metric"><div class="metric-label">−10 dB</div><div class="metric-val">× 0.1</div></div>
+      </div>
+
+      <h2>Five barriers & solutions</h2>
+      <table>
+        <tr><th>Barrier</th><th>Core cause</th><th>Key solutions</th></tr>
+        <tr><td>Attenuation</td><td>Distance + obstacles</td><td>MIMO, repeaters, mesh</td></tr>
+        <tr><td>Noise/Interference</td><td>Shared spectrum</td><td>Cognitive radio, directional antennas, QoS</td></tr>
+        <tr><td>Multipath fading</td><td>Reflections</td><td>OFDM, MIMO, diversity</td></tr>
+        <tr><td>Doppler shift</td><td>Mobility</td><td>Fast handoff, Doppler compensation</td></tr>
+        <tr><td>Hidden terminal</td><td>Limited range</td><td>RTS/CTS, CSMA/CA</td></tr>
+      </table>
+
+      <h2>BER targets by application</h2>
+      <table>
+        <tr><th>Application</th><th>BER</th><th>Delay</th></tr>
+        <tr><td>Voice (cell phone)</td><td>&lt; 10⁻³</td><td>&lt; 100 ms</td></tr>
+        <tr><td>Video</td><td>10⁻⁶</td><td>&lt; 100 ms</td></tr>
+        <tr><td>Email</td><td>&lt; 10⁻⁹</td><td>&lt; 1 day</td></tr>
+        <tr><td>Wired Ethernet</td><td>~10⁻¹²</td><td>Very low</td></tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var navItems = document.querySelectorAll('.nav-item');
+var pages = document.querySelectorAll('.page');
+navItems.forEach(function(item){
+  item.addEventListener('click', function(){
+    navItems.forEach(function(n){n.classList.remove('active')});
+    pages.forEach(function(p){p.classList.remove('active')});
+    item.classList.add('active');
+    var pid = 'page-' + item.dataset.page;
+    var page = document.getElementById(pid);
+    if(page){ page.classList.add('active'); page.scrollIntoView({behavior:'smooth',block:'start'}); }
+  });
+});
+
+function toggleExpand(btn){
+  var body = btn.nextElementSibling;
+  var icon = btn.querySelector('.expand-icon');
+  body.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+var revealed = 0;
+var total = document.querySelectorAll('.quiz-q').length;
+function showAns(btn){
+  var ans = btn.nextElementSibling;
+  if(!ans.classList.contains('show')){
+    ans.classList.add('show');
+    btn.textContent = 'Hide answer';
+    revealed++;
+    var pct = Math.round(revealed/total*100);
+    document.getElementById('qprogress').style.width = pct + '%';
+    document.getElementById('quiz-score').textContent = revealed + ' of ' + total + ' answers revealed';
+  } else {
+    ans.classList.remove('show');
+    btn.textContent = 'Show answer';
+    revealed = Math.max(0, revealed-1);
+    var pct2 = Math.round(revealed/total*100);
+    document.getElementById('qprogress').style.width = pct2 + '%';
+    document.getElementById('quiz-score').textContent = revealed + ' of ' + total + ' answers revealed';
+  }
+}
+
+var slider = document.getElementById('snr-slider');
+if(slider){
+  slider.addEventListener('input', function(){
+    var sig = parseInt(this.value);
+    var noise = 100 - sig;
+    document.getElementById('sig-val').textContent = sig;
+    document.getElementById('sig-bar').style.width = sig + '%';
+    document.getElementById('noise-bar').style.width = noise + '%';
+    var ratio = sig / noise;
+    var snrDb = (10 * Math.log10(ratio)).toFixed(1);
+    document.getElementById('snr-display').textContent = snrDb + ' dB';
+    var q = document.getElementById('snr-quality');
+    if(ratio > 4){ q.textContent = 'Excellent'; q.style.color='#0F6E56'; }
+    else if(ratio > 2){ q.textContent = 'Good'; q.style.color='#3B6D11'; }
+    else if(ratio > 1){ q.textContent = 'Fair'; q.style.color='#854F0B'; }
+    else { q.textContent = 'Poor'; q.style.color='#A32D2D'; }
+  });
+}
+</script>
