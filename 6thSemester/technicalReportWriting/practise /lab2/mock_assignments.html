@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TRW Lab — Mock PDF Reconstruction Assignments</title>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    tags: 'ams'
+  },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #d0c8b8;
+    margin: 0; padding: 2rem 1rem;
+    color: #111;
+  }
+  .page {
+    background: #fafaf7;
+    max-width: 720px;
+    margin: 0 auto 3.5rem;
+    padding: 3.5rem 4rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.1);
+    border-radius: 2px;
+    position: relative;
+    min-height: 960px;
+  }
+  .assignment-tag {
+    position: absolute;
+    top: -14px; left: 50%;
+    transform: translateX(-50%);
+    background: #2a3a2a;
+    color: #c8d8a8;
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 18px;
+    border-radius: 20px;
+  }
+  .difficulty-badge {
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+  }
+  .beginner { background: #e8f4e8; color: #2a5a2a; border: 1px solid #b0d4b0; }
+  .intermediate { background: #f4f0e0; color: #5a4a10; border: 1px solid #d4c880; }
+  .advanced { background: #f4e8e8; color: #5a1a1a; border: 1px solid #d4a0a0; }
+  .doc-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: 0.2rem 0 0.1rem;
+    color: #111;
+    line-height: 1.25;
+  }
+  .doc-meta {
+    font-size: 0.8rem;
+    color: #555;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.5rem;
+    color: #111;
+    border-bottom: 0.5px solid #ddd;
+    padding-bottom: 3px;
+  }
+  h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 1.1rem 0 0.3rem;
+    color: #222;
+  }
+  p {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    margin: 0.4rem 0;
+    color: #111;
+  }
+  .note {
+    font-size: 0.78rem;
+    background: #f5f0e5;
+    border-left: 3px solid #c8a850;
+    padding: 0.5rem 0.75rem;
+    margin: 1rem 0;
+    color: #444;
+    font-style: italic;
+  }
+  .separator {
+    border: none;
+    border-top: 1px solid #e0ddd5;
+    margin: 2rem 0;
+  }
+  .instructions {
+    background: #1c2c1c;
+    color: #c0d8a0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.03em;
+  }
+  .page-num {
+    position: absolute;
+    bottom: 1.5rem; right: 4rem;
+    font-size: 0.75rem;
+    color: #aaa;
+  }
+</style>
+</head>
+<body>
+
+<div style="text-align:center;margin-bottom:2rem">
+  <div style="font-family:'Courier New',monospace;font-size:.75rem;color:#555;letter-spacing:.1em;text-transform:uppercase">
+    TRW Lab · Mathematical LaTeX · PDF Reconstruction Practice
+  </div>
+  <div style="font-size:.8rem;color:#888;margin-top:.3rem;font-style:italic">
+    Recreate each document in LaTeX. Do not view the solution manual until you have attempted each assignment.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     ASSIGNMENT 1 — BEGINNER
+══════════════════════════════════════════════════════════ -->
+<div class="page">
+<div class="assignment-tag">Assignment 1 of 3</div>
+
+<div class="instructions">
+  TASK: Reconstruct this document in LaTeX as accurately as possible.
+  Pay attention to: equation numbering, fraction structure, matrix type, and spacing.
+</div>
+
+<div class="difficulty-badge beginner">Difficulty: Beginner</div>
+<div class="doc-title">Fundamental Theorems of Calculus</div>
+<div class="doc-meta">Practice Assignment · Department of Mathematics</div>
+
+<h2>1 &nbsp; The Derivative</h2>
+
+<p>The derivative of $f(x)$ with respect to $x$ is defined as the following limit:</p>
+
+$$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} \tag{1}$$
+
+<p>For any $n \in \mathbb{R}$, the power rule states:</p>
+
+$$\frac{d}{dx}\left(x^n\right) = nx^{n-1} \tag{2}$$
+
+<h2>2 &nbsp; Integration</h2>
+
+<p>The power rule for indefinite integration is given in Equation 3:</p>
+
+$$\int x^n\,dx = \frac{x^{n+1}}{n+1} + C, \qquad n \neq -1 \tag{3}$$
+
+<p>The famous Gaussian integral evaluates to:</p>
+
+$$\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi} \tag{4}$$
+
+<hr class="separator">
+
+<h2>3 &nbsp; Rotation Matrix</h2>
+
+<p>A rotation in $\mathbb{R}^2$ by angle $\theta$ is represented by the matrix:</p>
+
+$$R(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$$
+
+<p>Its determinant satisfies:</p>
+
+$$\begin{vmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{vmatrix} = \cos^2\theta + \sin^2\theta = 1 \tag{5}$$
+
+<h2>4 &nbsp; Basic Trigonometric Identity</h2>
+
+<p>The following identities follow from the Pythagorean theorem:</p>
+
+$$\begin{gather*}
+  \sin^2\theta + \cos^2\theta = 1 \\[6pt]
+  \tan^2\theta + 1 = \sec^2\theta \\[6pt]
+  1 + \cot^2\theta = \csc^2\theta
+\end{gather*}$$
+
+<div class="note">Hint: You will need the following environments: equation, gather*, pmatrix, vmatrix, \frac, \lim, \int, \sqrt, \mathbb, \sin, \cos, \tan, \sec, \cot, \csc.</div>
+
+<div class="page-num">1</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     ASSIGNMENT 2 — INTERMEDIATE
+══════════════════════════════════════════════════════════ -->
+<div class="page">
+<div class="assignment-tag">Assignment 2 of 3</div>
+
+<div class="instructions">
+  TASK: Reconstruct this document in LaTeX as accurately as possible.
+  Pay attention to: align environments, matrix types mixed in one expression, Greek letters, and vector notation.
+</div>
+
+<div class="difficulty-badge intermediate">Difficulty: Intermediate</div>
+<div class="doc-title">Linear Systems and Vector Spaces</div>
+<div class="doc-meta">Practice Assignment · Department of Applied Mathematics</div>
+
+<h2>1 &nbsp; System of Linear Equations</h2>
+
+<p>Consider the following system of three equations in three unknowns:</p>
+
+$$\begin{align}
+  2x + 3y - z  &= 7  \\
+  x  - y  + 2z &= -3 \\
+  3x + y  + z  &= 10
+\end{align}$$
+
+<p>This is written compactly in matrix form $A\mathbf{x} = \mathbf{b}$ as:</p>
+
+$$\begin{bmatrix} 2 & 3 & -1 \\ 1 & -1 & 2 \\ 3 & 1 & 1 \end{bmatrix} \begin{pmatrix} x \\ y \\ z \end{pmatrix} = \begin{pmatrix} 7 \\ -3 \\ 10 \end{pmatrix}$$
+
+<h2>2 &nbsp; Vector Operations</h2>
+
+<h3>2.1 &nbsp; Dot Product</h3>
+
+<p>The dot product of $\vec{u}$ and $\vec{v}$ in $\mathbb{R}^n$ is:</p>
+
+$$\vec{u} \cdot \vec{v} = \sum_{i=1}^{n} u_i v_i = |\vec{u}||\vec{v}|\cos\theta \tag{4}$$
+
+<h3>2.2 &nbsp; The $L^2$ Norm</h3>
+
+<p>The Euclidean norm of a vector $\mathbf{v} \in \mathbb{R}^n$:</p>
+
+$$\|\mathbf{v}\|_2 = \sqrt{\sum_{i=1}^{n} v_i^2} \tag{5}$$
+
+<hr class="separator">
+
+<h2>3 &nbsp; Eigenvalue Problem</h2>
+
+<p>For a matrix $A \in \mathbb{R}^{n \times n}$, the eigenvalue equation is:</p>
+
+$$A\mathbf{x} = \lambda\mathbf{x}, \qquad \lambda \in \mathbb{C} \tag{6}$$
+
+<p>The eigenvalues are roots of the characteristic polynomial:</p>
+
+$$\det(A - \lambda I) = 0 \tag{7}$$
+
+<h2>4 &nbsp; Taylor Series Expansion</h2>
+
+<p>The Taylor expansion of a smooth function $f(x)$ around the point $x = a$:</p>
+
+$$\begin{equation}
+  f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!}\,(x - a)^n
+\end{equation}$$
+
+<p>For $a = 0$ and $f(x) = e^x$, this reduces to:</p>
+
+$$e^x = \sum_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots$$
+
+<div class="note">Hint: You will need: align (numbered), bmatrix, pmatrix, vmatrix, \vec, \mathbf, \mathbb, \det, \sum, \frac, \lambda, \theta, \cdots, \cdot, \|...\|, and the \left( \right) delimiter pair.</div>
+
+<div class="page-num">2</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     ASSIGNMENT 3 — ADVANCED
+══════════════════════════════════════════════════════════ -->
+<div class="page">
+<div class="assignment-tag">Assignment 3 of 3</div>
+
+<div class="instructions">
+  TASK: Reconstruct this document in LaTeX as accurately as possible.
+  Pay attention to: nested fractions, partial derivatives, \mathcal font, complex subscripts, and multi-step align derivations.
+</div>
+
+<div class="difficulty-badge advanced">Difficulty: Advanced</div>
+<div class="doc-title">Gradient Descent and Optimization</div>
+<div class="doc-meta">Practice Assignment · Department of Computer Science &amp; Engineering</div>
+
+<h2>1 &nbsp; Loss Function</h2>
+
+<p>Given a training set $\{(x_i, y_i)\}_{i=1}^{N}$ with predictions $\hat{y}_i = \theta^T x_i$, the mean squared error loss is:</p>
+
+$$\mathcal{L}(\theta) = \frac{1}{N}\sum_{i=1}^{N}\left(y_i - \hat{y}_i\right)^2 \tag{1}$$
+
+<p>where $\theta \in \mathbb{R}^d$ is the parameter vector and $\hat{y}_i = \theta^T x_i$.</p>
+
+<h2>2 &nbsp; Gradient Computation</h2>
+
+<p>The gradient of $\mathcal{L}$ with respect to $\theta$ is derived step by step:</p>
+
+$$\begin{align}
+  \frac{\partial\mathcal{L}}{\partial\theta}
+    &= \frac{\partial}{\partial\theta}\left[\frac{1}{N}\sum_{i=1}^{N}\left(y_i - \theta^T x_i\right)^2\right] \\[6pt]
+    &= \frac{-2}{N}\sum_{i=1}^{N}\left(y_i - \theta^T x_i\right)x_i \\[6pt]
+    &= \frac{-2}{N}X^T(y - X\theta)
+\end{align}$$
+
+<h2>3 &nbsp; Normal Equation</h2>
+
+<p>Setting the gradient in Equation (2) to zero and solving for $\hat{\theta}$ yields the closed-form solution:</p>
+
+$$\hat{\theta} = \left(X^TX\right)^{-1}X^Ty \tag{5}$$
+
+<p>where $X \in \mathbb{R}^{N \times d}$ is the design matrix and $y \in \mathbb{R}^N$ is the target vector.</p>
+
+<hr class="separator">
+
+<h2>4 &nbsp; Gradient Descent Update Rule</h2>
+
+<p>Starting from an initial $\theta^{(0)}$, the parameter is updated at each iteration $t$:</p>
+
+$$\theta^{(t+1)} = \theta^{(t)} - \alpha \cdot \nabla_\theta\,\mathcal{L}\!\left(\theta^{(t)}\right) \tag{6}$$
+
+<p>Substituting the gradient from Section 2, this expands to:</p>
+
+$$\begin{equation}
+  \begin{split}
+    \theta^{(t+1)} &= \theta^{(t)} - \alpha \cdot \frac{-2}{N}X^T\!\left(y - X\theta^{(t)}\right) \\[4pt]
+                   &= \theta^{(t)} + \frac{2\alpha}{N}\,X^T\!\left(y - X\theta^{(t)}\right)
+  \end{split}
+\end{equation}$$
+
+<h2>5 &nbsp; Convergence Criterion</h2>
+
+<p>Gradient descent is said to have converged when the gradient magnitude falls below a tolerance:</p>
+
+$$\left\|\nabla_\theta\,\mathcal{L}\!\left(\theta^{(t)}\right)\right\|_2 \leq \varepsilon \tag{8}$$
+
+<p>for some pre-specified $\varepsilon > 0$. The softmax function used for multiclass output is:</p>
+
+$$\sigma(\mathbf{z})_j = \frac{e^{z_j}}{\displaystyle\sum_{k=1}^{K} e^{z_k}}, \qquad j = 1, 2, \ldots, K \tag{9}$$
+
+<div class="note">Hint: You will need: \mathcal{L}, \mathbb{R}, \hat{\theta}, \partial, \nabla, align (numbered), split inside equation, \left\|...\right\|_2, \left(...\right)^{-1}, \frac{-2}{N}, X^T, \varepsilon, \displaystyle, \theta^{(t)} notation, and \alpha.</div>
+
+<div class="page-num">3</div>
+</div>
+
+</body>
+</html>
