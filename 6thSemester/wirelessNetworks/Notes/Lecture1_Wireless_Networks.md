@@ -101,11 +101,11 @@ The unifying theme is the **trade-off**: you cannot simultaneously maximize rate
 ### Question 9 — Reflection vs diffraction vs scattering.
 **Answer:**
 
-| Phenomenon | Cause | Surface | Effect |
-|---|---|---|---|
-| **Reflection** | Bounces off **large, smooth** surface (> λ) | Walls, ground, buildings | Strong reflected copies; enables NLOS |
-| **Diffraction** | **Bends around edges** of obstacles | Hills, corners | Reaches **shadowed** regions |
-| **Scattering** | Hits **rough/small** objects (~λ) | Foliage, rain, signposts | Disperses into **many weak** directions |
+| Phenomenon      | Cause                                       | Surface                  | Effect                                  |
+| --------------- | ------------------------------------------- | ------------------------ | --------------------------------------- |
+| **Reflection**  | Bounces off **large, smooth** surface (> λ) | Walls, ground, buildings | Strong reflected copies; enables NLOS   |
+| **Diffraction** | **Bends around edges** of obstacles         | Hills, corners           | Reaches **shadowed** regions            |
+| **Scattering**  | Hits **rough/small** objects (~λ)           | Foliage, rain, signposts | Disperses into **many weak** directions |
 
 **Discriminator:** size/smoothness — **big-smooth → reflect, edge → diffract, rough-small → scatter.**
 
