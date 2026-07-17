@@ -159,12 +159,12 @@ Supplies Used = Opening Balance − Supplies Still on Hand
 
 **Step-by-Step Logic:**
 
-|Step|Question|Answer|
-|---|---|---|
-|1|What did we start with?|$2,500 in Advertising Supplies (asset)|
-|2|What do we still have?|$1,000 on hand (confirmed by physical count)|
-|3|What was used?|$2,500 − $1,000 = $1,500 (this is the expense)|
-|4|What needs adjusting?|Asset is overstated by $1,500; Expense is understated by $1,500|
+| Step | Question                | Answer                                                          |
+| ---- | ----------------------- | --------------------------------------------------------------- |
+| 1    | What did we start with? | $2,500 in Advertising Supplies (asset)                          |
+| 2    | What do we still have?  | $1,000 on hand (confirmed by physical count)                    |
+| 3    | What was used?          | $2,500 − $1,000 = $1,500 (this is the expense)                  |
+| 4    | What needs adjusting?   | Asset is overstated by $1,500; Expense is understated by $1,500 |
 
 **Adjusting Journal Entry:**
 
