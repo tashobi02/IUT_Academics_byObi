@@ -598,7 +598,7 @@ Beginning cash: $0 → Ending cash: $8,050 ✓
 ```
 Income Statement
    Net Income $2,750
-        ↓
+        ↓Question
 Owner's Equity Statement ← feeds net income in
    Ending Capital $16,450
         ↓
@@ -660,7 +660,7 @@ From the given data, three items qualify as assets:
 | **Total Assets** | **$27,000** |
 
 > **Why these three?**
-> - **Cash** — money immediately available in the business.
+> - **Cash** — money immediately available Questionin the business.
 > - **Accounts Receivable** — money owed *to* Flanagan by customers; a legal right to collect.
 > - **Equipment** — a long-term physical asset used to operate the business.
 >
@@ -728,7 +728,7 @@ Total Assets = $27,000
 | **Total Liabilities** | **$18,500** |
 
 **Step 3 — Owner's Equity:**
-
+Question
 ```
 Owner's Equity = Total Assets − Total Liabilities
                = $27,000 − $18,500
@@ -758,3 +758,4 @@ The equation is balanced.
 | (a)  | Total Assets   | **$27,000** |
 | (b)  | Net Income     | **$14,000** |
 | (c)  | Owner's Equity | **$8,500**  |
+Question
