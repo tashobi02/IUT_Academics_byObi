@@ -221,6 +221,9 @@ This is literally the same optimizer as the "maximize variance" formulation in B
 
 ⭐ **Clarity point:** *"Subtract the mean" is not optional pre-processing flavor — it is a load-bearing part of the definition of the covariance matrix used in step 2. Skip it and step 2's formula silently computes the wrong matrix.*
 
+
+![[Pasted image 20260905145531.png]]
+
 ---
 
 ### Block I — Slide 20: Step 2, the Covariance Matrix
@@ -246,6 +249,9 @@ This is literally the same optimizer as the "maximize variance" formulation in B
 ---
 
 ### Block J — Slide 21: Step 3, Eigenvectors and Eigenvalues via SVD
+
+![[Pasted image 20260905154521.png]]
+
 🟦 **What the slide says:** *"Singular Value Decomposition to get the eigenvectors and eigenvalues"* — MATLAB-style code `[U,S,V] = svd(Sigma)`, with $U = \begin{bmatrix} | & | & & | \\ u^{(1)} & u^{(2)} & \cdots & u^{(n)} \\ | & | & & |\end{bmatrix} \in \mathbb{R}^{n\times n}$, alongside a repeat of the mean-adjusted scatter plot with the (soon-to-be-drawn) eigenvector axes.
 
 🔤 **Jargon breakdown:**
@@ -299,6 +305,8 @@ This is literally the same optimizer as the "maximize variance" formulation in B
 📝 **Example:** In the transformed ("doublevecfinal.dat") coordinates, notice the new $z_1$-axis spread (roughly $-1.7$ to $1.8$) is much wider than the new $z_2$-axis spread (roughly $-0.35$ to $0.4$) — exactly reflecting $\lambda_1 \approx 1.284 \gg \lambda_2 \approx 0.049$.
 
 ⭐ **Clarity point:** *A common exam trap: "does PCA always reduce dimensionality?" — No. PCA with $k=n$ is a pure rotation; the reduction only happens if you explicitly choose $k<n$.*
+
+![[Pasted image 20260905162221.png]]
 
 ---
 

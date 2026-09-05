@@ -815,6 +815,8 @@ Adding $-\infty$ (in practice, a large negative number) to any "future" position
 
 ## 3.17 Transformers Beyond NLP — the other syllabus gap
 
+![[Pasted image 20260905224721.png]]
+
 **Slide reference:** Lecture 9, p. 2 lists *"Transformers in other fields"* as an outline bullet, with **no corresponding slide content** anywhere in either deck.
 
 > [!danger] **Slide gap**
